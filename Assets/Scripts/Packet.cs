@@ -11,7 +11,7 @@ public enum ServerPackets
     spawnPlayer,
     playerPosition,
     playerRotation,
-    udpTest,
+   // udpTest,
     updateChat
 }
 
@@ -19,7 +19,7 @@ public enum ServerPackets
 public enum ClientPackets
 {
     welcomeReceived = 1,
-    updTestReceived,
+   // updTestReceived,
     playerMovement
 }
 public class Packet : IDisposable
