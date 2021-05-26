@@ -11,7 +11,8 @@ public enum ServerPackets
     spawnPlayer,
     playerPosition,
     playerRotation,
-    udpTest
+    udpTest,
+    updateChat
 }
 
 /// <summary>Sent from client to server.</summary>

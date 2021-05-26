@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,11 +11,13 @@ public class UIManager : MonoBehaviour
     public GameObject startMenu;
     public GameObject buttonsPanel;
     public GameObject czatPanel;
+    public static TextMeshPro czatTMP;
 
     public InputField usernameField;
 
     private void Awake()
     {
+        czatTMP = czatPanel.GetComponentInChildren<TextMeshPro>();
         if (instance == null)
         {
             instance = this;
@@ -32,5 +35,6 @@ public class UIManager : MonoBehaviour
         usernameField.interactable = false;
         Client.instance.ConnectToServer();
         buttonsPanel.SetActive(true);
+        czatPanel.SetActive(true);
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using UnityEngine;
@@ -40,5 +41,13 @@ public class ClientHandle : MonoBehaviour
         Vector3 _position = _packet.ReadVector3();
 
         GameManager.players[_id].transform.position = _position;
+    }
+
+    public static void UpdateChat(Packet _packet) {
+        string _msg = _packet.ReadString();
+        print("Odebrano wiadomosc z serwera: " + _msg);
+
+        string chattext = UIManager.czatTMP.text;
+        UIManager.czatTMP.SetText(chattext+$"\n<color=red><b>[{DateTime.Now.ToShortTimeString()}]</b>{_msg}</color>");
     }
 }

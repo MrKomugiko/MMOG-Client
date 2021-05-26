@@ -34,8 +34,9 @@ public class PlayerController : MonoBehaviour
         
         if (Input.GetKeyDown("d") || right) _inputs[3] = true;
         
-        if(!_inputs.All(i=>i==false))
+        if(_inputs[0] || _inputs[1] || _inputs[2] || _inputs[3]) {
             ClientSend.PlayerMovement(_inputs);
+        }
     }
 
     // ANDROID keys maping to buttons ( no keyboard xd )
