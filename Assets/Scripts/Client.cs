@@ -12,7 +12,7 @@ public class Client : MonoBehaviour
 
     public string ip = "94.4.32.253";
     public int port = 5555;
-    public int myId = 0;
+    public int myId = 0 ;
     public TCP tcp;
     public UDP udp;
 
@@ -250,7 +250,10 @@ public class Client : MonoBehaviour
         packetHandlers = new Dictionary<int, PacketHandler>()
         {
             { (int)ServerPackets.welcome, ClientHandle.Welcome },
-            { (int)ServerPackets.udpTest, ClientHandle.UDPTest }
+            { (int)ServerPackets.udpTest, ClientHandle.UDPTest },
+            { (int)ServerPackets.spawnPlayer, ClientHandle.SpawnPlayer },
+            { (int)ServerPackets.playerPosition, ClientHandle.PlayerPosition }
+
         };
         Debug.Log("Initialized packets.");
     }

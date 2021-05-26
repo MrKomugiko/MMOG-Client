@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,6 +26,19 @@ public class ClientSend : MonoBehaviour
             _packet.Write(UIManager.instance.usernameField.text);
 
             SendTCPData(_packet);
+        }
+    }
+
+    public static void PlayerMovement(bool[] _inputs) {
+        //Debug.Log("PlayerMovement in ClientSend");
+        using (Packet _packet = new Packet((int)ClientPackets.playerMovement)) {
+            _packet.Write(_inputs.Length);
+            foreach(bool _input in _inputs) {
+                _packet.Write(_input);
+            }
+            _packet.Write(GameManager.players[Client.instance.myId].transform.rotation);
+
+            SendUDPData(_packet);
         }
     }
 
