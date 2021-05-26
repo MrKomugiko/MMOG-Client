@@ -29,7 +29,8 @@ public class ClientSend : MonoBehaviour
         }
     }
 
-    public static void PlayerMovement(bool[] _inputs) {
+    public static void PlayerMovement(bool[] _inputs) 
+    {
         //Debug.Log("PlayerMovement in ClientSend");
         using (Packet _packet = new Packet((int)ClientPackets.playerMovement)) {
             _packet.Write(_inputs.Length);

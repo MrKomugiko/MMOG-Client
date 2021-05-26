@@ -8,6 +8,9 @@ public class UIManager : MonoBehaviour
     public static UIManager instance;
 
     public GameObject startMenu;
+    public GameObject buttonsPanel;
+    public GameObject czatPanel;
+
     public InputField usernameField;
 
     private void Awake()
@@ -28,5 +31,6 @@ public class UIManager : MonoBehaviour
         startMenu.SetActive(false);
         usernameField.interactable = false;
         Client.instance.ConnectToServer();
+        buttonsPanel.SetActive(true);
     }
 }

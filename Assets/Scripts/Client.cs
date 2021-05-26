@@ -253,7 +253,6 @@ public class Client : MonoBehaviour
             { (int)ServerPackets.udpTest, ClientHandle.UDPTest },
             { (int)ServerPackets.spawnPlayer, ClientHandle.SpawnPlayer },
             { (int)ServerPackets.playerPosition, ClientHandle.PlayerPosition }
-
         };
         Debug.Log("Initialized packets.");
     }
