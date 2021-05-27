@@ -58,6 +58,18 @@ public class Client : MonoBehaviour
 
         public void Connect()
         {
+            TcpClient tcpClient = new TcpClient();
+            try 
+            {
+                tcpClient.Connect(instance.ip, instance.port);
+                print("Port open");
+            } 
+            catch (Exception)
+            {
+                print("Port closed");
+                return;
+            }
+
             socket = new TcpClient
             {
                 ReceiveBufferSize = dataBufferSize,
@@ -66,6 +78,7 @@ public class Client : MonoBehaviour
 
             receiveBuffer = new byte[dataBufferSize];
             socket.BeginConnect(instance.ip, instance.port, ConnectCallback, socket);
+ 
         }
 
         private void ConnectCallback(IAsyncResult _result)
@@ -74,6 +87,7 @@ public class Client : MonoBehaviour
 
             if (!socket.Connected)
             {
+                print("server jest wyłączony");
                 return;
             }
 
@@ -225,6 +239,7 @@ public class Client : MonoBehaviour
                 if (_data.Length < 4)
                 {
                     instance.Disconnect();
+                    print("DISCONNECTED 1");
                     return;
                 }
 
@@ -232,6 +247,7 @@ public class Client : MonoBehaviour
             }
             catch
             {
+                print("DISCONNECTED 2");
                 Disconnect();
             }
         }
@@ -268,18 +284,22 @@ public class Client : MonoBehaviour
           //{ (int)ServerPackets.udpTest, ClientHandle.UDPTest },
             { (int)ServerPackets.spawnPlayer, ClientHandle.SpawnPlayer },
             { (int)ServerPackets.playerPosition, ClientHandle.PlayerPosition },
-            { (int)ServerPackets.updateChat, ClientHandle.UpdateChat }
+            { (int)ServerPackets.updateChat, ClientHandle.UpdateChat },
+            { (int)ServerPackets.updateChat_NewUserPost, ClientHandle.UpdateChat_NewUserPost }
+
         };
         Debug.Log("Initialized packets.");
     }
     
     private void Disconnect() {
-        if(isConnected) {
-            isConnected = false;
+        isConnected = false;
+        //if(isConnected) {
+          //  isConnected = false;
             tcp.socket.Close();
             udp.socket.Close();
 
             Debug.Log("Disconnectef from server.");
-        }
+        //}
+        ThreadManager.ExecuteOnMainThread(()=>UIManager.instance.BackToStartScreen());
     }
 }

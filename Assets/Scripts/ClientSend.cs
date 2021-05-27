@@ -43,14 +43,25 @@ public class ClientSend : MonoBehaviour
         }
     }
 
+    public static void SendChatMessage(string _message)
+    {
+        using (Packet _packet = new Packet((int)ClientPackets.SendChatMessage))
+        {
+            _packet.Write(Client.instance.myId);
+            _packet.Write(_message);
+
+            SendTCPData(_packet);
+        }
+    }
+
     public static void UDPTestReceived()
     {
-        using (Packet _packet = new Packet((int)ClientPackets.updTestReceived))
-        {
-            _packet.Write("Received a UDP packet.");
+        // using (Packet _packet = new Packet((int)ClientPackets.updTestReceived))
+        // {
+        //     _packet.Write("Received a UDP packet.");
 
-            SendUDPData(_packet);
-        }
+        //     SendUDPData(_packet);
+        // }
     }
     #endregion
 }

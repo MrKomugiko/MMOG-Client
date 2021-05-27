@@ -7,7 +7,6 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
-
     public GameObject startMenu;
     public GameObject buttonsPanel;
     public GameObject czatPanel;
@@ -31,10 +30,32 @@ public class UIManager : MonoBehaviour
 
     public void ConnectToServer()
     {
-        startMenu.SetActive(false);
         usernameField.interactable = false;
-        Client.instance.ConnectToServer();
+        Client.instance.ConnectToServer();        
+    }
+
+    public void EnterGame()
+    {
+        startMenu.SetActive(false);
         buttonsPanel.SetActive(true);
-        czatPanel.SetActive(true);
+        czatPanel.SetActive(true);    
+    }
+    
+    public void BackToStartScreen()
+    {
+
+        try{
+            print("usunięcie obiektów graczy");
+            foreach(PlayerManager player in GameManager.players.Values)
+            {
+                Destroy(player.gameObject);
+            }
+        }catch{}
+        GameManager.players.Clear();
+        
+        print("powrót na strone główną");
+        startMenu.SetActive(true);
+        buttonsPanel.SetActive(false);
+        czatPanel.SetActive(false);   
     }
 }

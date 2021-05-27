@@ -12,7 +12,8 @@ public enum ServerPackets
     playerPosition,
     playerRotation,
    // udpTest,
-    updateChat
+    updateChat,
+    updateChat_NewUserPost
 }
 
 /// <summary>Sent from client to server.</summary>
@@ -20,7 +21,8 @@ public enum ClientPackets
 {
     welcomeReceived = 1,
    // updTestReceived,
-    playerMovement
+    playerMovement,
+    SendChatMessage
 }
 public class Packet : IDisposable
 {

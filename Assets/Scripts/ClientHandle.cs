@@ -8,6 +8,9 @@ public class ClientHandle : MonoBehaviour
 {
     public static void Welcome(Packet _packet)
     {
+
+       ThreadManager.ExecuteOnMainThread(()=>UIManager.instance.EnterGame());
+
         string _msg = _packet.ReadString();
         int _myId = _packet.ReadInt();
 
@@ -45,9 +48,19 @@ public class ClientHandle : MonoBehaviour
 
     public static void UpdateChat(Packet _packet) {
         string _msg = _packet.ReadString();
-        print("Odebrano wiadomosc z serwera: " + _msg);
+        print("Odebrano wiadomosc od GM: " + _msg);
 
         string chattext = UIManager.czatTMP.text;
-        UIManager.czatTMP.SetText(chattext+$"\n<color=red><b>[{DateTime.Now.ToShortTimeString()}]</b>{_msg}</color>");
+        UIManager.czatTMP.SetText(chattext+$"\n<color=red><b>[{DateTime.Now.ToShortTimeString()}]:[GM]:{_msg}</b></color>");
+    }
+    public static void UpdateChat_NewUserPost(Packet _packet)
+    {
+        int _playerId = _packet.ReadInt();
+        string _message = _packet.ReadString();
+        string _username = GameManager.players[_playerId].Username;
+        string _time=DateTime.Now.ToShortTimeString();
+
+        string chattext = UIManager.czatTMP.text;
+        UIManager.czatTMP.SetText(chattext+$"\n<color=white><b>[{_time}]</b>:<b>[{_username}]</b>:{_message}</color>");
     }
 }

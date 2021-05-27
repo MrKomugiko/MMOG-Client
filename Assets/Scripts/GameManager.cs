@@ -34,4 +34,10 @@ public class GameManager : MonoBehaviour
         _playerData.Username = _username;
         players.Add(_id,_playerData);
     }
+
+    public void OnClick_CloseApplication()
+    {
+        Application.Quit(); 
+        print("quit");
+    }
 }
