@@ -63,4 +63,11 @@ public class ClientHandle : MonoBehaviour
         string chattext = UIManager.czatTMP.text;
         UIManager.czatTMP.SetText(chattext+$"\n<color=white><b>[{_time}]</b>:<b>[{_username}]</b>:{_message}</color>");
     }
+
+    public static void RemoveOfflinePlayer(Packet _packet) {
+        int _id = _packet.ReadInt();
+        Destroy(GameManager.players[_id].gameObject);
+        GameManager.players.Remove(_id);
+        // puff ;d gracz offline znika z gry 
+    }
 }

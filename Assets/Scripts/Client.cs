@@ -285,7 +285,9 @@ public class Client : MonoBehaviour
             { (int)ServerPackets.spawnPlayer, ClientHandle.SpawnPlayer },
             { (int)ServerPackets.playerPosition, ClientHandle.PlayerPosition },
             { (int)ServerPackets.updateChat, ClientHandle.UpdateChat },
-            { (int)ServerPackets.updateChat_NewUserPost, ClientHandle.UpdateChat_NewUserPost }
+            { (int)ServerPackets.updateChat_NewUserPost, ClientHandle.UpdateChat_NewUserPost },
+            { (int)ServerPackets.removeOfflinePlayer, ClientHandle.RemoveOfflinePlayer }
+
 
         };
         Debug.Log("Initialized packets.");

@@ -13,7 +13,8 @@ public enum ServerPackets
     playerRotation,
    // udpTest,
     updateChat,
-    updateChat_NewUserPost
+    updateChat_NewUserPost,
+    removeOfflinePlayer
 }
 
 /// <summary>Sent from client to server.</summary>
