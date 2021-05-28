@@ -12,6 +12,8 @@ public class UIManager : MonoBehaviour
     public GameObject czatPanel;
     public static TextMeshPro czatTMP;
 
+    public GameObject grid;
+
     public InputField usernameField;
 
     private void Awake()
@@ -38,7 +40,9 @@ public class UIManager : MonoBehaviour
     {
         startMenu.SetActive(false);
         buttonsPanel.SetActive(true);
-        czatPanel.SetActive(true);    
+        czatPanel.SetActive(true);   
+        //TODO: wygląd gridu powinien być na starcieściągnięty z serwera jednorazowo jako metoda wczytywania mapy
+        grid.SetActive(true); 
     }
     
     public void BackToStartScreen()

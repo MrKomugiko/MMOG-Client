@@ -4,13 +4,14 @@ using UnityEngine;
 using System.Net;
 using System.Net.Sockets;
 using System;
+using UnityEngine.UI;
 
 public class Client : MonoBehaviour
 {
     public static Client instance;
     public static int dataBufferSize = 4096;
 
-    public string ip = "94.4.32.253";
+    public string ip = "51.194.28.157";
     public int port = 5555;
     public int myId = 0 ;
     public TCP tcp;
@@ -240,6 +241,10 @@ public class Client : MonoBehaviour
                 {
                     instance.Disconnect();
                     print("DISCONNECTED 1");
+                     foreach(Image arrowButton in GameObject.Find("ButtonsPanel").GetComponentsInChildren<Image>())
+                    {
+                        arrowButton.color = Color.blue;
+                    };
                     return;
                 }
 
@@ -248,7 +253,12 @@ public class Client : MonoBehaviour
             catch
             {
                 print("DISCONNECTED 2");
-                Disconnect();
+                // TEST
+                foreach(Image arrowButton in GameObject.Find("ButtonsPanel").GetComponentsInChildren<Image>())
+                {
+                    arrowButton.color = Color.red;
+                };
+                //Disconnect();
             }
         }
 
