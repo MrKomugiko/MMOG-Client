@@ -7,39 +7,33 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-
-    bool right => Input.GetAxis("Horizontal")>0f;
-    bool left => Input.GetAxis("Horizontal")<0f;
-    bool up => Input.GetAxis("Vertical")>0f;
-    bool down => Input.GetAxis("Vertical")<0f;
-
     private void Start() 
     {
         if(gameObject.transform.name.Contains("LocalPlayer"))
              AssignFunctionToLocalPlayerButtons();
     }
-    static public bool isMoving = false;
-    private void FixedUpdate()
-    {
-        if(! isMoving) SendInputToServer();
-    }
 
-    private void SendInputToServer()
+    private void Update()
     {
-        if (Input.GetKeyDown("w") || up)    NavigationButtonPressed(KeyCode.W);
+        if (Input.GetKeyDown(KeyCode.W))
+            NavigationButtonPressed(KeyCode.W);
         
-        if (Input.GetKeyDown("s") || down)  NavigationButtonPressed(KeyCode.S);
+        if (Input.GetKeyDown(KeyCode.S))           
+            NavigationButtonPressed(KeyCode.S);
+    
+        if (Input.GetKeyDown(KeyCode.A))
+            NavigationButtonPressed(KeyCode.A);
         
-        if (Input.GetKeyDown("a") || left)  NavigationButtonPressed(KeyCode.A);
-        
-        if (Input.GetKeyDown("d") || right) NavigationButtonPressed(KeyCode.D);
+        if(Input.GetKeyDown(KeyCode.D))          
+            NavigationButtonPressed(KeyCode.D);
     }
 
     // ANDROID keys maping to buttons ( no keyboard xd )
     // WINDOWS manual moving using a buttons
+    bool lockMovement = false;
     public void NavigationButtonPressed(KeyCode key)
     {
-        isMoving = true;
+      
         bool[] _inputsFromButton = new bool[4];
         switch(key)
         {
