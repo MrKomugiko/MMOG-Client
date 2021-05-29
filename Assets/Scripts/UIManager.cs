@@ -10,7 +10,8 @@ public class UIManager : MonoBehaviour
     public GameObject startMenu;
     public GameObject buttonsPanel;
     public GameObject czatPanel;
-    public static TextMeshPro czatTMP;
+    public static TextMeshProUGUI czatTMP;
+    [SerializeField] private TextMeshProUGUI czat;
 
     public GameObject grid;
 
@@ -18,7 +19,7 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
-        czatTMP = czatPanel.GetComponentInChildren<TextMeshPro>();
+        czatTMP = czat;
         if (instance == null)
         {
             instance = this;
@@ -33,33 +34,44 @@ public class UIManager : MonoBehaviour
     public void ConnectToServer()
     {
         usernameField.interactable = false;
-        Client.instance.ConnectToServer();        
+        Client.instance.ConnectToServer();
     }
 
     public void EnterGame()
     {
+
         startMenu.SetActive(false);
         buttonsPanel.SetActive(true);
-        czatPanel.SetActive(true);   
+        czatPanel.SetActive(true);
         //TODO: wygląd gridu powinien być na starcieściągnięty z serwera jednorazowo jako metoda wczytywania mapy
-        grid.SetActive(true); 
+        grid.SetActive(true);
     }
-    
+
     public void BackToStartScreen()
     {
 
-        try{
-            print("usunięcie obiektów graczy");
-            foreach(PlayerManager player in GameManager.players.Values)
+        foreach (PlayerManager player in GameManager.players.Values)
+        {
+            try
             {
+                print("usuniecie tilesów graczy");
+                GameManager.instance._tileMap.SetTile(player.CurrentPosition_GRID, null);
+            }
+            catch { }
+            try
+            {
+                print("usunięcie obiektów graczy");
                 Destroy(player.gameObject);
             }
-        }catch{}
+            catch { }
+        }
+        print("usuniecie graczy z pamieci");
         GameManager.players.Clear();
-        
+
         print("powrót na strone główną");
-        startMenu.SetActive(true);
+        grid.SetActive(false);
         buttonsPanel.SetActive(false);
-        czatPanel.SetActive(false);   
+        czatPanel.SetActive(false);
+        startMenu.SetActive(true);
     }
 }

@@ -11,19 +11,21 @@ public enum ServerPackets
     spawnPlayer,
     playerPosition,
     playerRotation,
-   // udpTest,
+    // udpTest,
     updateChat,
     updateChat_NewUserPost,
-    removeOfflinePlayer
+    removeOfflinePlayer,
+    ping_ALL
 }
 
 /// <summary>Sent from client to server.</summary>
 public enum ClientPackets
 {
     welcomeReceived = 1,
-   // updTestReceived,
+    // updTestReceived,
     playerMovement,
-    SendChatMessage
+    SendChatMessage,
+    PingReceived
 }
 public class Packet : IDisposable
 {

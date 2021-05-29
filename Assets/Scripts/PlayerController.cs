@@ -18,48 +18,44 @@ public class PlayerController : MonoBehaviour
         if(gameObject.transform.name.Contains("LocalPlayer"))
              AssignFunctionToLocalPlayerButtons();
     }
+    static public bool isMoving = false;
     private void FixedUpdate()
     {
-        
-        SendInputToServer();
+        if(! isMoving) SendInputToServer();
     }
 
     private void SendInputToServer()
     {
-        bool[] _inputs = new bool[4];
-        if (Input.GetKeyDown("w") || up)    _inputs[0] = true;
+        if (Input.GetKeyDown("w") || up)    NavigationButtonPressed(KeyCode.W);
         
-        if (Input.GetKeyDown("s") || down)  _inputs[1] = true;
+        if (Input.GetKeyDown("s") || down)  NavigationButtonPressed(KeyCode.S);
         
-        if (Input.GetKeyDown("a") || left)  _inputs[2] = true;
+        if (Input.GetKeyDown("a") || left)  NavigationButtonPressed(KeyCode.A);
         
-        if (Input.GetKeyDown("d") || right) _inputs[3] = true;
-        
-        if(_inputs[0] || _inputs[1] || _inputs[2] || _inputs[3]) {
-            ClientSend.PlayerMovement(_inputs);
-       }
+        if (Input.GetKeyDown("d") || right) NavigationButtonPressed(KeyCode.D);
     }
 
     // ANDROID keys maping to buttons ( no keyboard xd )
     // WINDOWS manual moving using a buttons
-    public void NavigationButtonPressed(string key)
+    public void NavigationButtonPressed(KeyCode key)
     {
+        isMoving = true;
         bool[] _inputsFromButton = new bool[4];
         switch(key)
         {
-            case "W": // 0
+            case KeyCode.W: // 0
                 _inputsFromButton[0] = true;
                 break;
             
-            case "S": // 1
+            case  KeyCode.S: // 1
                 _inputsFromButton[1] = true;
                 break;
             
-            case "A": // 2
+            case KeyCode.A: // 2
                 _inputsFromButton[2] = true;
                 break;
             
-            case "D": // 3
+            case KeyCode.D: // 3
                 _inputsFromButton[3] = true;
                 break;
         }
@@ -69,9 +65,9 @@ public class PlayerController : MonoBehaviour
 
     private void AssignFunctionToLocalPlayerButtons()
     {
-        GameObject.Find("W_Btn").GetComponent<Button>().onClick.AddListener(()=>NavigationButtonPressed("W"));
-        GameObject.Find("S_Btn").GetComponent<Button>().onClick.AddListener(()=>NavigationButtonPressed("S"));
-        GameObject.Find("A_Btn").GetComponent<Button>().onClick.AddListener(()=>NavigationButtonPressed("A"));
-        GameObject.Find("D_Btn").GetComponent<Button>().onClick.AddListener(()=>NavigationButtonPressed("D"));
+        GameObject.Find("W_Btn").GetComponent<Button>().onClick.AddListener(()=>NavigationButtonPressed(KeyCode.W));
+        GameObject.Find("S_Btn").GetComponent<Button>().onClick.AddListener(()=>NavigationButtonPressed(KeyCode.S));
+        GameObject.Find("A_Btn").GetComponent<Button>().onClick.AddListener(()=>NavigationButtonPressed(KeyCode.A));
+        GameObject.Find("D_Btn").GetComponent<Button>().onClick.AddListener(()=>NavigationButtonPressed(KeyCode.D));
     }
 }

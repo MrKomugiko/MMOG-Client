@@ -35,6 +35,8 @@ public class GameManager : MonoBehaviour
     Vector3 basePodition = new Vector3(0,0,2);
     public void SpawnPlayer(int _id, string _username, Vector3 _position, Quaternion _rotation, Vector3Int tileCoordPosition )
     {
+        if(players.ContainsKey(_id)) return;
+
         bool _isLocal;
         GameObject _player;
         if(_id == Client.instance.myId) 
@@ -56,6 +58,7 @@ public class GameManager : MonoBehaviour
         _playerData.CurrentPosition_GRID = tileCoordPosition;
         _playerData.IsLocal = _isLocal;
         _playerData.MyTile = _isLocal?localPlayerTile:playerTile;
+        
         players.Add(_id,_playerData);
     }
 

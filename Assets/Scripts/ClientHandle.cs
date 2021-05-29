@@ -8,7 +8,6 @@ public class ClientHandle : MonoBehaviour
 {
     public static void Welcome(Packet _packet)
     {
-
        ThreadManager.ExecuteOnMainThread(()=>UIManager.instance.EnterGame());
 
         string _msg = _packet.ReadString();
@@ -48,6 +47,7 @@ public class ClientHandle : MonoBehaviour
 //        print(_position.x+" "+_position.y+" "+_position.z);
        // GameManager.players[_id].transform.position = _position;
         GameManager.players[_id].MoveToPositionInGrid(new Vector3Int((int)_position.x,(int)_position.y,(int)_position.z));
+       
     }
 
     public static void UpdateChat(Packet _packet) {
@@ -71,6 +71,9 @@ public class ClientHandle : MonoBehaviour
     public static void RemoveOfflinePlayer(Packet _packet) {
         int _id = _packet.ReadInt();
 
+        // sprawdzenie czy id gracza istnieje 
+        if(!GameManager.players.ContainsKey(_id)) return;
+
         // usunięcie offline tilesa
         // ostatnia zarejestrowana pozycja gracza:
         var offlinePosition = GameManager.players[_id].CurrentPosition_GRID;
@@ -90,5 +93,10 @@ public class ClientHandle : MonoBehaviour
         Destroy(GameManager.players[_id].gameObject);
         // usunięcie afka z listy graczy
         GameManager.players.Remove(_id);
+
+    }
+
+    public static void PingBackToServer(Packet _packet) {
+        ClientSend.PingReceived();
     }
 }

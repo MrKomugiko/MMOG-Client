@@ -203,15 +203,23 @@ public class Client : MonoBehaviour
 
         public void Connect(int _localPort)
         {
-            socket = new UdpClient(_localPort);
+           try{  
+                if(endPoint == null) endPoint = new IPEndPoint(IPAddress.Parse(instance.ip), instance.port);
 
-            socket.Connect(endPoint);
-            socket.BeginReceive(ReceiveCallback, null);
+                socket = new UdpClient(_localPort);
 
-            using (Packet _packet = new Packet())
-            {
-                SendData(_packet);
+                socket.Connect(endPoint);
+                socket.BeginReceive(ReceiveCallback, null);
+
+             
+                using (Packet _packet = new Packet())
+                {
+                    SendData(_packet);
+                }
+            }catch(Exception _Ex){
+                print("CONNECT UDP -> "+_Ex.Message);
             }
+
         }
 
         public void SendData(Packet _packet)
@@ -227,6 +235,15 @@ public class Client : MonoBehaviour
             catch (Exception _ex)
             {
                 Debug.Log($"Error sending data to server via UDP: {_ex}");
+                // test ponownego połączenia sie z udp ?
+                try
+                {
+                    Connect(((IPEndPoint)Client.instance.tcp.socket.Client.LocalEndPoint).Port);
+                }
+                catch (System.Exception ex)
+                {
+                    print("proba ponownego połączenia sie z udp + "+ex.Message);
+                }
             }
         }
 
@@ -285,9 +302,8 @@ public class Client : MonoBehaviour
             { (int)ServerPackets.playerPosition, ClientHandle.PlayerPosition },
             { (int)ServerPackets.updateChat, ClientHandle.UpdateChat },
             { (int)ServerPackets.updateChat_NewUserPost, ClientHandle.UpdateChat_NewUserPost },
-            { (int)ServerPackets.removeOfflinePlayer, ClientHandle.RemoveOfflinePlayer }
-
-
+            { (int)ServerPackets.removeOfflinePlayer, ClientHandle.RemoveOfflinePlayer },
+            { (int)ServerPackets.ping_ALL, ClientHandle.PingBackToServer }
         };
         Debug.Log("Initialized packets.");
     }

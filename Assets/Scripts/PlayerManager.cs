@@ -38,6 +38,7 @@ public class PlayerManager : MonoBehaviour
         GameManager.instance._tileMap.SetTile(newPosition,MyTile);
         //zapisywanie nowejaktualnej pozycji
         CurrentPosition_GRID = newPosition;
+        PlayerController.isMoving = false;
     }
 
     public static bool CheckIfMorePlayersStayOnThisPosition(Vector3Int position) => 
