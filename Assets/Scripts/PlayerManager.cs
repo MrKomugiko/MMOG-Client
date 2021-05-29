@@ -28,7 +28,7 @@ public class PlayerManager : MonoBehaviour
         // sprawdzenie czy staliśmy na czimś miejscu
         if(CheckIfMorePlayersStayOnThisPosition(CurrentPosition_GRID))
         {
-            GameManager.instance._tileMap.SetTile(currentPosition_GRID,OtherAvaiablePlayerTileAtThisPosition(CurrentPosition_GRID));
+            GameManager.instance._tileMap.SetTile(currentPosition_GRID,OtherAvaiablePlayerTileAtThisPosition(CurrentPosition_GRID,Id));
         }
         else
         {
@@ -40,13 +40,13 @@ public class PlayerManager : MonoBehaviour
         CurrentPosition_GRID = newPosition;
     }
 
-    private bool CheckIfMorePlayersStayOnThisPosition(Vector3Int position) => 
+    public static bool CheckIfMorePlayersStayOnThisPosition(Vector3Int position) => 
         GameManager.players.Values
             .Where(pos=>pos.CurrentPosition_GRID == position)
             .Count() > 1;
     
-    private Tile OtherAvaiablePlayerTileAtThisPosition(Vector3Int postion) => 
+    public static Tile OtherAvaiablePlayerTileAtThisPosition(Vector3Int position, int ignoredId) => 
         GameManager.players.Values
-            .Where(p => p.CurrentPosition_GRID == currentPosition_GRID && p.Id != Id)
+            .Where(p => p.CurrentPosition_GRID == position && p.Id != ignoredId)
             .FirstOrDefault().myTile;
 }

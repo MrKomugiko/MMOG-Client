@@ -36,10 +36,7 @@ public class ClientHandle : MonoBehaviour
         Vector3 _position = _packet.ReadVector3();
         Quaternion _rotation = _packet.ReadQuaternion();
 
-        // TODO: spakowac Vector3Int odpowiadajacy coordynatom na tilemapie
-        Vector3Int _tileMapCoordinates = new Vector3Int(0,0,2);
-        // Vector3Int _tileMapCoordinates = new Vector3Int(_packet.ReadInt(),_packet.ReadInt(),_packet.ReadInt());
-        // aktualnie standardowo 0,0,0 dla kazdego 
+        Vector3Int _tileMapCoordinates = new Vector3Int((int)_position.x,(int)_position.y,(int)_position.z);
         
         GameManager.instance.SpawnPlayer(_id,_username,_position,_rotation, _tileMapCoordinates);
     }
@@ -49,7 +46,7 @@ public class ClientHandle : MonoBehaviour
         Vector3 _position = _packet.ReadVector3();
 
 //        print(_position.x+" "+_position.y+" "+_position.z);
-        GameManager.players[_id].transform.position = _position;
+       // GameManager.players[_id].transform.position = _position;
         GameManager.players[_id].MoveToPositionInGrid(new Vector3Int((int)_position.x,(int)_position.y,(int)_position.z));
     }
 
@@ -73,8 +70,25 @@ public class ClientHandle : MonoBehaviour
 
     public static void RemoveOfflinePlayer(Packet _packet) {
         int _id = _packet.ReadInt();
+
+        // usunięcie offline tilesa
+        // ostatnia zarejestrowana pozycja gracza:
+        var offlinePosition = GameManager.players[_id].CurrentPosition_GRID;
+        var isThereMorePlayersInOnePlace = PlayerManager.CheckIfMorePlayersStayOnThisPosition(offlinePosition);
+        if(isThereMorePlayersInOnePlace)
+        {   
+            // ktos stoi na miejscu afka, trzeba usunac kolor afka i przypisac kolor aktywnego
+            GameManager.instance._tileMap.SetTile(offlinePosition,PlayerManager.OtherAvaiablePlayerTileAtThisPosition(offlinePosition,_id));
+        }
+        else
+        {
+            // nikogo innego nie ma w miejscu afka, czyscimy pole klasycznie
+            GameManager.instance._tileMap.SetTile(offlinePosition,null);
+        }
+
+        // usunięcie obiektu gracza
         Destroy(GameManager.players[_id].gameObject);
+        // usunięcie afka z listy graczy
         GameManager.players.Remove(_id);
-        // puff ;d gracz offline znika z gry 
     }
 }

@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
     }
     private void FixedUpdate()
     {
+        
         SendInputToServer();
     }
 
@@ -36,7 +37,7 @@ public class PlayerController : MonoBehaviour
         
         if(_inputs[0] || _inputs[1] || _inputs[2] || _inputs[3]) {
             ClientSend.PlayerMovement(_inputs);
-        }
+       }
     }
 
     // ANDROID keys maping to buttons ( no keyboard xd )

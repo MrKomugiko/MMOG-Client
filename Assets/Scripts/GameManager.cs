@@ -1,7 +1,10 @@
-﻿using System.Collections;
+﻿using System.Net.NetworkInformation;
+using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System.Net.Sockets;
 
 public class GameManager : MonoBehaviour
 {
@@ -61,4 +64,6 @@ public class GameManager : MonoBehaviour
         Application.Quit(); 
         print("quit");
     }
+
+ 
 }

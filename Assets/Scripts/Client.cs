@@ -230,7 +230,7 @@ public class Client : MonoBehaviour
             }
         }
 
-        private void ReceiveCallback(IAsyncResult _result)
+        public void ReceiveCallback(IAsyncResult _result)
         {
             try
             {
@@ -240,11 +240,6 @@ public class Client : MonoBehaviour
                 if (_data.Length < 4)
                 {
                     instance.Disconnect();
-                    print("DISCONNECTED 1");
-                     foreach(Image arrowButton in GameObject.Find("ButtonsPanel").GetComponentsInChildren<Image>())
-                    {
-                        arrowButton.color = Color.blue;
-                    };
                     return;
                 }
 
@@ -252,13 +247,7 @@ public class Client : MonoBehaviour
             }
             catch
             {
-                print("DISCONNECTED 2");
-                // TEST
-                foreach(Image arrowButton in GameObject.Find("ButtonsPanel").GetComponentsInChildren<Image>())
-                {
-                    arrowButton.color = Color.red;
-                };
-                //Disconnect();
+                Disconnect();
             }
         }
 
@@ -304,14 +293,14 @@ public class Client : MonoBehaviour
     }
     
     private void Disconnect() {
-        isConnected = false;
-        //if(isConnected) {
-          //  isConnected = false;
+        if(isConnected) {
+            isConnected = false;
+            
             tcp.socket.Close();
             udp.socket.Close();
 
             Debug.Log("Disconnectef from server.");
-        //}
-        ThreadManager.ExecuteOnMainThread(()=>UIManager.instance.BackToStartScreen());
+            ThreadManager.ExecuteOnMainThread(()=>UIManager.instance.BackToStartScreen());
+        }
     }
 }
