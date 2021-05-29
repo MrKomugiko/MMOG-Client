@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class ClientSend : MonoBehaviour
 {
@@ -69,6 +70,32 @@ public class ClientSend : MonoBehaviour
 
         //     SendUDPData(_packet);
         // }
+    }
+
+    public static void SendMapDataToServer(Packet _p) {
+        // wysle dane tilemapy na serwer
+        Tilemap mapa = GameManager.instance._tileMap;
+        // interesuje mnie nazwa obiektu i jego lokalizacja
+
+        Dictionary<Vector3, string> tempdictNonEmptyTiles = new Dictionary<Vector3, string>();
+        foreach (Vector3Int position in mapa.cellBounds.allPositionsWithin) {
+            Tile tile = (Tile)mapa.GetTile(position);
+            if (tile != null) {
+                // print(tile.name);
+                tempdictNonEmptyTiles.Add(new Vector3(position.x, position.y, position.z), tile.name);
+            }
+        }
+
+        // pakowanie
+        using (Packet _packet = new Packet((int)ClientPackets.SEND_MAPDATA)) {
+            _packet.Write(tempdictNonEmptyTiles.Count); // SIZE
+            foreach (KeyValuePair<Vector3,string> data in tempdictNonEmptyTiles) {
+                _packet.Write(data.Key); // Vector3
+                _packet.Write(data.Value); // tile name
+            }
+
+            SendTCPData(_packet);
+        }
     }
     #endregion
 }

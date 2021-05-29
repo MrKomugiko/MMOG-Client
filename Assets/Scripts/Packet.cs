@@ -15,7 +15,8 @@ public enum ServerPackets
     updateChat,
     updateChat_NewUserPost,
     removeOfflinePlayer,
-    ping_ALL
+    ping_ALL,
+    downloadMapData
 }
 
 /// <summary>Sent from client to server.</summary>
@@ -25,7 +26,8 @@ public enum ClientPackets
     // updTestReceived,
     playerMovement,
     SendChatMessage,
-    PingReceived
+    PingReceived,
+    SEND_MAPDATA
 }
 public class Packet : IDisposable
 {
