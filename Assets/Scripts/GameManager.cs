@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
 
     public static GameManager instance;
     public static Dictionary<int,PlayerManager> players = new Dictionary<int, PlayerManager>();
+    [SerializeField] public GameObject NPC_Glowing_SPRITE_PREFAB;
     public GameObject localPlayerPrefab; // lokalny gracz 
     public Tile localPlayerTile;
     public GameObject playerPrefab; // inni gracze na serwerze
@@ -33,6 +34,8 @@ public class GameManager : MonoBehaviour
     }
 
     Vector3 basePodition = new Vector3(0,0,2);
+   [SerializeField] public GameObject shopWindow;
+
     public void SpawnPlayer(int _id, string _username, Vector3 _position, Quaternion _rotation, Vector3Int tileCoordPosition )
     {
         if(players.ContainsKey(_id)) return;

@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: BasicTile_BW
+  m_Name: HALF_WALL
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 5075534648788907645, guid: 651b2e6f83e74a5489fe93f9f13a26d6, type: 3}
-  m_Color: {r: 0.3584906, g: 0.3046241, b: 0.25500178, a: 1}
+  m_Sprite: {fileID: -6020702042251428424, guid: 651b2e6f83e74a5489fe93f9f13a26d6, type: 3}
+  m_Color: {r: 1, g: 0.91250306, b: 0.86226416, a: 1}
   m_Transform:
     e00: 1
     e01: 0

@@ -281,7 +281,16 @@ public class Client : MonoBehaviour
                 using (Packet _packet = new Packet(_data))
                 {
                     int _packetId = _packet.ReadInt();
+                 try
+                 {
                     packetHandlers[_packetId](_packet);
+                     
+                 }
+                 catch (System.Exception)
+                 {
+                     print("jakis blad emmm???");
+                    // throw;
+                 }   
                 }
             });
         }

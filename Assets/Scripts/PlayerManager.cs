@@ -15,8 +15,16 @@ public class PlayerManager : MonoBehaviour
 
     public int Id { get => _id; set => _id = value; }
     public string Username { get => _username; set => _username = value; }
-    public Vector3Int CurrentPosition_GRID { get => currentPosition_GRID; set => currentPosition_GRID = value; }
-    public bool IsLocal { get => isLocal; set => isLocal = value; }
+    public Vector3Int CurrentPosition_GRID { get => currentPosition_GRID; set {
+        currentPosition_GRID = value;
+        NPCDetector.CheckForNPC(value);
+     }
+      }
+    public bool IsLocal { get => isLocal; set {
+        isLocal = value; 
+        if(isLocal == true)  GameObject.Find("Main Camera").gameObject.transform.parent = this.gameObject.transform.Find("Player-xray-border").gameObject.transform;;    
+        } 
+    }
     public Tile MyTile { get => myTile; set => myTile = value; }
 
     internal void MoveToPositionInGrid(Vector3Int newPosition)

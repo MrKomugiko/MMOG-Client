@@ -47,6 +47,15 @@ TextureImporter:
   - first:
       213: 5075534648788907645
     second: _estTiles 1_14
+  - first:
+      213: -6020702042251428424
+    second: _estTiles 1_15
+  - first:
+      213: 2619273696434576616
+    second: glowing_NPC
+  - first:
+      213: -2731139307411175199
+    second: glowing_)NPC
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -456,6 +465,48 @@ TextureImporter:
       bones: []
       spriteID: d76ff3a2fdbef6640800000000000000
       internalID: 5075534648788907645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: _estTiles 1_15
+      rect:
+        serializedVersion: 2
+        x: 165
+        y: 15
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8bd7221446b227ca0800000000000000
+      internalID: -6020702042251428424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glowing_)NPC
+      rect:
+        serializedVersion: 2
+        x: 207
+        y: 58
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.265625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e886a5254b091ad0800000000000000
+      internalID: -2731139307411175199
       vertices: []
       indices: 
       edges: []

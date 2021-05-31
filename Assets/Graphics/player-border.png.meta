@@ -8,6 +8,9 @@ TextureImporter:
   - first:
       213: -6917440828666993054
     second: cutted 34x33
+  - first:
+      213: -170312173561089190
+    second: NPC-glowing-border
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -111,11 +114,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 105
         width: 34
         height: 34
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -132,7 +135,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 39
-        y: 1
+        y: 106
         width: 34
         height: 33
       alignment: 7
@@ -144,6 +147,35 @@ TextureImporter:
       bones: []
       spriteID: 266258c67305000a0800000000000000
       internalID: -6917440828666993054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NPC-glowing-border
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 57
+        width: 38
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5, y: 0.054054055}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape:
+      - - {x: 16, y: 7.5}
+        - {x: 2, y: 15.5}
+        - {x: -2, y: 15.5}
+        - {x: -16, y: 7.5}
+        - {x: -16, y: -7.5}
+        - {x: -2, y: -15.5}
+        - {x: 2, y: -15.5}
+        - {x: 16, y: -7.5}
+      tessellationDetail: 1
+      bones: []
+      spriteID: a5377f10bfde2adf0800000000000000
+      internalID: -170312173561089190
       vertices: []
       indices: 
       edges: []
