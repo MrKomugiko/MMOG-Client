@@ -16,9 +16,9 @@ public class NPCDetector : MonoBehaviour
     *   *    *    *   *
 
 */
-    private static Dictionary<Vector3Int,GameObject> _npcInRange_borders = new Dictionary<Vector3Int, GameObject>();
-    private static Vector3Int ostatnio_sprawdzana_pozycja = Vector3Int.zero;
-    public static void CheckForNPC(Vector3Int playerPosition) 
+    private  Dictionary<Vector3Int,GameObject> _npcInRange_borders = new Dictionary<Vector3Int, GameObject>();
+    private  Vector3Int ostatnio_sprawdzana_pozycja = Vector3Int.zero;
+    public void CheckForNPC(Vector3Int playerPosition) 
     {
         if(ostatnio_sprawdzana_pozycja == playerPosition) return; // gracz nie ruszył sie ponowne sprawdzanie nie ejst koneiczne
         ostatnio_sprawdzana_pozycja = playerPosition;
@@ -60,7 +60,7 @@ public class NPCDetector : MonoBehaviour
         }
     }
     
-    public static void OnClick_test()
+    public void OnClick_test()
     {
        GameManager.instance.shopWindow.SetActive(true);
     }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BorderScript : MonoBehaviour
 {
-    Transform transform;    
+    Transform _transform;    
     PlayerManager player;
     Vector3Int borderPosition;
 
@@ -20,7 +20,7 @@ public class BorderScript : MonoBehaviour
 
     private void Awake() {
         SRenderer= GetComponent<SpriteRenderer>();
-        transform = GetComponent<Transform>();    
+        _transform = GetComponent<Transform>();    
         player = GetComponentInParent<PlayerManager>();
     }
     private void Start() {
@@ -30,7 +30,7 @@ public class BorderScript : MonoBehaviour
     {
         if(PositionChangeChangeCheck() == false) return;
 
-        transform.position = GameManager.instance._tileMap.CellToWorld(player.CurrentPosition_GRID);
+        _transform.position = GameManager.instance._tileMap.CellToWorld(player.CurrentPosition_GRID);
         BorderPosition = player.CurrentPosition_GRID;
     }
 

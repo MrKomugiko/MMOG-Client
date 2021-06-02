@@ -11,7 +11,7 @@ public class Client : MonoBehaviour
     public static Client instance;
     public static int dataBufferSize = 4096;
 
-    public string ip = "51.194.28.157";
+    public string ip = "51.116.114.83";
     public int port = 5555;
     public int myId = 0 ;
     public TCP tcp;
@@ -327,7 +327,8 @@ public class Client : MonoBehaviour
             udp.socket.Close();
 
             Debug.Log("Disconnectef from server.");
-            ThreadManager.ExecuteOnMainThread(()=>UIManager.instance.BackToStartScreen());
         }
+        ThreadManager.ExecuteOnMainThread(()=>UIManager.instance.BackToStartScreen());
+        UIManager.instance.BackToStartScreen();
     }
 }

@@ -61,6 +61,12 @@ public class UIManager : MonoBehaviour
             try
             {
                 print("usunięcie obiektów graczy");
+                if(player.IsLocal)
+                {
+                    var camera = GameObject.Find("Main Camera").gameObject;
+                    camera.transform.parent = null;
+                    camera.transform.localPosition = Vector3.zero;
+                }
                 Destroy(player.gameObject);
             }
             catch { }

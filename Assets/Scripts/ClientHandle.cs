@@ -92,7 +92,7 @@ public class ClientHandle : MonoBehaviour
         // usunięcie obiektu gracza
         Destroy(GameManager.players[_id].gameObject);
         // usunięcie afka z listy graczy
-        GameManager.players.Remove(_id);
+       // GameManager.players.Remove(_id);
 
     }
 
