@@ -8,20 +8,43 @@ using System.Net.Sockets;
 
 public class GameManager : MonoBehaviour
 {
-
     public static GameManager instance;
-    public static Dictionary<int,PlayerManager> players = new Dictionary<int, PlayerManager>();
+
+    [SerializeField] public GameObject shopWindow;
     [SerializeField] public GameObject NPC_Glowing_SPRITE_PREFAB;
+    [SerializeField] public List<Tile> listaDostepnychTilesow;
+    
+    public static Dictionary<Vector3Int,string> MAPDATA { get; set; }
+    public int CurrentUpdateVersion 
+    { 
+        get => currentUpdateVersion; 
+        set 
+        { 
+            if(currentUpdateVersion < value)
+            {
+                // mapa jest starsza niz aktualnie na serwerze
+                print($"Current update version is outdated: [{currentUpdateVersion}]. New update on server is {value} ready to download");
+                ClientSend.DownloadLatestMapData();
+                currentUpdateVersion = value; 
+            }
+
+            // mapa jest aktualna 
+            print("Map is up to date");
+            currentUpdateVersion = value;
+        }
+    }
+
+    public static Dictionary<int,PlayerManager> players = new Dictionary<int, PlayerManager>();
+    
     public GameObject localPlayerPrefab; // lokalny gracz 
     public Tile localPlayerTile;
     public GameObject playerPrefab; // inni gracze na serwerze
     public Tile playerTile;
-[SerializeField] public List<Tile> listaDostepnychTilesow;
-
-    public static int CurrentUpdateVersion = 999;
+    [SerializeField] private int currentUpdateVersion;
     public Tilemap _tileMap;
-
+    
     Vector3Int startingLocationOnGrid = new Vector3Int(0,0,2);
+    Vector3 basePodition = new Vector3(0,0,2);
 
     private void Awake()
     {
@@ -36,19 +59,9 @@ public class GameManager : MonoBehaviour
             Destroy(this);
         }
     }
-
-    Vector3 basePodition = new Vector3(0,0,2);
-   [SerializeField] public GameObject shopWindow;
-
-    public static Dictionary<Vector3Int,string> MAPDATA { get; set; }
-
     public void SpawnPlayer(int _id, string _username, Vector3 _position, Quaternion _rotation, Vector3Int tileCoordPosition )
     {
-        // Przed spawnem ładujemy aktualną mapke z serwera
-
-        //----------------------------------------------------------------------------------------------------
-
-        if(players.ContainsKey(_id)) return;
+       if(players.ContainsKey(_id)) return;
 
         bool _isLocal;
         GameObject _player;
@@ -74,13 +87,11 @@ public class GameManager : MonoBehaviour
         
         players.Add(_id,_playerData);
     }
-
     public void OnClick_CloseApplication()
     {
         Application.Quit(); 
         print("quit");
     }
-
     public void CheckForUpdates()
     {
         //TODO: dodac numer update`a do sprawdzanmia

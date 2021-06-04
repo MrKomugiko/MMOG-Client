@@ -104,9 +104,9 @@ public class ClientHandle : MonoBehaviour
 
     public static void ReceivedUpdateNumber(Packet _packet)
     {
-        print($"Current update version is [{GameManager.CurrentUpdateVersion}]. New update on server is {_packet.ReadInt()}");
+        GameManager.instance.CurrentUpdateVersion = _packet.ReadInt();
         // Poproś o nową wersje mapy
-        ClientSend.DownloadLatestMapUpdate();
+        //ClientSend.DownloadLatestMapUpdate();
     }
 
     public static void NewMapDataFromServerReceived(Packet _packet)
@@ -118,7 +118,7 @@ public class ClientHandle : MonoBehaviour
             brandNewMap.Add(_packet.ReadVector3(),_packet.ReadString());
         }
 
-        print($"Otrzymales nowiutką mape: [{brandNewMap.Count}]");
+        print($"Otrzymales nowiutką mape wielosc: [{brandNewMap.Count}]");
 
         // TODO: zapisanie mapy w pamieci ?
             ZapiszMapeDoPliku(brandNewMap);
@@ -129,7 +129,7 @@ public class ClientHandle : MonoBehaviour
        private static void ZapiszMapeDoPliku(Dictionary<Vector3, string> mapData)
         {
             string path = "MAPDATA2.txt";
-            print(path);
+         //   print(path);
             print("Zapisywanie danych mapy do pliku");
             using (FileStream fs = new FileStream(path, FileMode.Create))
             {

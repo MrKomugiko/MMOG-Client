@@ -30,7 +30,8 @@ using UnityEngine;
         SendChatMessage,
         PingReceived,
         SEND_MAPDATA_TO_SERVER,
-        downloadLatestMapUpdate
+        downloadLatestMapUpdate,
+        download_recentMapVersion
 }
 public class Packet : IDisposable
 {

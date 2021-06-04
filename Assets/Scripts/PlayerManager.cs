@@ -15,30 +15,52 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] Tile myTile;
     [SerializeField] NPCDetector nPCDetector;
 
-    public int Id { get => _id; set => _id = value; }
-    public string Username { get => _username; set => _username = value; }
-    public Vector3Int CurrentPosition_GRID { get => currentPosition_GRID; set {
-        currentPosition_GRID = value;
-
-        if(IsLocal)
+    public int Id 
+    { 
+        get => _id; 
+        set => _id = value; 
+    }
+    public string Username 
+    { 
+        get => _username; 
+        set => _username = value; 
+    }
+    public Tile MyTile 
+    { 
+        get => myTile; 
+        set => myTile = value; 
+    }
+    public Vector3Int CurrentPosition_GRID 
+    { 
+        get => currentPosition_GRID; 
+        set 
         {
-            nPCDetector.CheckForNPC(value);
-        }
+            currentPosition_GRID = value;
+
+            if(IsLocal)
+            {
+                nPCDetector.CheckForNPC(value);
+            }
      }
       }
-    public bool IsLocal { get => isLocal; set {
-        isLocal = value; 
-        if(isLocal == true)  
+    public bool IsLocal 
+    { 
+        get => isLocal; 
+        set 
         {
-            GameObject.Find("Main Camera").gameObject.transform.parent = this.gameObject.transform.Find("Player-xray-border").gameObject.transform;;    
-            nPCDetector = GetComponentInChildren<NPCDetector>();
-        }
+            isLocal = value; 
+            if(isLocal == true)  
+            {
+                GameObject.Find("Main Camera").gameObject.transform.parent = this.gameObject.transform.Find("Player-xray-border").gameObject.transform;;    
+                nPCDetector = GetComponentInChildren<NPCDetector>();
+            }
         } 
     }
-     private void Start() {
+     
+    private void Start() 
+     {
          ClearDuplicatedLocalPlayersOnStart();
      }
-
     private void ClearDuplicatedLocalPlayersOnStart()
     {
         foreach(var pm in GetComponentsInParent<PlayerManager>())
@@ -48,15 +70,8 @@ public class PlayerManager : MonoBehaviour
             Destroy(pm.gameObject);
         }
     }
-    public Tile MyTile { get => myTile; set => myTile = value; }
-
-    internal void MoveToPositionInGrid(Vector3Int newPosition)
+    public void MoveToPositionInGrid(Vector3Int newPosition)
     {
-        // 1# sprawdz czy jakis inny gracz stoi na tm samym miejscu co ty 
-        //  ( jeżeli tak, podstaw na swoim miejscu tilesa bohatera, a samego siebie wstaw dalej)
-        
-        // czyszczenie ogona
-        // sprawdzenie czy staliśmy na czimś miejscu
         if(CheckIfMorePlayersStayOnThisPosition(CurrentPosition_GRID))
         {
             GameManager.instance._tileMap.SetTile(currentPosition_GRID,OtherAvaiablePlayerTileAtThisPosition(CurrentPosition_GRID,Id));
@@ -67,16 +82,15 @@ public class PlayerManager : MonoBehaviour
         }
         // wstawianie aktualnej pozycji
         GameManager.instance._tileMap.SetTile(newPosition,MyTile);
+
         //zapisywanie nowejaktualnej pozycji
         CurrentPosition_GRID = newPosition;
 
     }
-
     public static bool CheckIfMorePlayersStayOnThisPosition(Vector3Int position) => 
         GameManager.players.Values
             .Where(pos=>pos.CurrentPosition_GRID == position)
             .Count() > 1;
-    
     public static Tile OtherAvaiablePlayerTileAtThisPosition(Vector3Int position, int ignoredId) => 
         GameManager.players.Values
             .Where(p => p.CurrentPosition_GRID == position && p.Id != ignoredId)

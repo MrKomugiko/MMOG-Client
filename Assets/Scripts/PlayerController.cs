@@ -9,8 +9,7 @@ public class PlayerController : MonoBehaviour
 {
     private void Start() 
     {
-        if(gameObject.transform.name.Contains("LocalPlayer"))
-             AssignFunctionToLocalPlayerButtons();
+        if(gameObject.transform.name.Contains("LocalPlayer")) AssignFunctionToLocalPlayerButtons();
     }
 
     private void Update()
@@ -28,8 +27,6 @@ public class PlayerController : MonoBehaviour
             NavigationButtonPressed(KeyCode.D);
     }
 
-    // ANDROID keys maping to buttons ( no keyboard xd )
-    // WINDOWS manual moving using a buttons
     bool lockMovement = false;
     public void NavigationButtonPressed(KeyCode key)
     {

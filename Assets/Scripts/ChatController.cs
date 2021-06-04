@@ -30,10 +30,9 @@ public class ChatController : MonoBehaviour
         string _username = GameManager.players[_playerId].Username;
         string _time=DateTime.Now.ToShortTimeString();
 
-        print($"Wiadomosc na czacie powinna wyglądać następująco"+
-              $"[{_time}]:[{_username}]:{_message}");
+        // print($"Wiadomosc na czacie powinna wyglądać następująco"+
+            //   $"[{_time}]:[{_username}]:{_message}");
 
-        //Clear input field;
         message_InputField.text = "";
 
         ClientSend.SendChatMessage(_message);

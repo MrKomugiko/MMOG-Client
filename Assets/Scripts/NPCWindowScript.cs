@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WindowScript : MonoBehaviour
+public class NPCWindowScript : MonoBehaviour
 {
     public void OnClick_Close()
     {

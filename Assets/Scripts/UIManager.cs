@@ -6,15 +6,15 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    [SerializeField] private TextMeshProUGUI czat;
+
     public static UIManager instance;
+    public static TextMeshProUGUI czatTMP;
+    
     public GameObject startMenu;
     public GameObject buttonsPanel;
     public GameObject czatPanel;
-    public static TextMeshProUGUI czatTMP;
-    [SerializeField] private TextMeshProUGUI czat;
-
     public GameObject grid;
-
     public InputField usernameField;
 
     private void Awake()
@@ -30,37 +30,33 @@ public class UIManager : MonoBehaviour
             Destroy(this);
         }
     }
-
     public void ConnectToServer()
     {
         usernameField.interactable = false;
         Client.instance.ConnectToServer();
     }
-
     public void EnterGame()
     {
-
+        print("Aktywowanie sceny gry / Enter Game");
         startMenu.SetActive(false);
         buttonsPanel.SetActive(true);
         czatPanel.SetActive(true);
-        //TODO: wygląd gridu powinien być na starcieściągnięty z serwera jednorazowo jako metoda wczytywania mapy
         grid.SetActive(true);
     }
-
     public void BackToStartScreen()
     {
-
+        print("Powrót na strone główną");
         foreach (PlayerManager player in GameManager.players.Values)
         {
             try
             {
-                print("usuniecie tilesów graczy");
+                //print("usuniecie tilesów graczy");
                 GameManager.instance._tileMap.SetTile(player.CurrentPosition_GRID, null);
             }
             catch { }
             try
             {
-                print("usunięcie obiektów graczy");
+               // print("usunięcie obiektów graczy");
                 if(player.IsLocal)
                 {
                     var camera = GameObject.Find("Main Camera").gameObject;
@@ -71,10 +67,9 @@ public class UIManager : MonoBehaviour
             }
             catch { }
         }
-        print("usuniecie graczy z pamieci");
+      //  print("usuniecie graczy z pamieci");
         GameManager.players.Clear();
 
-        print("powrót na strone główną");
         grid.SetActive(false);
         buttonsPanel.SetActive(false);
         czatPanel.SetActive(false);

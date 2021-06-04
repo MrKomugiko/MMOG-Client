@@ -16,7 +16,7 @@ public class NPCDetector : MonoBehaviour
     *   *    *    *   *
 
 */
-    private  Dictionary<Vector3Int,GameObject> _npcInRange_borders = new Dictionary<Vector3Int, GameObject>();
+    private  Dictionary<Vector3Int,GameObject> _npcInRange_GameObject = new Dictionary<Vector3Int, GameObject>();
     private  Vector3Int ostatnio_sprawdzana_pozycja = Vector3Int.zero;
     public void CheckForNPC(Vector3Int playerPosition) 
     {
@@ -32,30 +32,28 @@ public class NPCDetector : MonoBehaviour
                 if(sprawdzanyTile.name.Contains("NPC")){
                     Debug.Log($"w poblizu jest NPC => [{sprawdzanaPozycja}]");
                     // TODO: Wyślij do serwera zapytanie jaki to npc
-
-                    // TODO: wyrównienie 'NPC' jako coś w zasięgu
-                    // "TEST" będzie wartością zwróconą przez serwer
-                    if(! _npcInRange_borders.ContainsKey(sprawdzanaPozycja))   // nie musimy dugi raz dodawac tego samego NPCta                 
+              
+                    if(! _npcInRange_GameObject.ContainsKey(sprawdzanaPozycja))   // nie musimy dugi raz dodawac tego samego NPCta                 
                         {
                             var border = Instantiate(
                                 GameManager.instance.NPC_Glowing_SPRITE_PREFAB,
                                 GameManager.instance._tileMap.CellToWorld(sprawdzanaPozycja),
                                 Quaternion.identity,
                                 GameObject.Find("MapCanvas").transform);
-                            _npcInRange_borders.Add(sprawdzanaPozycja,border);
-                            border.name = "TEST";
+                            _npcInRange_GameObject.Add(sprawdzanaPozycja,border);
+                            border.name = "NPC";
                             border.GetComponentInChildren<Button>().onClick.AddListener(()=>OnClick_test());
                         }
                 }
             }
         }
         // sprawdzmy czy ostatnio widziany npc nadal jest w zasięgu             
-        foreach(var NPC in _npcInRange_borders.Keys)
+        foreach(var NPC in _npcInRange_GameObject.Keys)
         {
             if(searchArea.Contains(NPC - playerPosition) == false)
             {
-                Destroy(_npcInRange_borders[NPC].gameObject);
-                _npcInRange_borders.Remove(NPC);
+                Destroy(_npcInRange_GameObject[NPC].gameObject);
+                _npcInRange_GameObject.Remove(NPC);
             }
         }
     }

@@ -7,13 +7,13 @@ public class BorderScript : MonoBehaviour
     Transform _transform;    
     PlayerManager player;
     Vector3Int borderPosition;
+    SpriteRenderer SRenderer;
 
     public Vector3Int BorderPosition 
     {
         get => borderPosition; 
         set 
         {
-       
             borderPosition = value; 
         }
     }
@@ -33,13 +33,11 @@ public class BorderScript : MonoBehaviour
         _transform.position = GameManager.instance._tileMap.CellToWorld(player.CurrentPosition_GRID);
         BorderPosition = player.CurrentPosition_GRID;
     }
-
+    
     bool PositionChangeChangeCheck(){
         if(BorderPosition == player.CurrentPosition_GRID) return false;
         return true;
      }
-
-SpriteRenderer SRenderer;
     public void ShowBorder()
     {
         SRenderer.enabled = true;
