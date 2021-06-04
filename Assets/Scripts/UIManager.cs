@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI czat;
-
+    [SerializeField] private GameObject updateAndMapVersion;
     public static UIManager instance;
     public static TextMeshProUGUI czatTMP;
     
@@ -74,5 +74,14 @@ public class UIManager : MonoBehaviour
         buttonsPanel.SetActive(false);
         czatPanel.SetActive(false);
         startMenu.SetActive(true);
+    }
+
+    public void UpdateBuildIndicatorOnScreen(int _currentBuildVersion = 0000, bool _isDownloadAvaiable = false)
+    {
+        // change text
+        updateAndMapVersion.transform.Find("text_buildVersion").GetComponent<TextMeshProUGUI>().SetText($"Build ver. {_currentBuildVersion}");
+
+        //activate or no button
+        updateAndMapVersion.GetComponent<Button>().interactable = _isDownloadAvaiable;
     }
 }

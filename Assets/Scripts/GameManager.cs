@@ -26,11 +26,14 @@ public class GameManager : MonoBehaviour
                 print($"Current update version is outdated: [{currentUpdateVersion}]. New update on server is {value} ready to download");
                 ClientSend.DownloadLatestMapData();
                 currentUpdateVersion = value; 
+                UIManager.instance.UpdateBuildIndicatorOnScreen(currentUpdateVersion, _isDownloadAvaiable: true);
             }
+  
+                // mapa jest aktualna 
+                print("Map is up to date");
+                currentUpdateVersion = value;
 
-            // mapa jest aktualna 
-            print("Map is up to date");
-            currentUpdateVersion = value;
+                UIManager.instance.UpdateBuildIndicatorOnScreen(currentUpdateVersion,_isDownloadAvaiable: false);
         }
     }
 

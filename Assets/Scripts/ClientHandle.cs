@@ -21,7 +21,6 @@ public class ClientHandle : MonoBehaviour
 
         Client.instance.udp.Connect(((IPEndPoint)Client.instance.tcp.socket.Client.LocalEndPoint).Port);
     }
-
     public static void UDPTest(Packet _packet)
     {
         string _msg = _packet.ReadString();
@@ -29,7 +28,6 @@ public class ClientHandle : MonoBehaviour
         Debug.Log($"Received packet via UDP. Contains message: {_msg}");
         ClientSend.UDPTestReceived();
     }
-
     public static void SpawnPlayer(Packet _packet)
     {
         int _id = _packet.ReadInt();
@@ -41,7 +39,6 @@ public class ClientHandle : MonoBehaviour
         
         GameManager.instance.SpawnPlayer(_id,_username,_position,_rotation, _tileMapCoordinates);
     }
-
     public static void PlayerPosition(Packet _packet) {
         int _id = _packet.ReadInt();
         Vector3 _position = _packet.ReadVector3();
@@ -51,7 +48,6 @@ public class ClientHandle : MonoBehaviour
         GameManager.players[_id].MoveToPositionInGrid(new Vector3Int((int)_position.x,(int)_position.y,(int)_position.z));
        
     }
-
     public static void UpdateChat(Packet _packet) {
         string _msg = _packet.ReadString();
         print("Odebrano wiadomosc od GM: " + _msg);
@@ -69,7 +65,6 @@ public class ClientHandle : MonoBehaviour
         string chattext = UIManager.czatTMP.text;
         UIManager.czatTMP.SetText(chattext+$"\n<color=white><b>[{_time}]</b>:<b>[{_username}]</b>:{_message}</color>");
     }
-
     public static void RemoveOfflinePlayer(Packet _packet) {
         int _id = _packet.ReadInt();
 
@@ -97,18 +92,15 @@ public class ClientHandle : MonoBehaviour
        // GameManager.players.Remove(_id);
 
     }
-
     public static void PingBackToServer(Packet _packet) {
         ClientSend.PingReceived();
     }
-
     public static void ReceivedUpdateNumber(Packet _packet)
     {
         GameManager.instance.CurrentUpdateVersion = _packet.ReadInt();
         // Poproś o nową wersje mapy
         //ClientSend.DownloadLatestMapUpdate();
     }
-
     public static void NewMapDataFromServerReceived(Packet _packet)
     {
         int mapSize = _packet.ReadInt();
@@ -126,22 +118,23 @@ public class ClientHandle : MonoBehaviour
         // TODO: zapis i odczyt mapy z pliku => zeby nie sciągać jej później // luz server i tak sprawdza ze swoją orginalną kopią ;d
 
     }
-       private static void ZapiszMapeDoPliku(Dictionary<Vector3, string> mapData)
+//--------------------------------------------------------------------------------------------------------------
+    private static void ZapiszMapeDoPliku(Dictionary<Vector3, string> mapData)
+    {
+        string path = "MAPDATA2.txt";
+        //   print(path);
+        print("Zapisywanie danych mapy do pliku");
+        using (FileStream fs = new FileStream(path, FileMode.Create))
         {
-            string path = "MAPDATA2.txt";
-         //   print(path);
-            print("Zapisywanie danych mapy do pliku");
-            using (FileStream fs = new FileStream(path, FileMode.Create))
+            using (TextWriter tw = new StreamWriter(fs))
+                
+            foreach (KeyValuePair<Vector3, string> kvp in mapData)
             {
-                using (TextWriter tw = new StreamWriter(fs))
-                    
-                foreach (KeyValuePair<Vector3, string> kvp in mapData)
-                {
-                    tw.WriteLine(string.Format("{0} {1}", kvp.Key, kvp.Value));
-                }
+                tw.WriteLine(string.Format("{0} {1}", kvp.Key, kvp.Value));
             }
         }
-        public static void LoadMapDataFromFile()
+    }
+    private static void LoadMapDataFromFile()
         {
             string path = "MAPDATA2.txt";
 
