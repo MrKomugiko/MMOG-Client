@@ -10,13 +10,15 @@ using UnityEngine;
         welcome = 1,
         spawnPlayer,
         playerPosition,
-        playerRotation,
-       // udpTest,
+        //playerRotation,
+        // udpTest,
         updateChat,
         updateChat_NewUserPost,
         removeOfflinePlayer,
         ping_ALL,
-        downloadMapData
+        downloadMapData,
+        sendCurrentUpdateNumber,
+        SEND_MAPDATA_TO_CLIENT
     }
 
     /// <summary>Sent from client to server.</summary>
@@ -27,8 +29,9 @@ using UnityEngine;
         playerMovement,
         SendChatMessage,
         PingReceived,
-        SEND_MAPDATA
-    }
+        SEND_MAPDATA_TO_SERVER,
+        downloadLatestMapUpdate
+}
 public class Packet : IDisposable
 {
     private List<byte> buffer;

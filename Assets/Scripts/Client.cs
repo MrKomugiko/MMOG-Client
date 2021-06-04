@@ -313,7 +313,9 @@ public class Client : MonoBehaviour
             { (int)ServerPackets.updateChat_NewUserPost, ClientHandle.UpdateChat_NewUserPost },
             { (int)ServerPackets.removeOfflinePlayer, ClientHandle.RemoveOfflinePlayer },
             { (int)ServerPackets.ping_ALL, ClientHandle.PingBackToServer },
-            { (int)ServerPackets.downloadMapData, ClientSend.SendMapDataToServer }
+            { (int)ServerPackets.downloadMapData, ClientSend.SendMapDataToServer },
+            { (int)ServerPackets.sendCurrentUpdateNumber, ClientHandle.ReceivedUpdateNumber }, // otrzymanie info o nowym Update
+            { (int)ServerPackets.SEND_MAPDATA_TO_CLIENT, ClientHandle.NewMapDataFromServerReceived }
 
         };
         Debug.Log("Initialized packets.");

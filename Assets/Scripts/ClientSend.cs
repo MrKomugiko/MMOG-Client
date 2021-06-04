@@ -87,7 +87,7 @@ public class ClientSend : MonoBehaviour
         }
 
         // pakowanie
-        using (Packet _packet = new Packet((int)ClientPackets.SEND_MAPDATA)) {
+        using (Packet _packet = new Packet((int)ClientPackets.SEND_MAPDATA_TO_SERVER)) {
             _packet.Write(tempdictNonEmptyTiles.Count); // SIZE
             foreach (KeyValuePair<Vector3,string> data in tempdictNonEmptyTiles) {
                 _packet.Write(data.Key); // Vector3
@@ -96,6 +96,14 @@ public class ClientSend : MonoBehaviour
 
             SendTCPData(_packet);
         }
+    }
+
+    internal static void DownloadLatestMapUpdate()
+    {
+          using (Packet _packet = new Packet((int)ClientPackets.downloadLatestMapUpdate)) {
+            _packet.Write(Client.instance.myId); // kto żdąda nowej mapki
+            SendTCPData(_packet);
+        }   
     }
     #endregion
 }

@@ -16,12 +16,16 @@ public class GameManager : MonoBehaviour
     public Tile localPlayerTile;
     public GameObject playerPrefab; // inni gracze na serwerze
     public Tile playerTile;
+[SerializeField] public List<Tile> listaDostepnychTilesow;
+
+    public static int CurrentUpdateVersion = 999;
     public Tilemap _tileMap;
 
     Vector3Int startingLocationOnGrid = new Vector3Int(0,0,2);
 
     private void Awake()
     {
+        MAPDATA = new Dictionary<Vector3Int, string>();
         if (instance == null)
         {
             instance = this;
@@ -36,8 +40,14 @@ public class GameManager : MonoBehaviour
     Vector3 basePodition = new Vector3(0,0,2);
    [SerializeField] public GameObject shopWindow;
 
+    public static Dictionary<Vector3Int,string> MAPDATA { get; set; }
+
     public void SpawnPlayer(int _id, string _username, Vector3 _position, Quaternion _rotation, Vector3Int tileCoordPosition )
     {
+        // Przed spawnem ładujemy aktualną mapke z serwera
+
+        //----------------------------------------------------------------------------------------------------
+
         if(players.ContainsKey(_id)) return;
 
         bool _isLocal;
@@ -69,6 +79,21 @@ public class GameManager : MonoBehaviour
     {
         Application.Quit(); 
         print("quit");
+    }
+
+    public void CheckForUpdates()
+    {
+        //TODO: dodac numer update`a do sprawdzanmia
+
+        // zablokowanie gry na czas sciagania mapy
+
+        // wyslanie proźby o nową wersje mapy
+
+        // zakttualizowanie mapy
+
+        // odblokowanie gry
+
+        // connect
     }
 
  

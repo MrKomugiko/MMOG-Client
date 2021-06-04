@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Runtime.InteropServices.ComTypes;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +34,19 @@ public class PlayerManager : MonoBehaviour
             nPCDetector = GetComponentInChildren<NPCDetector>();
         }
         } 
+    }
+     private void Start() {
+         ClearDuplicatedLocalPlayersOnStart();
+     }
+
+    private void ClearDuplicatedLocalPlayersOnStart()
+    {
+        foreach(var pm in GetComponentsInParent<PlayerManager>())
+        {
+            if(pm == this) continue;
+
+            Destroy(pm.gameObject);
+        }
     }
     public Tile MyTile { get => myTile; set => myTile = value; }
 
