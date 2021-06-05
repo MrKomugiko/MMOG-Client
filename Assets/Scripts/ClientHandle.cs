@@ -242,5 +242,13 @@ public class ClientHandle : MonoBehaviour
                 }
 
             }
-        } 
+        }
+
+    internal static void SendMapToServer(Packet _packet)
+    {
+        // determine what map type server need from us
+
+        MAPTYPE mappType =  (MAPTYPE)_packet.ReadInt();
+        ClientSend.SendMapDataToServer(mappType);
+    }
 }

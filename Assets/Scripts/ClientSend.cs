@@ -73,25 +73,34 @@ public class ClientSend : MonoBehaviour
             //     SendUDPData(_packet);
             // }
         }
-        public static void SendMapDataToServer(Packet _p) {
-        print("Wysłanie surowej wersji mapy na serwer aby ją nadpisać i przechować #!tylko admin! do usunięcia później");
-            // wysle dane tilemapy na serwer
-            Tilemap mapa = GameManager.instance._tileMap;
-            // interesuje mnie nazwa obiektu i jego lokalizacja
+        public static void SendMapDataToServer(MAPTYPE mapType) {
 
-            Dictionary<Vector3, string> tempdictNonEmptyTiles = new Dictionary<Vector3, string>();
-            foreach (Vector3Int position in mapa.cellBounds.allPositionsWithin) {
-                Tile tile = (Tile)mapa.GetTile(position);
-                if (tile != null) {
-                    // print(tile.name);
-                    tempdictNonEmptyTiles.Add(new Vector3(position.x, position.y, position.z), tile.name);
+            print($"Wysłanie na serwer {mapType.ToString()}");
+
+            Tilemap TILEMAP = new Tilemap();
+            switch (mapType)
+            {
+                case MAPTYPE.GROUND_MAP:
+                    TILEMAP = GameManager.instance._tileMap_GROUND;
+                break;
+                    case MAPTYPE.OBSTACLEMAP:
+                    TILEMAP = GameManager.instance._tileMap;
+                break;
+            }
+
+            Dictionary<Vector3, string> temp = new Dictionary<Vector3, string>();
+            foreach (Vector3Int position in TILEMAP.cellBounds.allPositionsWithin) {
+                Tile tile = (Tile)TILEMAP.GetTile(position);
+                if (tile != null) 
+                {
+                    temp.Add(new Vector3(position.x, position.y, position.z), tile.name);
                 }
             }
 
-            // pakowanie
             using (Packet _packet = new Packet((int)ClientPackets.SEND_MAPDATA_TO_SERVER)) {
-                _packet.Write(tempdictNonEmptyTiles.Count); // SIZE
-                foreach (KeyValuePair<Vector3,string> data in tempdictNonEmptyTiles) {
+                _packet.Write(temp.Count); // SIZE
+                _packet.Write((int)mapType); // INT maptype
+                foreach (KeyValuePair<Vector3,string> data in temp) {
                     _packet.Write(data.Key); // Vector3
                     _packet.Write(data.Value); // tile name
                 }
@@ -114,6 +123,5 @@ public class ClientSend : MonoBehaviour
             SendTCPData(_packet);
         }   
     }
-   
-    #endregion
+   #endregion
 }

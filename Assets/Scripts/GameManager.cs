@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] public List<Tile> listaDostepnychTilesow;
     
     public static Dictionary<Vector3Int,string> MAPDATA { get; set; }
+    public static Dictionary<Vector3Int,string> MAPDATA_Ground { get; set; }
     public int CurrentUpdateVersion 
     { 
         get => currentUpdateVersion; 
@@ -44,7 +45,8 @@ public class GameManager : MonoBehaviour
     public GameObject playerPrefab; // inni gracze na serwerze
     public Tile playerTile;
     [SerializeField] private int currentUpdateVersion;
-    public Tilemap _tileMap;
+    public Tilemap _tileMap; //
+    public Tilemap _tileMap_GROUND; 
     
     Vector3Int startingLocationOnGrid = new Vector3Int(0,0,2);
     Vector3 basePodition = new Vector3(0,0,2);
