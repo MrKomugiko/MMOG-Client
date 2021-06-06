@@ -305,18 +305,21 @@ public class Client : MonoBehaviour
     {
         packetHandlers = new Dictionary<int, PacketHandler>()
         {
-            { (int)ServerPackets.welcome, ClientHandle.Welcome },
-          //{ (int)ServerPackets.udpTest, ClientHandle.UDPTest },
-            { (int)ServerPackets.spawnPlayer, ClientHandle.SpawnPlayer },
-            { (int)ServerPackets.playerPosition, ClientHandle.PlayerPosition },
-            { (int)ServerPackets.updateChat, ClientHandle.UpdateChat },
-            { (int)ServerPackets.updateChat_NewUserPost, ClientHandle.UpdateChat_NewUserPost },
-            { (int)ServerPackets.removeOfflinePlayer, ClientHandle.RemoveOfflinePlayer },
-            { (int)ServerPackets.ping_ALL, ClientHandle.PingBackToServer },
-            { (int)ServerPackets.downloadMapData, ClientHandle.SendMapToServer },
-            { (int)ServerPackets.sendCurrentUpdateNumber, ClientHandle.ReceivedUpdateNumber }, // otrzymanie info o nowym Update
-            { (int)ServerPackets.SEND_MAPDATA_TO_CLIENT, ClientHandle.NewMapDataFromServerReceived }
-
+            { (int)ServerPackets.welcome, ClientHandle.Welcome },                                       // potwierdzenie poprawnego logowania sie do serwera
+            { (int)ServerPackets.spawnPlayer, ClientHandle.SpawnPlayer },                               // pojawienie sie gracza na scenie
+            { (int)ServerPackets.playerPosition, ClientHandle.PlayerPosition },                         // odebranie nowej pozycji gracza ktory sie wykonał ruch (w tym local)
+            { (int)ServerPackets.updateChat, ClientHandle.UpdateChat },                                 // polecenie aktualizacji czatu o wiadomość GM'a
+            { (int)ServerPackets.updateChat_NewUserPost, ClientHandle.UpdateChat_NewUserPost },         // polecenie aktualizacji czatu o post innego uzytkownika
+            { (int)ServerPackets.removeOfflinePlayer, ClientHandle.RemoveOfflinePlayer },               // info o osobach ktore sie wylogowały, i ktore mamy usunąć ze sceny
+            { (int)ServerPackets.ping_ALL, ClientHandle.PingBackToServer },                             // zwykły heartbeat co 5 sekund czy klient nadal aktywny
+            { (int)ServerPackets.downloadMapData, ClientHandle.SendMapToServer },                       // klient ma wysłać swoją mape na serwer
+            { (int)ServerPackets.sendCurrentUpdateNumber, ClientHandle.ReceivedUpdateNumber },          // otrzymanie info o nowym Update
+            { (int)ServerPackets.SEND_MAPDATA_TO_CLIENT, ClientHandle.NewMapDataFromServerReceived }    // otrzymano nową mape
+            // TODO:     // otrzymanie info o szczegółach zebranego przedmiotu
+            // TODO:     // otrzymanie szczegółów dotycznących napotkanego NPC'a 
+            // TODO:     // otrzymanie info o aktualnych ofertach w sklepie (jeze,lli ktos cos sprzeda to bedzie mozna to odkupic od npc ?)
+            // TODO:     // otrzymanie potwierdzenia akceptacji zaproszenia przez innego gracza do party
+            // TODO:     // otrzymanie aktualnych informacji dotyczące innego gracza ( level, pozycja, w zakladce "party" jezeli jestescie w grupie )   
         };
         Debug.Log("Initialized packets.");
     }
@@ -331,6 +334,6 @@ public class Client : MonoBehaviour
             Debug.Log("Disconnectef from server.");
         }
         ThreadManager.ExecuteOnMainThread(()=>UIManager.instance.BackToStartScreen());
-       //UIManager.instance.BackToStartScreen();
+        UIManager.instance.BackToStartScreen();
     }
 }

@@ -29,12 +29,14 @@ public class GameManager : MonoBehaviour
                 currentUpdateVersion = value; 
                 UIManager.instance.UpdateBuildIndicatorOnScreen(currentUpdateVersion, _isDownloadAvaiable: true);
             }
-  
+            else
+            {
                 // mapa jest aktualna 
                 print("Map is up to date");
                 currentUpdateVersion = value;
 
                 UIManager.instance.UpdateBuildIndicatorOnScreen(currentUpdateVersion,_isDownloadAvaiable: false);
+            }
         }
     }
 

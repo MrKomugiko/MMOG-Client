@@ -93,14 +93,15 @@ public class ClientHandle : MonoBehaviour
        // GameManager.players.Remove(_id);
 
     }
-    public static void PingBackToServer(Packet _packet) {
+    public static void PingBackToServer(Packet _packet) 
+    {
+        // Heartbit d;
         ClientSend.PingReceived();
     }
     public static void ReceivedUpdateNumber(Packet _packet)
     {
+        // porownaj wersje mapy z serwera a aktualnie zapisanej , w przypadku różnicy, pobierz z serwera nową wersje
         GameManager.instance.CurrentUpdateVersion = _packet.ReadInt();
-        // Poproś o nową wersje mapy
-        //ClientSend.DownloadLatestMapUpdate();
     }
     public static void NewMapDataFromServerReceived(Packet _packet)
     {
@@ -114,31 +115,88 @@ public class ClientHandle : MonoBehaviour
 
         print($"Otrzymales nowiutką [{mapType.ToString()}] wielosc: [{brandNewMap.Count}]");
 
-      
-            ZapiszMapeDoPliku(mapType, brandNewMap);
-        try
+        SaveMapDataToFile(mapType, brandNewMap);
+    
+        LoadMapDataFromFile(mapType);
+    }
+
+    private static (Dictionary<Vector3Int,string> mapdata,Tilemap tilemap) GetReferencesByMaptype(MAPTYPE _type) 
+    {
+        Dictionary<Vector3Int,string> mapdata = null;
+        Tilemap tilemap = null;
+
+        switch(_type)
         {
-             switch (mapType)
+            case MAPTYPE.GROUND_MAP:
+                mapdata = GameManager.MAPDATA_Ground;
+                tilemap = GameManager.instance._tileMap_GROUND;
+            break;
+
+            case MAPTYPE.OBSTACLEMAP:
+                mapdata = GameManager.MAPDATA;
+                tilemap = GameManager.instance._tileMap;
+            break;
+        }
+        return (mapdata,tilemap);
+    }
+    private static void LoadMapDataFromFile(MAPTYPE _mapType)
+    {
+        var references = GetReferencesByMaptype(_mapType);
+        ref Tilemap REFERENCE_TILEMAP = ref references.tilemap;
+        Dictionary<Vector3Int,string> REFERENCE_MAPDATA = references.mapdata;
+
+        print($"Ladowanie danych mapy [{_mapType.ToString()}] z pliku do pamięci");
+        int modifiedCounter = 0, wrongDataRecords = 0, deletedCounter = 0, newAddedCounter = 0;
+        Dictionary<Vector3Int, string> TEMP_MAPDATA_FROM_FILE = ReadMapDataFromFile(_mapType);
+
+        REFERENCE_TILEMAP.ClearAllTiles();
+         // ---------- MODYFIKACJA ISTNIEJĄCYCH DANYCH SERVERA
+        // --------- JEZELI NIE MA ZAPISANYCH DANYCH NA SERWERZE Z AUTOMATU WSZYSTKO PRZYPISUJEMY JAK Z PLIKU
+        if (REFERENCE_MAPDATA.Count == 0)
+        {
+            REFERENCE_MAPDATA = TEMP_MAPDATA_FROM_FILE;
+        }
+        if (REFERENCE_MAPDATA.Count > 0)
+        {
+            if (TEMP_MAPDATA_FROM_FILE.Count == 0) print("Plik jest pusty -> Brak zapisanych danych mapy");
+
+            // porownanie i dodanie/zamiana danych z istniejącym zapisem w pamiec
+            foreach (var kvp in TEMP_MAPDATA_FROM_FILE)
             {
-                case MAPTYPE.GROUND_MAP:
-                LoadMapDataFromFile(mapType,GameManager.MAPDATA_Ground, ref GameManager.instance._tileMap_GROUND);
-           
-                break;
-                case MAPTYPE.OBSTACLEMAP:
-                    LoadMapDataFromFile(mapType,GameManager.MAPDATA , ref GameManager.instance._tileMap_GROUND);
-                break;   
+                if (REFERENCE_MAPDATA.ContainsKey(kvp.Key))
+                {
+                    if (REFERENCE_MAPDATA[kvp.Key] != kvp.Value)
+                    {
+                        REFERENCE_MAPDATA[kvp.Key] = kvp.Value;
+                        modifiedCounter++;
+                    }
+                }
+                else
+                {
+                    REFERENCE_MAPDATA.Add(kvp.Key, kvp.Value);
+                    newAddedCounter++;
+                }
+            }
+           // usuniecie nieaktualnych pól
+               
+            foreach (var pole in REFERENCE_MAPDATA.Where(pole => TEMP_MAPDATA_FROM_FILE.ContainsKey(pole.Key) == false).Select(pole => pole.Key).ToList()) 
+            {
+                REFERENCE_MAPDATA.Remove(pole);
+                deletedCounter++;
             }
         }
-        catch (System.Exception ex)
-        {
-            print("error"+ex.Message);
-        }
-            
-        // TODO: zapis i odczyt mapy z pliku => zeby nie sciągać jej później // luz server i tak sprawdza ze swoją orginalną kopią ;d
 
+        // ----------------------------------PODSUMOWANIE ----------------------------------
+        print(
+            $"Odczytano: .................. {TEMP_MAPDATA_FROM_FILE.Count}\n" +
+            $"Dodano: ..................... {newAddedCounter}\n" +
+            $"Zmodyfikowano: .............. {modifiedCounter}\n" +
+            $"Usunięto: ................... {deletedCounter}\n" +
+            $"Uszkodzonych danych: ........ {wrongDataRecords}");
+
+        PopulateTilemapWithCorrectTiles(_data: REFERENCE_MAPDATA, _tilemap: REFERENCE_TILEMAP);
     }
-//--------------------------------------------------------------------------------------------------------------
-    private static void ZapiszMapeDoPliku(MAPTYPE mapType, Dictionary<Vector3, string> mapData)
+    private static void SaveMapDataToFile(MAPTYPE mapType, Dictionary<Vector3, string> mapData)
     {
         string path = $"{mapType.ToString()}.txt";
         //   print(path);
@@ -153,138 +211,57 @@ public class ClientHandle : MonoBehaviour
             }
         }
     }
-    private static void LoadMapDataFromFile(MAPTYPE _mapType, Dictionary<Vector3Int,string> REFERENCE_MAPDATA, ref Tilemap REFERENCE_TILEMAP)
+    private static Dictionary<Vector3Int, string> ReadMapDataFromFile(MAPTYPE _mapType)
+    {
+        string path = $"{_mapType.ToString()}.txt";
+        if (!File.Exists(path)) return null;
+
+        var TEMP_MAPDATA_FROM_FILE = new Dictionary<Vector3Int, string>();
+        string line;
+        StreamReader file = new StreamReader(path);
+        while ((line = file.ReadLine()) != null)
         {
-            string path = $"{_mapType.ToString()}.txt";
+            string text = line.Replace("(", "").Replace(")", "");
+            string[] data = text.Split(" ".ToCharArray());
 
-            print($"Ladowanie danych mapy [{_mapType.ToString()}] z pliku do pamięci");
-            var mapData = new Dictionary<Vector3Int,string>();
-            if (!File.Exists(path)) return;
-            // ----------------------------------ZCZYTYWANIE Z PLIKU ----------------------------------
-            string line;
+            string x = data[0].Trim().Replace(",", ".");
+            string y = data[1].Trim().Replace(",", ".");
+            string z = data[2].Trim().Replace(",", ".");
 
-            int modifiedCounter = 0;
-            int wrongDataRecords = 0;
-            int deletedCounter = 0;
-            int newAddedCounter = 0;
+            int iX = Int32.Parse(x.Remove(x.Length - 3));
+            int iY = Int32.Parse(y.Remove(y.Length - 3));
+            int iZ = Int32.Parse(z.Remove(z.Length - 2));
 
-            
-            StreamReader file = new StreamReader(path);  
-            while((line = file.ReadLine()) != null)  
-            {  
-                string text = line.Replace("(","").Replace(")","");
-                string[] data = text.Split(" ".ToCharArray());
+            string value = data[3];
 
-               try {
-                    string x = data[0].Trim().Replace(",", ".");
-                    string y=data[1].Trim().Replace(",", ".");
-                    string z =data[2].Trim().Replace(",", ".");
-                    // print($"[{x}][{y}][{z}]");
-                    x = x.Remove(x.Length-3);
-                    y = y.Remove(y.Length-3);
-                    z = z.Remove(z.Length-2); 
-                    // print($"[{x}][{y}][{z}]");
-                    string value = data[3];
+            TEMP_MAPDATA_FROM_FILE.Add(new Vector3Int(iX, iY, iZ), value);
+        }
+        file.Close();
 
-                    mapData.Add(new Vector3Int(Int32.Parse(x),Int32.Parse(y),Int32.Parse(z)), value);
-               }
-               catch(System.FormatException ex) {
-                   print("zły format, zle zaladowana lokalizacja Vector3 => "+text+" Error: "+ex.Message );
-                   wrongDataRecords++;
-               }
-               catch(Exception ex) {
-                   print(ex.Message);
-               }
-            }  
-            file.Close();
-        //     if(REFERENCE_MAPDATA == null)
-        //     {
-        //         print("mapa jest null ??????????????????????????");
-            
-        //   //  Tilemap REFERENCE_TILEMAP = null;
-        //     switch (_mapType)
-        //     {
-        //         case MAPTYPE.GROUND_MAP:
-        //             REFERENCE_MAPDATA = GameManager.MAPDATA_Ground;
-        //             REFERENCE_TILEMAP = GameManager.instance._tileMap_GROUND;
-        //         break;
-        //         case MAPTYPE.OBSTACLEMAP:
-        //             REFERENCE_MAPDATA = GameManager.MAPDATA;      
-        //             REFERENCE_TILEMAP = GameManager.instance._tileMap;
-        //         break;   
-        //     }
-          //  }
-            // ----------------------------------ZAPISYWANIE W PAMIECI KLIENTA ----------------------------------
-            // --------- JEZELI NIE MA ZAPISANYCH DANYCH NA SERWERZE
-            if (REFERENCE_MAPDATA.Count == 0) 
+        return TEMP_MAPDATA_FROM_FILE;
+    }
+    private static void PopulateTilemapWithCorrectTiles(Dictionary<Vector3Int, string> _data, Tilemap _tilemap)
+    {
+        Console.WriteLine("zastosowywanie zmian w mapie, podmiana tilesów na aktualne");
+        foreach (KeyValuePair<Vector3Int, string> kvp in _data)
+        {
+            Tile tile = (Tile)_tilemap.GetTile(kvp.Key);
+            if (tile != null)
             {
-                REFERENCE_MAPDATA = mapData;
+                // Podmiana istniejącego tilesa na inny
+                string tileName = GameManager.instance.listaDostepnychTilesow.Where(t => t.name == kvp.Value).First().name;
+                _tilemap.SetTile(kvp.Key, GameManager.instance.listaDostepnychTilesow.Where(t => t.name == tileName).First());
             }
-            // ---------- MODYFIKACJA ISTNIEJĄCYCH DANYCH SERVERA
-            if (REFERENCE_MAPDATA.Count > 0) 
+            else
             {
-                if (mapData.Count == 0) print("Plik jest pusty -> Brak zapisanych danych mapy");
-
-                // porownanie i dodanie/zamiana danych z istniejącym zapisem w pamiec
-                foreach (var kvp in mapData) {
-                    if (REFERENCE_MAPDATA.ContainsKey(kvp.Key)) {
-                        if (REFERENCE_MAPDATA[kvp.Key] != kvp.Value) {
-                            REFERENCE_MAPDATA[kvp.Key] = kvp.Value;
-                            modifiedCounter++;
-                        }
-                    }else {
-                        REFERENCE_MAPDATA.Add(kvp.Key, kvp.Value);
-                        newAddedCounter++;
-                    }
-                }
-
-                // usuniecie nieaktualnych pól
-                foreach (var pole in REFERENCE_MAPDATA.Where(pole => mapData.ContainsKey(pole.Key) == false).Select(pole => pole.Key).ToList()) {
-                    REFERENCE_MAPDATA.Remove(pole);
-                    deletedCounter++;
-                }
-            }
-            //---------- przypisanie danych 
-            // switch (_mapType)
-            // {
-            //     case MAPTYPE.GROUND_MAP:
-            //         GameManager.MAPDATA_Ground = REFERENCE_MAPDATA;
-            //     break;
-            //     case MAPTYPE.OBSTACLEMAP:
-            //         GameManager.MAPDATA = REFERENCE_MAPDATA;    
-            //     break;   
-            // }
-
-           // ----------------------------------PODSUMOWANIE ----------------------------------
-            Console.WriteLine(
-                $"Odczytano: .................. {mapData.Count}\n"+
-                $"Dodano: ..................... {newAddedCounter}\n" +
-                $"Zmodyfikowano: .............. {modifiedCounter}\n" +
-                $"Usunięto: ................... {deletedCounter}\n" +
-                $"Uszkodzonych danych: ........ {wrongDataRecords}");
-
-        // PODMIANA DANYCH MAPY 
-            foreach(var kvp in REFERENCE_MAPDATA)
-            {
-                var tile = (Tile)REFERENCE_TILEMAP.GetTile(kvp.Key);
-                if(tile != null)
-                {
-                    // Podmiana istniejącego tilesa na inny
-                    string tileName = GameManager.instance.listaDostepnychTilesow.Where(t=>t.name == kvp.Value).First().name; 
-                    REFERENCE_TILEMAP.SetTile(kvp.Key, GameManager.instance.listaDostepnychTilesow.Where(t=>t.name == tileName).First());
-                }
-                else
-                {
-                    // dodanie nowego tilesa w puste miejsce
-                    REFERENCE_TILEMAP.SetTile(kvp.Key, GameManager.instance.listaDostepnychTilesow.Where(t=>t.name == kvp.Value).First());
-                }
+                // dodanie nowego tilesa w puste miejsce
+                _tilemap.SetTile(kvp.Key, GameManager.instance.listaDostepnychTilesow.Where(t => t.name == kvp.Value).First());
             }
         }
-
-    internal static void SendMapToServer(Packet _packet)
+    }
+    public static void SendMapToServer(Packet _packet)
     {
         // determine what map type server need from us
-
         MAPTYPE mapType =  (MAPTYPE)_packet.ReadInt();
         print("server chce mape: "+mapType.ToString());
         ClientSend.SendMapDataToServer(mapType);
