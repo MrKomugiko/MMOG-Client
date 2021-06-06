@@ -7305,7 +7305,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0
+  near clip plane: -19.2
   far clip plane: 1000
   field of view: 60
   orthographic: 1
@@ -26704,6 +26704,7 @@ MonoBehaviour:
   playerTile: {fileID: 11400000, guid: e42d75eae6922754d896ce4a2b23440c, type: 2}
   currentUpdateVersion: 0
   _tileMap: {fileID: 318502708}
+  _tileMap_GROUND: {fileID: 1275125293}
 --- !u!4 &1422712139
 Transform:
   m_ObjectHideFlags: 0
@@ -28192,6 +28193,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _transform: {fileID: 2067064465}
   CurrentFloor: 2
+  currentPosition: {x: 0, y: 0, z: 2}
   moving: 0
   jumpFrames: 3
 --- !u!212 &2067064467

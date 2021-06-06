@@ -11,6 +11,7 @@ public class MovementScript : MonoBehaviour
     void Start()
     {
         _transform.position = GameManager.instance._tileMap_GROUND.CellToWorld(currentPosition);
+        _transform.position += new Vector3(0,0,.9f);
     }
 
     public bool moving;

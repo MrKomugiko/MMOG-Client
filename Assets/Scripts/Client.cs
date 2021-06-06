@@ -331,6 +331,6 @@ public class Client : MonoBehaviour
             Debug.Log("Disconnectef from server.");
         }
         ThreadManager.ExecuteOnMainThread(()=>UIManager.instance.BackToStartScreen());
-        UIManager.instance.BackToStartScreen();
+       //UIManager.instance.BackToStartScreen();
     }
 }
