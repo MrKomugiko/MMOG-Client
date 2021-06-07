@@ -39,15 +39,15 @@ public class ClientHandle : MonoBehaviour
         Vector3Int _tileMapCoordinates = new Vector3Int((int)_position.x,(int)_position.y,(int)_position.z);
         
         GameManager.instance.SpawnPlayer(_id,_username,_position,_rotation, _tileMapCoordinates);
+        print($"spawn[{_username}] at: position:{_position} / tilecoord:{_tileMapCoordinates}");
     }
     public static void PlayerPosition(Packet _packet) {
         int _id = _packet.ReadInt();
         Vector3 _position = _packet.ReadVector3();
 
-//        print(_position.x+" "+_position.y+" "+_position.z);
-       // GameManager.players[_id].transform.position = _position;
+        print("otrzymana nowa pozycja:"+_position);
         GameManager.players[_id].MoveToPositionInGrid(new Vector3Int((int)_position.x,(int)_position.y,(int)_position.z));
-       
+        GameManager.players[_id].movementScript.waitingForServerAnswer = false;
     }
     public static void UpdateChat(Packet _packet) {
         string _msg = _packet.ReadString();
@@ -75,20 +75,24 @@ public class ClientHandle : MonoBehaviour
         // usunięcie offline tilesa
         // ostatnia zarejestrowana pozycja gracza:
         var offlinePosition = GameManager.players[_id].CurrentPosition_GRID;
-        var isThereMorePlayersInOnePlace = PlayerManager.CheckIfMorePlayersStayOnThisPosition(offlinePosition);
-        if(isThereMorePlayersInOnePlace)
-        {   
-            // ktos stoi na miejscu afka, trzeba usunac kolor afka i przypisac kolor aktywnego
-            GameManager.instance._tileMap.SetTile(offlinePosition,PlayerManager.OtherAvaiablePlayerTileAtThisPosition(offlinePosition,_id));
-        }
-        else
-        {
-            // nikogo innego nie ma w miejscu afka, czyscimy pole klasycznie
-            GameManager.instance._tileMap.SetTile(offlinePosition,null);
-        }
+      //  var isThereMorePlayersInOnePlace = PlayerManager.CheckIfMorePlayersStayOnThisPosition(offlinePosition);
+        // if(isThereMorePlayersInOnePlace)
+        // {   
+        //     // ktos stoi na miejscu afka, trzeba usunac kolor afka i przypisac kolor aktywnego
+        //     GameManager.instance._tileMap.SetTile(offlinePosition,PlayerManager.OtherAvaiablePlayerTileAtThisPosition(offlinePosition,_id));
+        // }
+        // else
+        // {
+        //     // nikogo innego nie ma w miejscu afka, czyscimy pole klasycznie
+        //     GameManager.instance._tileMap.SetTile(offlinePosition,null);
+        // }
 
         // usunięcie obiektu gracza
-        Destroy(GameManager.players[_id].gameObject);
+        try
+        {
+         Destroy(GameManager.players[_id].gameObject);
+        }
+        catch{};
         // usunięcie afka z listy graczy
        // GameManager.players.Remove(_id);
 

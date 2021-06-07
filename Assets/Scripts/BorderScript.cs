@@ -30,8 +30,8 @@ public class BorderScript : MonoBehaviour
     {
         if(PositionChangeChangeCheck() == false) return;
 
-        _transform.position = GameManager.instance._tileMap.CellToWorld(player.CurrentPosition_GRID);
-        BorderPosition = player.CurrentPosition_GRID;
+        //_transform.position = GameManager.instance._tileMap.CellToWorld(player.CurrentPosition_GRID);
+       // BorderPosition = player.CurrentPosition_GRID;
     }
     
     bool PositionChangeChangeCheck(){

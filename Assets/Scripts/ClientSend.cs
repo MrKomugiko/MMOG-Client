@@ -33,8 +33,8 @@ public class ClientSend : MonoBehaviour
         }
         public static void PlayerMovement(bool[] _inputs) 
         {
-            //print("Wysłanie informacji o ruchu na serwer do przetworzenia");
-            //Debug.Log("PlayerMovement in ClientSend");
+          print("Wysłanie informacji o ruchu na serwer do przetworzenia");
+            
             using (Packet _packet = new Packet((int)ClientPackets.playerMovement)) {
                 _packet.Write(_inputs.Length);
                 foreach(bool _input in _inputs) {
@@ -42,7 +42,8 @@ public class ClientSend : MonoBehaviour
                 }
                 _packet.Write(GameManager.players[Client.instance.myId].transform.rotation);
 
-                SendUDPData(_packet);
+                SendTCPData(_packet);
+                
             }
         }
         public static void SendChatMessage(string _message)

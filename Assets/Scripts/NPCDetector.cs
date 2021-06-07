@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -48,7 +49,7 @@ public class NPCDetector : MonoBehaviour
             }
         }
         // sprawdzmy czy ostatnio widziany npc nadal jest w zasięgu             
-        foreach(var NPC in _npcInRange_GameObject.Keys)
+        foreach(var NPC in _npcInRange_GameObject.Keys.ToList())
         {
             if(searchArea.Contains(NPC - playerPosition) == false)
             {

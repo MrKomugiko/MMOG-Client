@@ -76,13 +76,13 @@ public class GameManager : MonoBehaviour
         if(_id == Client.instance.myId) 
         {
             _player = Instantiate(localPlayerPrefab, _position,_rotation);
-            _tileMap.SetTile(tileCoordPosition,localPlayerTile);
+         //   _tileMap.SetTile(tileCoordPosition,localPlayerTile);
             _isLocal = true;
         }
         else
         {
             _player = Instantiate(playerPrefab,_position,_rotation);
-            _tileMap.SetTile(tileCoordPosition,playerTile);
+         //   _tileMap.SetTile(tileCoordPosition,playerTile);
             _isLocal = false;
         }
 
@@ -91,7 +91,7 @@ public class GameManager : MonoBehaviour
         _playerData.Username = _username;
         _playerData.CurrentPosition_GRID = tileCoordPosition;
         _playerData.IsLocal = _isLocal;
-        _playerData.MyTile = _isLocal?localPlayerTile:playerTile;
+     //   _playerData.MyTile = _isLocal?localPlayerTile:playerTile;
         
         players.Add(_id,_playerData);
     }
