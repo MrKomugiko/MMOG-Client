@@ -9,7 +9,7 @@ public class BotScript : MonoBehaviour
     
     IEnumerator ClickDirectionButtonsRoutine()
     {
-        print("starting new routine");
+      //  print("starting new routine");
         while(isRunning)
         {
             if(_movementScript.waitingForServerAnswer) continue;
@@ -21,7 +21,7 @@ public class BotScript : MonoBehaviour
     }
     private KeyCode GetDirectionKey(int value)
     {
-        print("bot click button");
+       // print("bot click button");
         switch (value)
         {
             case 1: return KeyCode.W;

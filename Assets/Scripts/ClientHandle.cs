@@ -45,13 +45,13 @@ public class ClientHandle : MonoBehaviour
         int _id = _packet.ReadInt();
         Vector3 _position = _packet.ReadVector3();
 
-        print("otrzymana nowa pozycja:"+_position);
+       // print("otrzymana nowa pozycja:"+_position);
         GameManager.players[_id].MoveToPositionInGrid(new Vector3Int((int)_position.x,(int)_position.y,(int)_position.z));
         GameManager.players[_id].movementScript.waitingForServerAnswer = false;
     }
     public static void UpdateChat(Packet _packet) {
         string _msg = _packet.ReadString();
-        print("Odebrano wiadomosc od GM: " + _msg);
+        //print("Odebrano wiadomosc od GM: " + _msg);
 
         string chattext = UIManager.czatTMP.text;
         UIManager.czatTMP.SetText(chattext+$"\n<color=red><b>[{DateTime.Now.ToShortTimeString()}]:[GM]:{_msg}</b></color>");

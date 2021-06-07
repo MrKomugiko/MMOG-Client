@@ -78,8 +78,8 @@ public class MovementScript : MonoBehaviour
         float newX = 0;
         float newY = 0;
         var direction = lastPosition_Grid-newPosition_Grid;
-        float newZ = CheckIfPlayerMakeJump(lastPosition_Grid.z, newPosition_Grid.z);
-        lastPosition_Grid = newPosition_Grid;
+        int jumpDirection = CheckIfPlayerMakeJump(lastPosition_Grid.z, newPosition_Grid.z);
+    
 
 
         if(direction.x == 0 && direction.y == -1) // DOWN
@@ -103,14 +103,15 @@ public class MovementScript : MonoBehaviour
                 newY =  0.25f;
         }
         
-        if(newZ == 0) StartCoroutine(WalkAnimation(newX,newY));
-        if(newZ != 0) StartCoroutine(JumpAnimation(newPosition_Grid));
+        if(jumpDirection == 0) StartCoroutine(WalkAnimation(newX,newY));
+        if(jumpDirection != 0) StartCoroutine(JumpAnimation(newPosition_Grid, jumpDirection,(Vector3Int?)lastPosition_Grid));
+        lastPosition_Grid = newPosition_Grid;
     }
 
-    private float CheckIfPlayerMakeJump(int old_Z, int new_Z)
+    private int CheckIfPlayerMakeJump(int old_Z, int new_Z)
     {
-        float heightDifferenceValue =  (float)(new_Z - old_Z);
-
+        int heightDifferenceValue =  (new_Z - old_Z);
+       // print($"Gracz idzie {(heightDifferenceValue>0?"do góry":"na dół")}.");
         return heightDifferenceValue;
     }
 
@@ -139,12 +140,16 @@ public class MovementScript : MonoBehaviour
         moving = false;
         yield return null;
     }
-    private IEnumerator JumpAnimation(Vector3Int newPosition_Grid)
+    private IEnumerator JumpAnimation(Vector3Int newPosition_Grid, int direction,Vector3Int? startPodition_Grid = null)
     {
-        Vector3 startPosition = _transform.position;
+        startPodition_Grid = Vector3Int.CeilToInt(_transform.position);
         Vector3 endPosition = GameManager.instance._tileMap.CellToWorld(newPosition_Grid);
 
-        _transform.position = new Vector3(endPosition.x,endPosition.y,(startPosition.z+2));
+        _transform.position = new Vector3(
+            endPosition.x,
+            endPosition.y,
+            direction>0?(startPodition_Grid.Value.z+2):(startPodition_Grid.Value.z-2)
+            );
 
         // TODO: ogarnąć trajektorie skoku 
 
