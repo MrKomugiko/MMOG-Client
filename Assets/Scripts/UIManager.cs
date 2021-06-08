@@ -84,4 +84,15 @@ public class UIManager : MonoBehaviour
         //activate or no button
         updateAndMapVersion.GetComponent<Button>().interactable = _isDownloadAvaiable;
     }
+
+    [SerializeField] TextMeshProUGUI PlayersOnlineText;
+
+        public void PrintCurrentOnlineUsers()
+        {
+            PlayersOnlineText.SetText("");
+            foreach(var player in GameManager.players.Values)
+            {
+                PlayersOnlineText.SetText(PlayersOnlineText.text + $"\n- [{player.Id}] [{player.Username}]");
+            }
+        }
 }

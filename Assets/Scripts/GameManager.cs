@@ -1,21 +1,27 @@
-﻿using System.Net.NetworkInformation;
+﻿using System.Net.Http;
+using System.Net.NetworkInformation;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using Unity;
 using System.Net.Sockets;
+using System.Linq;
+using TMPro;
 
-public class GameManager : MonoBehaviour
+public partial class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
     [SerializeField] public GameObject shopWindow;
     [SerializeField] public GameObject NPC_Glowing_SPRITE_PREFAB;
     [SerializeField] public List<Tile> listaDostepnychTilesow;
-    
+     [SerializeField] public GameObject StartLocationSeconFloorContainer;
+    [SerializeField] public GameObject StartLocationFirstFloorContainer;
     public static Dictionary<Vector3Int,string> MAPDATA {get; set;}
     public static Dictionary<Vector3Int,string> MAPDATA_Ground  {get; set;}
+
     public int CurrentUpdateVersion 
     { 
         get => currentUpdateVersion; 
@@ -115,5 +121,45 @@ public class GameManager : MonoBehaviour
         // connect
     }
 
- 
-}
+    public Dictionary<Vector3Int, Locations> LocationMaps = 
+   // zmienic  Locations na zwykłą klase zawierającą szcegolowe info o mapie - np wysokosc ;d 
+   new Dictionary<Vector3Int, Locations>{
+        { new Vector3Int( 7, -2, 14), Locations.Start_Second_Floor },
+        { new Vector3Int( 7, -1, 12), Locations.Start_First_Floor }
+    };
+
+    public void EnterNewLocation(Vector3Int locationCoord_Grid, PlayerManager player)
+    {
+        // 2nd floor staring localtion
+        //[ 7, -3, 14 ] podmiana map
+
+        if(player.IsLocal == false) return;
+
+        // nie zmieniaj nic jezeli gracz juz tu jest
+
+        var enterNewLocation = LocationMaps[locationCoord_Grid];
+
+        if(player.CurrentLocation == enterNewLocation) return;
+
+        switch(enterNewLocation)
+        {
+            case Locations.Start_First_Floor:
+                player.GetComponent<SpriteRenderer>().sortingOrder = 0;
+                //TODO: dodać liste lokalizacji ( gameobiektow) do listy
+                StartLocationSeconFloorContainer.SetActive(false);
+            break;
+
+
+            case Locations.Start_Second_Floor:
+                player.GetComponent<SpriteRenderer>().sortingOrder = 2;
+                StartLocationSeconFloorContainer.SetActive(true);
+                // StartLocationFirstFloorContainer.SetActive(false);
+            break;
+        }
+
+        Debug.Log("You entered "+enterNewLocation.ToString());
+        player.CurrentLocation = enterNewLocation;
+        ClientSend.SendServerPlayerNewLocalisation(enterNewLocation);
+        }
+    }
+

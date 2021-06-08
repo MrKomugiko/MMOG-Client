@@ -14,51 +14,57 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private bool isLocal;
     [SerializeField] NPCDetector nPCDetector;
     [SerializeField] public MovementScript movementScript;
-    public int Id 
-    { 
-        get => _id; 
-        set => _id = value; 
+    [SerializeField] private Locations currentLocation;
+
+
+    public int Id
+    {
+        get => _id;
+        set => _id = value;
     }
-    public string Username 
-    { 
-        get => _username; 
-        set => _username = value; 
+    public string Username
+    {
+        get => _username;
+        set => _username = value;
     }
-    public Vector3Int CurrentPosition_GRID 
-    { 
-        get => currentPosition_GRID; 
-        set 
+    public Vector3Int CurrentPosition_GRID
+    {
+        get => currentPosition_GRID;
+        set
         {
             currentPosition_GRID = value;
 
-            if(IsLocal)
+            if (IsLocal)
             {
                 nPCDetector.CheckForNPC(value);
             }
-     }
-      }
-    public bool IsLocal 
-    { 
-        get => isLocal; 
-        set 
+        }
+    }
+    public bool IsLocal
+    {
+        get => isLocal;
+        set
         {
-            isLocal = value; 
-            if(isLocal == true)  
+            isLocal = value;
+            if (isLocal == true)
             {
-                GameObject.Find("Main Camera").gameObject.transform.parent = this.gameObject.transform.Find("Player-xray-border").gameObject.transform;;    
+                GameObject.Find("Main Camera").gameObject.transform.parent = this.gameObject.transform.Find("Player-xray-border").gameObject.transform; ;
                 nPCDetector = GetComponentInChildren<NPCDetector>();
             }
-        } 
-    }   
-    private void Start() 
-     {
-         ClearDuplicatedLocalPlayersOnStart();
-     }
+        }
+    }
+
+    public Locations CurrentLocation { get => currentLocation; set => currentLocation = value; }
+
+    private void Start()
+    {
+        ClearDuplicatedLocalPlayersOnStart();
+    }
     private void ClearDuplicatedLocalPlayersOnStart()
     {
-        foreach(var pm in GetComponentsInParent<PlayerManager>())
+        foreach (var pm in GetComponentsInParent<PlayerManager>())
         {
-            if(pm == this) continue;
+            if (pm == this) continue;
 
             Destroy(pm.gameObject);
         }
@@ -69,6 +75,7 @@ public class PlayerManager : MonoBehaviour
         CurrentPosition_GRID = newPosition;
         // wykonanie animacji ruchu z wczesniejszej pozycji na aktualną
         movementScript.ExecuteMovingAnimation(newPosition_Grid: newPosition);
-        movementScript.moving = true;
+        
+        if(isLocal) movementScript.moving = true;
     }
 }

@@ -21,6 +21,7 @@ public class ClientHandle : MonoBehaviour
         ClientSend.WelcomeReceived();
 
         Client.instance.udp.Connect(((IPEndPoint)Client.instance.tcp.socket.Client.LocalEndPoint).Port);
+
     }
     public static void UDPTest(Packet _packet)
     {
@@ -39,13 +40,24 @@ public class ClientHandle : MonoBehaviour
         Vector3Int _tileMapCoordinates = new Vector3Int((int)_position.x,(int)_position.y,(int)_position.z);
         
         GameManager.instance.SpawnPlayer(_id,_username,_position,_rotation, _tileMapCoordinates);
-        print($"spawn[{_username}] at: position:{_position} / tilecoord:{_tileMapCoordinates}");
+        //print($"spawn[{_username}] at: position:{_position} / tilecoord:{_tileMapCoordinates}");
+
+        UIManager.instance.PrintCurrentOnlineUsers();
+        
     }
     public static void PlayerPosition(Packet _packet) {
         int _id = _packet.ReadInt();
         Vector3 _position = _packet.ReadVector3();
 
        // print("otrzymana nowa pozycja:"+_position);
+
+       if(_id == Client.instance.myId)
+       {
+           if(GameManager.instance.LocationMaps.ContainsKey(Vector3Int.CeilToInt(_position)))
+           {
+                GameManager.instance.EnterNewLocation(Vector3Int.CeilToInt(_position),GameManager.players[_id]);
+           }
+       }
         GameManager.players[_id].MoveToPositionInGrid(new Vector3Int((int)_position.x,(int)_position.y,(int)_position.z));
         GameManager.players[_id].movementScript.waitingForServerAnswer = false;
     }
@@ -72,35 +84,23 @@ public class ClientHandle : MonoBehaviour
         // sprawdzenie czy id gracza istnieje 
         if(!GameManager.players.ContainsKey(_id)) return;
 
-        // usunięcie offline tilesa
-        // ostatnia zarejestrowana pozycja gracza:
-        var offlinePosition = GameManager.players[_id].CurrentPosition_GRID;
-      //  var isThereMorePlayersInOnePlace = PlayerManager.CheckIfMorePlayersStayOnThisPosition(offlinePosition);
-        // if(isThereMorePlayersInOnePlace)
-        // {   
-        //     // ktos stoi na miejscu afka, trzeba usunac kolor afka i przypisac kolor aktywnego
-        //     GameManager.instance._tileMap.SetTile(offlinePosition,PlayerManager.OtherAvaiablePlayerTileAtThisPosition(offlinePosition,_id));
-        // }
-        // else
-        // {
-        //     // nikogo innego nie ma w miejscu afka, czyscimy pole klasycznie
-        //     GameManager.instance._tileMap.SetTile(offlinePosition,null);
-        // }
-
-        // usunięcie obiektu gracza
         try
         {
-         Destroy(GameManager.players[_id].gameObject);
+        // usunięcie obiektu gracza
+            Destroy(GameManager.players[_id].gameObject);
+        // usunięcie afka z listy graczy
+            GameManager.players.Remove(_id);
+
+            UIManager.instance.PrintCurrentOnlineUsers();
         }
         catch{};
-        // usunięcie afka z listy graczy
-       // GameManager.players.Remove(_id);
-
     }
+
     public static void PingBackToServer(Packet _packet) 
     {
         // Heartbit d;
         ClientSend.PingReceived();
+        UIManager.instance.PrintCurrentOnlineUsers();
     }
     public static void ReceivedUpdateNumber(Packet _packet)
     {

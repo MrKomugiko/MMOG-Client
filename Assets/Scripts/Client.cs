@@ -325,15 +325,19 @@ public class Client : MonoBehaviour
     }
     
     private void Disconnect() {
-        if(isConnected) {
-            isConnected = false;
-            
-            tcp.socket.Close();
-            udp.socket.Close();
+        try
+        {
+            if(isConnected) {
+                isConnected = false;
+                
+                tcp.socket.Close();
+                udp.socket.Close();
 
-            Debug.Log("Disconnectef from server.");
+                Debug.Log("Disconnectef from server.");
+            }
+            ThreadManager.ExecuteOnMainThread(()=>UIManager.instance.BackToStartScreen());
+            UIManager.instance.BackToStartScreen();
         }
-        ThreadManager.ExecuteOnMainThread(()=>UIManager.instance.BackToStartScreen());
-        UIManager.instance.BackToStartScreen();
+        catch (System.Exception){} 
     }
 }

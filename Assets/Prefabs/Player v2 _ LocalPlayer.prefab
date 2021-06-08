@@ -99,11 +99,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _transform: {fileID: 164629180767317850}
   CurrentFloor: 2
-  currentPosition_Grid: {x: 0, y: 0, z: 2}
+  lastPosition_Grid: {x: 0, y: 0, z: 0}
   PManager: {fileID: 164629180767317855}
-  lastPressedDirectionKey: 0
+  jumpFrames: 16
   moving: 0
-  jumpFrames: 3
+  navigationButtonsDelay: 0.2
+  waitingForServerAnswer: 0
 --- !u!114 &164629180767317855
 MonoBehaviour:
   m_ObjectHideFlags: 0

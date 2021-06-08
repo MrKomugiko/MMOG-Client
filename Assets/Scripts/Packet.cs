@@ -31,7 +31,8 @@ using UnityEngine;
         PingReceived,
         SEND_MAPDATA_TO_SERVER,
         downloadLatestMapUpdate,
-        download_recentMapVersion
+        download_recentMapVersion,
+        clientChangeLocalisation
 }
 public class Packet : IDisposable
 {

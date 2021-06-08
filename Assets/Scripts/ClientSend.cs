@@ -124,5 +124,14 @@ public class ClientSend : MonoBehaviour
             SendTCPData(_packet);
         }   
     }
-   #endregion
+
+    public static void SendServerPlayerNewLocalisation(Locations enterNewLocation)
+    {
+       print("Wysylanie na serwer info o zmianie lokalizacji gracza");
+        using (Packet _packet = new Packet((int)ClientPackets.clientChangeLocalisation)) {
+            _packet.Write((int)enterNewLocation); // int
+            SendTCPData(_packet);
+        }
+    }
+    #endregion
 }
