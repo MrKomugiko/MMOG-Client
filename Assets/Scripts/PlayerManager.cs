@@ -78,4 +78,5 @@ public class PlayerManager : MonoBehaviour
         
         if(isLocal) movementScript.moving = true;
     }
+    
 }

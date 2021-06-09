@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System.Xml;
+using System.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -36,10 +37,10 @@ public class ClientHandle : MonoBehaviour
         string _username = _packet.ReadString();
         Vector3 _position = _packet.ReadVector3();
         Quaternion _rotation = _packet.ReadQuaternion();
-
+        Locations _currentLocation = (Locations)_packet.ReadInt();
         Vector3Int _tileMapCoordinates = new Vector3Int((int)_position.x,(int)_position.y,(int)_position.z);
         
-        GameManager.instance.SpawnPlayer(_id,_username,_position,_rotation, _tileMapCoordinates);
+        GameManager.instance.SpawnPlayer(_id,_username,_position,_rotation, _tileMapCoordinates,_currentLocation);
         //print($"spawn[{_username}] at: position:{_position} / tilecoord:{_tileMapCoordinates}");
 
         UIManager.instance.PrintCurrentOnlineUsers();
@@ -57,9 +58,18 @@ public class ClientHandle : MonoBehaviour
            {
                 GameManager.instance.EnterNewLocation(Vector3Int.CeilToInt(_position),GameManager.players[_id]);
            }
-       }
+       } try{
         GameManager.players[_id].MoveToPositionInGrid(new Vector3Int((int)_position.x,(int)_position.y,(int)_position.z));
+        }
+    catch(Exception _Ex){
+                print("GameManager.players[_id].MoveToPositionInGrid(new Vector3Int((int)_position.x,(int)_position.y,(int)_position.z))r -> "+_Ex.Message);
+            }
+       try{
         GameManager.players[_id].movementScript.waitingForServerAnswer = false;
+    }
+    catch(Exception _Ex){
+                print("GameManager.players[_id].movementScript.waitingForServerAnswer -> "+_Ex.Message);
+            }
     }
     public static void UpdateChat(Packet _packet) {
         string _msg = _packet.ReadString();
@@ -84,16 +94,12 @@ public class ClientHandle : MonoBehaviour
         // sprawdzenie czy id gracza istnieje 
         if(!GameManager.players.ContainsKey(_id)) return;
 
-        try
-        {
         // usunięcie obiektu gracza
             Destroy(GameManager.players[_id].gameObject);
         // usunięcie afka z listy graczy
             GameManager.players.Remove(_id);
 
             UIManager.instance.PrintCurrentOnlineUsers();
-        }
-        catch{};
     }
 
     public static void PingBackToServer(Packet _packet) 
@@ -109,6 +115,7 @@ public class ClientHandle : MonoBehaviour
     }
     public static void NewMapDataFromServerReceived(Packet _packet)
     {
+        Locations location = (Locations)_packet.ReadInt();
         MAPTYPE mapType = (MAPTYPE)_packet.ReadInt();
         int mapSize = _packet.ReadInt();
         Dictionary<Vector3,string> brandNewMap = new Dictionary<Vector3, string>();
@@ -117,43 +124,62 @@ public class ClientHandle : MonoBehaviour
             brandNewMap.Add(_packet.ReadVector3(),_packet.ReadString());
         }
 
-        print($"Otrzymales nowiutką [{mapType.ToString()}] wielosc: [{brandNewMap.Count}]");
+        print($"Otrzymales nowiutką [{location.ToString()}][{mapType.ToString()}] wielosc: [{brandNewMap.Count}]");
 
-        SaveMapDataToFile(mapType, brandNewMap);
+        SaveMapDataToFile(location, mapType, brandNewMap);
     
-        LoadMapDataFromFile(mapType);
+        LoadMapDataFromFile(location, mapType);
     }
 
-    private static (Dictionary<Vector3Int,string> mapdata,Tilemap tilemap) GetReferencesByMaptype(MAPTYPE _type) 
+    private static (Dictionary<Vector3Int,string> mapdata,Tilemap tilemap) GetReferencesByMaptype(Locations _location, MAPTYPE _mapType) 
     {
-        Dictionary<Vector3Int,string> mapdata = null;
-        Tilemap tilemap = null;
+        // TODO: do ogarnięcia kiedyindziej, dynamiczne tworzenie i generowanie sie mapy na podstawie pozycji gracza
+        // aktualnie,, są tylko 2 piętra i jest szasa dopisac to z ręki , ale nie na dluzsza mete
+        int key = GetKeyFromMapLocationAndType(_location,_mapType);
 
-        switch(_type)
+        Dictionary<Vector3Int,string> mapdata = new Dictionary<Vector3Int, string>();
+        Tilemap tilemap = new Tilemap();
+
+        print(key);
+
+            switch(key)
         {
-            case MAPTYPE.GROUND_MAP:
+            case 1:
+            
                 mapdata = GameManager.MAPDATA_Ground;
                 tilemap = GameManager.instance._tileMap_GROUND;
             break;
 
-            case MAPTYPE.OBSTACLEMAP:
+            case 2:
                 mapdata = GameManager.MAPDATA;
                 tilemap = GameManager.instance._tileMap;
+            break;
+            
+            case 11:
+            
+                mapdata = GameManager.MAPDATA2ndFloor_Ground;
+                tilemap = GameManager.instance._tileMap3ndFloor_GROUND;
+            break;
+
+            case 12:
+                mapdata = GameManager.MAPDATA2ndFloor;
+                tilemap = GameManager.instance._tileMap2ndFloor;
             break;
         }
         return (mapdata,tilemap);
     }
-    private static void LoadMapDataFromFile(MAPTYPE _mapType)
+    private static void LoadMapDataFromFile(Locations _location, MAPTYPE _mapType)
     {
-        var references = GetReferencesByMaptype(_mapType);
-        ref Tilemap REFERENCE_TILEMAP = ref references.tilemap;
+
+        var references = GetReferencesByMaptype(_location, _mapType);
+        Tilemap REFERENCE_TILEMAP = references.tilemap;
         Dictionary<Vector3Int,string> REFERENCE_MAPDATA = references.mapdata;
 
         print($"Ladowanie danych mapy [{_mapType.ToString()}] z pliku do pamięci");
         int modifiedCounter = 0, wrongDataRecords = 0, deletedCounter = 0, newAddedCounter = 0;
-        Dictionary<Vector3Int, string> TEMP_MAPDATA_FROM_FILE = ReadMapDataFromFile(_mapType);
+        Dictionary<Vector3Int, string> TEMP_MAPDATA_FROM_FILE = ReadMapDataFromFile(_location, _mapType);
 
-        REFERENCE_TILEMAP.ClearAllTiles();
+        references.tilemap.ClearAllTiles();
          // ---------- MODYFIKACJA ISTNIEJĄCYCH DANYCH SERVERA
         // --------- JEZELI NIE MA ZAPISANYCH DANYCH NA SERWERZE Z AUTOMATU WSZYSTKO PRZYPISUJEMY JAK Z PLIKU
         if (REFERENCE_MAPDATA.Count == 0)
@@ -200,11 +226,23 @@ public class ClientHandle : MonoBehaviour
 
         PopulateTilemapWithCorrectTiles(_data: REFERENCE_MAPDATA, _tilemap: REFERENCE_TILEMAP);
     }
-    private static void SaveMapDataToFile(MAPTYPE mapType, Dictionary<Vector3, string> mapData)
+    private static void SaveMapDataToFile(Locations location, MAPTYPE mapType, Dictionary<Vector3, string> mapData)
     {
-        string path = $"{mapType.ToString()}.txt";
+        
+        string path = GetFilePath(DATATYPE.Locations,location,mapType);
         //   print(path);
-        print($"Zapisywanie danych mapy[{mapType.ToString()}] do pliku");
+        // print($"Zapisywanie danych mapy[{location.ToString()}][{mapType.ToString()}] do pliku");
+        //  if (!File.Exists(path)) 
+        //     {
+
+        //         Console.WriteLine(path);
+        //         return;
+        //     }
+       // Directory.CreateDirectory(path);
+
+
+       CreateFolder(DATATYPE.Locations,location);
+
         using (FileStream fs = new FileStream(path, FileMode.Create))
         {
             using (TextWriter tw = new StreamWriter(fs))
@@ -215,10 +253,13 @@ public class ClientHandle : MonoBehaviour
             }
         }
     }
-    private static Dictionary<Vector3Int, string> ReadMapDataFromFile(MAPTYPE _mapType)
+    private static Dictionary<Vector3Int, string> ReadMapDataFromFile(Locations _location, MAPTYPE _mapType)
     {
-        string path = $"{_mapType.ToString()}.txt";
-        if (!File.Exists(path)) return null;
+        string path = GetFilePath(DATATYPE.Locations, _location, _mapType);
+        if (!File.Exists(path)) {
+            Console.WriteLine("Brak pliku z danymi mapy"); 
+            throw new Exception();
+        };
 
         var TEMP_MAPDATA_FROM_FILE = new Dictionary<Vector3Int, string>();
         string line;
@@ -267,7 +308,21 @@ public class ClientHandle : MonoBehaviour
     {
         // determine what map type server need from us
         MAPTYPE mapType =  (MAPTYPE)_packet.ReadInt();
-        print("server chce mape: "+mapType.ToString());
-        ClientSend.SendMapDataToServer(mapType);
+        Locations mapLocation = (Locations)_packet.ReadInt();
+        print("server chce mape typu: "+mapType.ToString()+" dla lokalizacji: "+ mapLocation.ToString());
+        ClientSend.SendMapDataToServer(mapType,mapLocation);
     }
+
+
+        public static string GetFilePath(DATATYPE dataType, Locations locations, MAPTYPE mapType)
+        {
+            return $"DATA\\{dataType.ToString()}\\{locations.ToString()}\\{mapType.ToString()}.txt";
+        }
+        public static void CreateFolder(DATATYPE? dataType, Locations? locations)
+        {
+            Directory.CreateDirectory($"DATA\\{dataType.ToString()}\\{locations.ToString()}");
+        }
+        
+
+        public static int GetKeyFromMapLocationAndType(Locations location, MAPTYPE mapType) => (int)location * 10 + (int)mapType + 1;
 }

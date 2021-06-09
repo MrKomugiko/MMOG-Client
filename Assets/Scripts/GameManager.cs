@@ -17,10 +17,20 @@ public partial class GameManager : MonoBehaviour
     [SerializeField] public GameObject shopWindow;
     [SerializeField] public GameObject NPC_Glowing_SPRITE_PREFAB;
     [SerializeField] public List<Tile> listaDostepnychTilesow;
+
+    [SerializeField] public List<GameObject> ListaDostepnychLokalizacji = new List<GameObject>();
      [SerializeField] public GameObject StartLocationSeconFloorContainer;
-    [SerializeField] public GameObject StartLocationFirstFloorContainer;
+    [SerializeField]  public GameObject StartLocationFirstFloorContainer;
+    public Tilemap _tileMap;
+    public Tilemap _tileMap_GROUND;
+    
     public static Dictionary<Vector3Int,string> MAPDATA {get; set;}
     public static Dictionary<Vector3Int,string> MAPDATA_Ground  {get; set;}
+
+    public Tilemap _tileMap3ndFloor_GROUND;
+    public Tilemap _tileMap2ndFloor;
+    public static Dictionary<Vector3Int, string> MAPDATA2ndFloor_Ground { get; internal set; }
+    public static Dictionary<Vector3Int, string> MAPDATA2ndFloor { get; internal set; }
 
     public int CurrentUpdateVersion 
     { 
@@ -53,9 +63,6 @@ public partial class GameManager : MonoBehaviour
     public GameObject playerPrefab; // inni gracze na serwerze
     public Tile playerTile;
     [SerializeField] private int currentUpdateVersion;
-    public Tilemap _tileMap;
-    public Tilemap _tileMap_GROUND;
-    
     Vector3Int startingLocationOnGrid = new Vector3Int(0,0,2);
     Vector3 basePodition = new Vector3(0,0,2);
 
@@ -63,6 +70,13 @@ public partial class GameManager : MonoBehaviour
     {
         MAPDATA = new Dictionary<Vector3Int, string>();
         MAPDATA_Ground = new Dictionary<Vector3Int,string>();
+
+        MAPDATA2ndFloor = new Dictionary<Vector3Int, string>();
+        MAPDATA2ndFloor_Ground = new Dictionary<Vector3Int,string>();
+
+        ListaDostepnychLokalizacji.Add(StartLocationFirstFloorContainer);
+        ListaDostepnychLokalizacji.Add(StartLocationSeconFloorContainer);
+
         if (instance == null)
         {
             instance = this;
@@ -73,7 +87,7 @@ public partial class GameManager : MonoBehaviour
             Destroy(this);
         }
     }
-    public void SpawnPlayer(int _id, string _username, Vector3 _position, Quaternion _rotation, Vector3Int tileCoordPosition )
+    public void SpawnPlayer(int _id, string _username, Vector3 _position, Quaternion _rotation, Vector3Int tileCoordPosition, Locations _currentLocation)
     {
        if(players.ContainsKey(_id)) return;
 
@@ -96,8 +110,8 @@ public partial class GameManager : MonoBehaviour
         _playerData.Id = _id;
         _playerData.Username = _username;
         _playerData.CurrentPosition_GRID = tileCoordPosition;
+        _playerData.CurrentLocation = _currentLocation;
         _playerData.IsLocal = _isLocal;
-     //   _playerData.MyTile = _isLocal?localPlayerTile:playerTile;
         
         players.Add(_id,_playerData);
     }
@@ -121,13 +135,14 @@ public partial class GameManager : MonoBehaviour
         // connect
     }
 
-    public Dictionary<Vector3Int, Locations> LocationMaps = 
+    public Dictionary<Vector3Int, Locations[]> LocationMaps = 
    // zmienic  Locations na zwykłą klase zawierającą szcegolowe info o mapie - np wysokosc ;d 
-   new Dictionary<Vector3Int, Locations>{
-        { new Vector3Int( 7, -2, 14), Locations.Start_Second_Floor },
-        { new Vector3Int( 7, -1, 12), Locations.Start_First_Floor }
+        new Dictionary<Vector3Int, Locations[]>{
+        { 
+            new Vector3Int( 7, -2, 14), new Locations[2]{Locations.Start_First_Floor,Locations.Start_Second_Floor}
+        }
     };
-
+ 
     public void EnterNewLocation(Vector3Int locationCoord_Grid, PlayerManager player)
     {
         // 2nd floor staring localtion
@@ -139,9 +154,10 @@ public partial class GameManager : MonoBehaviour
 
         var enterNewLocation = LocationMaps[locationCoord_Grid];
 
-        if(player.CurrentLocation == enterNewLocation) return;
-
-        switch(enterNewLocation)
+        // if(enterNewLocation.Contains(player.CurrentLocation)) return;
+        // TODO: jakos to zautomatyzować
+        var new_location = enterNewLocation[0] == player.CurrentLocation?enterNewLocation[1]:enterNewLocation[0];
+        switch(new_location)
         {
             case Locations.Start_First_Floor:
                 player.GetComponent<SpriteRenderer>().sortingOrder = 0;
@@ -158,8 +174,8 @@ public partial class GameManager : MonoBehaviour
         }
 
         Debug.Log("You entered "+enterNewLocation.ToString());
-        player.CurrentLocation = enterNewLocation;
-        ClientSend.SendServerPlayerNewLocalisation(enterNewLocation);
+        player.CurrentLocation = new_location;
+        ClientSend.SendServerPlayerNewLocalisation(new_location);
         }
     }
 

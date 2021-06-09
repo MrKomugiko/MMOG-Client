@@ -1,5 +1,5 @@
 public enum MAPTYPE
 {
-    GROUND_MAP,
-    OBSTACLEMAP
+    Ground_MAP,
+    Obstacle_MAP
 }

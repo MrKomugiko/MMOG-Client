@@ -1,6 +1,8 @@
-﻿using System;
+﻿using System.ComponentModel;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -74,20 +76,23 @@ public class ClientSend : MonoBehaviour
             //     SendUDPData(_packet);
             // }
         }
-        public static void SendMapDataToServer(MAPTYPE mapType) {
+        public static void SendMapDataToServer(MAPTYPE mapType, Locations mapLocation) {
 
-            print($"Wysłanie na serwer {mapType.ToString()}");
+            GameObject locationContainer = GameManager.instance.ListaDostepnychLokalizacji.Where(n=>n.name == mapLocation.ToString()).FirstOrDefault();
+           // print("1."+locationContainer.ToString());
+            Tilemap TILEMAP = locationContainer.GetComponentsInChildren<Tilemap>().Select(t=>t).Where(t=>t.gameObject.name == mapType.ToString()).FirstOrDefault();
+             //print("2."+TILEMAP.ToString());
+            print($"Wysłanie na serwer {locationContainer.ToString()} / tilemap {TILEMAP.ToString()}");
 
-            Tilemap TILEMAP = new Tilemap();
-            switch (mapType)
-            {
-                case MAPTYPE.GROUND_MAP:
-                    TILEMAP = GameManager.instance._tileMap_GROUND;
-                break;
-                    case MAPTYPE.OBSTACLEMAP:
-                    TILEMAP = GameManager.instance._tileMap;
-                break;
-            }
+            // switch (mapType)
+            // {
+            //     case MAPTYPE.GROUND_MAP_CLIENT:
+            //         TILEMAP = GameManager.instance._tileMap_GROUND;
+            //     break;
+            //         case MAPTYPE.OBSTACLE_MAP_CLIENT:
+            //         TILEMAP = GameManager.instance._tileMap;
+            //     break;
+            // }
 
             Dictionary<Vector3, string> temp = new Dictionary<Vector3, string>();
             foreach (Vector3Int position in TILEMAP.cellBounds.allPositionsWithin) {
@@ -100,6 +105,8 @@ public class ClientSend : MonoBehaviour
 
             using (Packet _packet = new Packet((int)ClientPackets.SEND_MAPDATA_TO_SERVER)) {
                 _packet.Write(temp.Count); // SIZE
+                _packet.Write((int)DATATYPE.Locations);
+                _packet.Write((int)mapLocation);
                 _packet.Write((int)mapType); // INT maptype
                 foreach (KeyValuePair<Vector3,string> data in temp) {
                     _packet.Write(data.Key); // Vector3

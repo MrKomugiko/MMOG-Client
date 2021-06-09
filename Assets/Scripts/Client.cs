@@ -11,7 +11,7 @@ public class Client : MonoBehaviour
     public static Client instance;
     public static int dataBufferSize = 4096;
 
-    public string ip = "51.116.114.83";
+    public string ip = "51.144.170.232";
     public int port = 5555;
     public int myId = 0 ;
     public TCP tcp;
@@ -325,8 +325,6 @@ public class Client : MonoBehaviour
     }
     
     private void Disconnect() {
-        try
-        {
             if(isConnected) {
                 isConnected = false;
                 
@@ -338,6 +336,4 @@ public class Client : MonoBehaviour
             ThreadManager.ExecuteOnMainThread(()=>UIManager.instance.BackToStartScreen());
             UIManager.instance.BackToStartScreen();
         }
-        catch (System.Exception){} 
-    }
 }
