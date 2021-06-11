@@ -1,5 +1,4 @@
-﻿using System.Xml;
-using System.Data;
+﻿using System.Data.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,6 +22,8 @@ public class ClientHandle : MonoBehaviour
 
         Client.instance.udp.Connect(((IPEndPoint)Client.instance.tcp.socket.Client.LocalEndPoint).Port);
 
+
+
     }
     public static void UDPTest(Packet _packet)
     {
@@ -33,11 +34,12 @@ public class ClientHandle : MonoBehaviour
     }
     public static void SpawnPlayer(Packet _packet)
     {
+print("spawn player");
         int _id = _packet.ReadInt();
         string _username = _packet.ReadString();
         Vector3 _position = _packet.ReadVector3();
         Quaternion _rotation = _packet.ReadQuaternion();
-        Locations _currentLocation = (Locations)_packet.ReadInt();
+        LOCATIONS _currentLocation = (LOCATIONS)_packet.ReadInt();
         Vector3Int _tileMapCoordinates = new Vector3Int((int)_position.x,(int)_position.y,(int)_position.z);
         
         GameManager.instance.SpawnPlayer(_id,_username,_position,_rotation, _tileMapCoordinates,_currentLocation);
@@ -111,11 +113,16 @@ public class ClientHandle : MonoBehaviour
     public static void ReceivedUpdateNumber(Packet _packet)
     {
         // porownaj wersje mapy z serwera a aktualnie zapisanej , w przypadku różnicy, pobierz z serwera nową wersje
-        GameManager.instance.CurrentUpdateVersion = _packet.ReadInt();
+        // PAcket zawiera json patchnotes z servera
+
+        UpdateChecker.CacheJsonDataFromServer(_packet.ReadString());
+        UpdateChecker.FindOutdatedMAPDATAFilesVersion2();
+        /////////////////////////////////////////////////////////////////////////////////////////GameManager.instance.CurrentUpdateVersion = _packet.ReadInt();
     }
     public static void NewMapDataFromServerReceived(Packet _packet)
     {
-        Locations location = (Locations)_packet.ReadInt();
+        int newMapVersion = _packet.ReadInt();
+        LOCATIONS location = (LOCATIONS)_packet.ReadInt();
         MAPTYPE mapType = (MAPTYPE)_packet.ReadInt();
         int mapSize = _packet.ReadInt();
         Dictionary<Vector3,string> brandNewMap = new Dictionary<Vector3, string>();
@@ -124,14 +131,31 @@ public class ClientHandle : MonoBehaviour
             brandNewMap.Add(_packet.ReadVector3(),_packet.ReadString());
         }
 
-        print($"Otrzymales nowiutką [{location.ToString()}][{mapType.ToString()}] wielosc: [{brandNewMap.Count}]");
+        print($"Otrzymales uaktualnioną [{location.ToString()}][{mapType.ToString()}] wielosc: [{brandNewMap.Count}]");
 
         SaveMapDataToFile(location, mapType, brandNewMap);
+
+        if(UpdateChecker.CLIENT_UPDATE_VERSIONS == null) 
+        {
+            print("no pathnote file, assign exact file from server, but remove updateverions number");
+            UpdateChecker.CLIENT_UPDATE_VERSIONS = UpdateChecker.GetPathNoteWithClearMAPDATASVersionNumbers(UpdateChecker.SERVER_UPDATE_VERSIONS);
+            UpdateChecker.SaveChangesToFile();
+        }
+        try
+        {
+            UpdateChecker.CLIENT_UPDATE_VERSIONS._Data[location][mapType]._Version = newMapVersion;
+            UpdateChecker.SaveChangesToFile(); 
+        }
+        catch (System.Exception)
+        {
+            print("emmm brak pliku json");
+        }
+        
     
         LoadMapDataFromFile(location, mapType);
     }
 
-    private static (Dictionary<Vector3Int,string> mapdata,Tilemap tilemap) GetReferencesByMaptype(Locations _location, MAPTYPE _mapType) 
+    private static (Dictionary<Vector3Int,string> mapdata,Tilemap tilemap) GetReferencesByMaptype(LOCATIONS _location, MAPTYPE _mapType) 
     {
         // TODO: do ogarnięcia kiedyindziej, dynamiczne tworzenie i generowanie sie mapy na podstawie pozycji gracza
         // aktualnie,, są tylko 2 piętra i jest szasa dopisac to z ręki , ale nie na dluzsza mete
@@ -140,9 +164,9 @@ public class ClientHandle : MonoBehaviour
         Dictionary<Vector3Int,string> mapdata = new Dictionary<Vector3Int, string>();
         Tilemap tilemap = new Tilemap();
 
-        print(key);
+       // print(key);
 
-            switch(key)
+        switch(key)
         {
             case 1:
             
@@ -168,14 +192,14 @@ public class ClientHandle : MonoBehaviour
         }
         return (mapdata,tilemap);
     }
-    private static void LoadMapDataFromFile(Locations _location, MAPTYPE _mapType)
+    private static void LoadMapDataFromFile(LOCATIONS _location, MAPTYPE _mapType)
     {
 
         var references = GetReferencesByMaptype(_location, _mapType);
         Tilemap REFERENCE_TILEMAP = references.tilemap;
         Dictionary<Vector3Int,string> REFERENCE_MAPDATA = references.mapdata;
 
-        print($"Ladowanie danych mapy [{_mapType.ToString()}] z pliku do pamięci");
+      //  print($"Ladowanie danych mapy [{_mapType.ToString()}] z pliku do pamięci");
         int modifiedCounter = 0, wrongDataRecords = 0, deletedCounter = 0, newAddedCounter = 0;
         Dictionary<Vector3Int, string> TEMP_MAPDATA_FROM_FILE = ReadMapDataFromFile(_location, _mapType);
 
@@ -226,7 +250,7 @@ public class ClientHandle : MonoBehaviour
 
         PopulateTilemapWithCorrectTiles(_data: REFERENCE_MAPDATA, _tilemap: REFERENCE_TILEMAP);
     }
-    private static void SaveMapDataToFile(Locations location, MAPTYPE mapType, Dictionary<Vector3, string> mapData)
+    private static void SaveMapDataToFile(LOCATIONS location, MAPTYPE mapType, Dictionary<Vector3, string> mapData)
     {
         
         string path = GetFilePath(DATATYPE.Locations,location,mapType);
@@ -253,7 +277,7 @@ public class ClientHandle : MonoBehaviour
             }
         }
     }
-    private static Dictionary<Vector3Int, string> ReadMapDataFromFile(Locations _location, MAPTYPE _mapType)
+    private static Dictionary<Vector3Int, string> ReadMapDataFromFile(LOCATIONS _location, MAPTYPE _mapType)
     {
         string path = GetFilePath(DATATYPE.Locations, _location, _mapType);
         if (!File.Exists(path)) {
@@ -308,21 +332,21 @@ public class ClientHandle : MonoBehaviour
     {
         // determine what map type server need from us
         MAPTYPE mapType =  (MAPTYPE)_packet.ReadInt();
-        Locations mapLocation = (Locations)_packet.ReadInt();
+        LOCATIONS mapLocation = (LOCATIONS)_packet.ReadInt();
         print("server chce mape typu: "+mapType.ToString()+" dla lokalizacji: "+ mapLocation.ToString());
         ClientSend.SendMapDataToServer(mapType,mapLocation);
     }
 
 
-        public static string GetFilePath(DATATYPE dataType, Locations locations, MAPTYPE mapType)
+        public static string GetFilePath(DATATYPE dataType, LOCATIONS locations, MAPTYPE mapType)
         {
             return $"DATA\\{dataType.ToString()}\\{locations.ToString()}\\{mapType.ToString()}.txt";
         }
-        public static void CreateFolder(DATATYPE? dataType, Locations? locations)
+        public static void CreateFolder(DATATYPE? dataType, LOCATIONS? locations)
         {
             Directory.CreateDirectory($"DATA\\{dataType.ToString()}\\{locations.ToString()}");
         }
         
 
-        public static int GetKeyFromMapLocationAndType(Locations location, MAPTYPE mapType) => (int)location * 10 + (int)mapType + 1;
+        public static int GetKeyFromMapLocationAndType(LOCATIONS location, MAPTYPE mapType) => (int)location * 10 + (int)mapType + 1;
 }

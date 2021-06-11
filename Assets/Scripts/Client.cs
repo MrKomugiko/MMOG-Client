@@ -1,17 +1,15 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Net;
 using System.Net.Sockets;
 using System;
-using UnityEngine.UI;
 
 public class Client : MonoBehaviour
 {
     public static Client instance;
     public static int dataBufferSize = 4096;
 
-    public string ip = "51.144.170.232";
+    public string ip = "192.168.144.39";
     public int port = 5555;
     public int myId = 0 ;
     public TCP tcp;
@@ -79,7 +77,7 @@ public class Client : MonoBehaviour
 
             receiveBuffer = new byte[dataBufferSize];
             socket.BeginConnect(instance.ip, instance.port, ConnectCallback, socket);
- 
+
         }
 
         private void ConnectCallback(IAsyncResult _result)
@@ -334,6 +332,6 @@ public class Client : MonoBehaviour
                 Debug.Log("Disconnectef from server.");
             }
             ThreadManager.ExecuteOnMainThread(()=>UIManager.instance.BackToStartScreen());
-            UIManager.instance.BackToStartScreen();
+          //  UIManager.instance.BackToStartScreen();
         }
 }

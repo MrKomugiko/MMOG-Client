@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class NPCWindowScript : MonoBehaviour
+public class WindowScript : MonoBehaviour
 {
     public void OnClick_Close()
     {
@@ -13,6 +11,4 @@ public class NPCWindowScript : MonoBehaviour
         // chowanie podswietlenia npc i napisu
            
     }
-
-
 }

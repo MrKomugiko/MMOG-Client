@@ -1,14 +1,7 @@
-﻿using System.Net.Http;
-using System.Net.NetworkInformation;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using Unity;
-using System.Net.Sockets;
-using System.Linq;
-using TMPro;
 
 public partial class GameManager : MonoBehaviour
 {
@@ -32,27 +25,27 @@ public partial class GameManager : MonoBehaviour
     public static Dictionary<Vector3Int, string> MAPDATA2ndFloor_Ground { get; internal set; }
     public static Dictionary<Vector3Int, string> MAPDATA2ndFloor { get; internal set; }
 
-    public int CurrentUpdateVersion 
+   [Obsolete] public int CurrentUpdateVersion 
     { 
         get => currentUpdateVersion; 
         set 
         { 
-            if(currentUpdateVersion < value)
-            {
+           // if(currentUpdateVersion < value)
+          //  {
                 // mapa jest starsza niz aktualnie na serwerze
-                print($"Current update version is outdated: [{currentUpdateVersion}]. New update on server is {value} ready to download");
-                ClientSend.DownloadLatestMapData();
+              //  print($"Current update version is outdated: [{currentUpdateVersion}]. New update on server is {value} ready to download");
+              //  ClientSend.DownloadLatestMapData();
                 currentUpdateVersion = value; 
-                UIManager.instance.UpdateBuildIndicatorOnScreen(currentUpdateVersion, _isDownloadAvaiable: true);
-            }
-            else
-            {
+              //  UIManager.instance.UpdateBuildIndicatorOnScreen(currentUpdateVersion, _isDownloadAvaiable: true);
+          //  }
+          //  else
+          //  {
                 // mapa jest aktualna 
-                print("Map is up to date");
+             //   print("Map is up to date");
                 currentUpdateVersion = value;
 
-                UIManager.instance.UpdateBuildIndicatorOnScreen(currentUpdateVersion,_isDownloadAvaiable: false);
-            }
+              //  UIManager.instance.UpdateBuildIndicatorOnScreen(currentUpdateVersion,_isDownloadAvaiable: false);
+           // }
         }
     }
 
@@ -87,7 +80,7 @@ public partial class GameManager : MonoBehaviour
             Destroy(this);
         }
     }
-    public void SpawnPlayer(int _id, string _username, Vector3 _position, Quaternion _rotation, Vector3Int tileCoordPosition, Locations _currentLocation)
+    public void SpawnPlayer(int _id, string _username, Vector3 _position, Quaternion _rotation, Vector3Int tileCoordPosition, LOCATIONS _currentLocation)
     {
        if(players.ContainsKey(_id)) return;
 
@@ -135,19 +128,16 @@ public partial class GameManager : MonoBehaviour
         // connect
     }
 
-    public Dictionary<Vector3Int, Locations[]> LocationMaps = 
+    public Dictionary<Vector3Int, LOCATIONS[]> LocationMaps = 
    // zmienic  Locations na zwykłą klase zawierającą szcegolowe info o mapie - np wysokosc ;d 
-        new Dictionary<Vector3Int, Locations[]>{
+        new Dictionary<Vector3Int, LOCATIONS[]>{
         { 
-            new Vector3Int( 7, -2, 14), new Locations[2]{Locations.Start_First_Floor,Locations.Start_Second_Floor}
+            new Vector3Int( 7, -2, 14), new LOCATIONS[2]{LOCATIONS.Start_First_Floor,LOCATIONS.Start_Second_Floor}
         }
     };
  
     public void EnterNewLocation(Vector3Int locationCoord_Grid, PlayerManager player)
     {
-        // 2nd floor staring localtion
-        //[ 7, -3, 14 ] podmiana map
-
         if(player.IsLocal == false) return;
 
         // nie zmieniaj nic jezeli gracz juz tu jest
@@ -159,14 +149,14 @@ public partial class GameManager : MonoBehaviour
         var new_location = enterNewLocation[0] == player.CurrentLocation?enterNewLocation[1]:enterNewLocation[0];
         switch(new_location)
         {
-            case Locations.Start_First_Floor:
+            case LOCATIONS.Start_First_Floor:
                 player.GetComponent<SpriteRenderer>().sortingOrder = 0;
                 //TODO: dodać liste lokalizacji ( gameobiektow) do listy
                 StartLocationSeconFloorContainer.SetActive(false);
             break;
 
 
-            case Locations.Start_Second_Floor:
+            case LOCATIONS.Start_Second_Floor:
                 player.GetComponent<SpriteRenderer>().sortingOrder = 2;
                 StartLocationSeconFloorContainer.SetActive(true);
                 // StartLocationFirstFloorContainer.SetActive(false);

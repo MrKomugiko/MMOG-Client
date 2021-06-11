@@ -94,17 +94,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 164629180767317851}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4fd422f0be522ef499dd4f073127705a, type: 3}
+  m_Script: {fileID: 11500000, guid: a7e7d068aecaf6848a4675b8841a9e73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _transform: {fileID: 164629180767317850}
+  moving: 0
+  waitingForServerAnswer: 0
   CurrentFloor: 2
+  _transform: {fileID: 164629180767317850}
   lastPosition_Grid: {x: 0, y: 0, z: 0}
   PManager: {fileID: 164629180767317855}
   jumpFrames: 16
-  moving: 0
-  navigationButtonsDelay: 0.2
-  waitingForServerAnswer: 0
+  walkFrames: 6
 --- !u!114 &164629180767317855
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122,7 +122,9 @@ MonoBehaviour:
   currentPosition_GRID: {x: 0, y: 0, z: 2}
   isLocal: 0
   nPCDetector: {fileID: 164629181321773868}
+  borderScript: {fileID: 164629181321773869}
   movementScript: {fileID: 164629180767317849}
+  currentLocation: 0
 --- !u!1 &164629181321773871
 GameObject:
   m_ObjectHideFlags: 0
@@ -216,7 +218,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 164629181321773871}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4711d75f400eab46aef117a3a1e6ef5, type: 3}
+  m_Script: {fileID: 11500000, guid: ca062f35cee723e40a69311f43624f8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &164629181321773869
@@ -228,6 +230,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 164629181321773871}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e14326c9419cb145b150ed7f6f93095, type: 3}
+  m_Script: {fileID: 11500000, guid: f4944c22ef189a8429579c57bdd1e3e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

@@ -1,37 +1,38 @@
-﻿using System.IO;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class MovementScript : MonoBehaviour
 {
+    public bool moving;
+    public bool waitingForServerAnswer = false;
+    public int CurrentFloor = 2;
     [SerializeField] Transform _transform;
-    [SerializeField] int CurrentFloor = 2;
-    [SerializeField] public Vector3Int lastPosition_Grid = Vector3Int.zero;
+    [SerializeField] Vector3Int lastPosition_Grid = Vector3Int.zero;
     [SerializeField] PlayerManager PManager;
-    private float jumpFrames = 16;
-    private float walkFrames = 6;
+    [SerializeField] float jumpFrames = 16;
+    [SerializeField] float walkFrames = 6;
 
-    void Start()
+
+    public void InstallConponent(PlayerManager playermanager)
+    {
+        PManager = playermanager;
+        Configure();
+    }
+    void Configure()
     {
         lastPosition_Grid = PManager.CurrentPosition_GRID;
+        _transform = GetComponent<Transform>();
         _transform.position = GameManager.instance._tileMap_GROUND.CellToWorld(PManager.CurrentPosition_GRID);
         _transform.position += new Vector3(0, 0, .9f);
         if (PManager.IsLocal) AssignFunctionToLocalPlayerButtons();
     }
-
-    public bool moving;
-    [SerializeField] float navigationButtonsDelay = .2f;
-    float timer = 0.0f;
-    [SerializeField] public bool waitingForServerAnswer = false;
+    
     private void Update()
     {
         // wyłączenie update'a na innych klientach
         if(PManager.IsLocal == false) return;
         if (waitingForServerAnswer) return;
-
 
         if (Input.GetKeyDown(KeyCode.W))
             NavigationButtonPressed(KeyCode.W);
@@ -41,7 +42,6 @@ public class MovementScript : MonoBehaviour
             NavigationButtonPressed(KeyCode.A);
         else if (Input.GetKeyDown(KeyCode.D))
             NavigationButtonPressed(KeyCode.D);
-
     }
     private void AssignFunctionToLocalPlayerButtons()
     {
@@ -85,8 +85,6 @@ public class MovementScript : MonoBehaviour
         var direction = lastPosition_Grid - newPosition_Grid;
         int jumpDirection = CheckIfPlayerMakeJump(lastPosition_Grid.z, newPosition_Grid.z);
 
-
-
         if (direction.x == 0 && direction.y == -1) // DOWN
         {
             newX = -0.5f;
@@ -112,20 +110,14 @@ public class MovementScript : MonoBehaviour
         if (jumpDirection != 0) StartCoroutine(JumpAnimation(newPosition_Grid, jumpDirection, (Vector3Int?)lastPosition_Grid));
         lastPosition_Grid = newPosition_Grid;
     }
-
     private int CheckIfPlayerMakeJump(int old_Z, int new_Z)
     {
         int heightDifferenceValue = (new_Z - old_Z);
         // print($"Gracz idzie {(heightDifferenceValue>0?"do góry":"na dół")}.");
         return heightDifferenceValue;
     }
-
     private IEnumerator WalkAnimation(float xShift = 0, float yShift = 0)
     {
-        
-        // skok na wysokosc +1L Vector3 Height_shift_Vector = new Vector3(0,0,1f/jumpFrames);
-        // skok na wysokosc +2L Vector3 Height_shift_Vector = new Vector3(0,0,2f/jumpFrames);
-
         Vector3 UP_shift_Vector = new Vector3(((xShift / 2) / walkFrames), ((yShift / 2) / walkFrames) + (0.25f / walkFrames), 0);
         Vector3 Down_shift_Vector = new Vector3(((xShift / 2) / walkFrames), ((yShift / 2) / walkFrames) - (0.25f / walkFrames), 0);
         Vector3 Height_shift_Vector = new Vector3(0, 0, 2f / walkFrames);

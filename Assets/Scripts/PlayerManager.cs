@@ -1,10 +1,4 @@
-﻿using System.Runtime.InteropServices.ComTypes;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using UnityEngine.Tilemaps;
+﻿using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -13,8 +7,9 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private Vector3Int currentPosition_GRID;
     [SerializeField] private bool isLocal;
     [SerializeField] NPCDetector nPCDetector;
+    [SerializeField] BorderScript borderScript;
     [SerializeField] public MovementScript movementScript;
-    [SerializeField] private Locations currentLocation;
+    [SerializeField] private LOCATIONS currentLocation;
 
 
     public int Id
@@ -37,6 +32,7 @@ public class PlayerManager : MonoBehaviour
             if (IsLocal)
             {
                 nPCDetector.CheckForNPC(value);
+                borderScript.ChangeBorderSortingOrder(movementScript.CurrentFloor);
             }
         }
     }
@@ -54,11 +50,12 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public Locations CurrentLocation { get => currentLocation; set => currentLocation = value; }
+    public LOCATIONS CurrentLocation { get => currentLocation; set => currentLocation = value; }
 
     private void Start()
     {
         ClearDuplicatedLocalPlayersOnStart();
+        movementScript.InstallConponent(this);
     }
     private void ClearDuplicatedLocalPlayersOnStart()
     {
@@ -78,5 +75,5 @@ public class PlayerManager : MonoBehaviour
         
         if(isLocal) movementScript.moving = true;
     }
-    
+
 }

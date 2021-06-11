@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -76,7 +74,7 @@ public class ClientSend : MonoBehaviour
             //     SendUDPData(_packet);
             // }
         }
-        public static void SendMapDataToServer(MAPTYPE mapType, Locations mapLocation) {
+        public static void SendMapDataToServer(MAPTYPE mapType, LOCATIONS mapLocation) {
 
             GameObject locationContainer = GameManager.instance.ListaDostepnychLokalizacji.Where(n=>n.name == mapLocation.ToString()).FirstOrDefault();
            // print("1."+locationContainer.ToString());
@@ -116,23 +114,37 @@ public class ClientSend : MonoBehaviour
                 SendTCPData(_packet);
             }
         }
-        public static void DownloadLatestMapData()
+    public static void DownloadLatestMapData()
     {
-        print("Wysłanie proźby o przysłanie nowego pakietu mapy dla aktualnego update`a");
+      //  print("Wysłanie proźby o przysłanie nowego pakietu mapy dla aktualnego update`a");
           using (Packet _packet = new Packet((int)ClientPackets.downloadLatestMapUpdate)) {
+            _packet.Write(false); // false -> informacja że gracz chce wszystkie mapy 
             _packet.Write(Client.instance.myId); // kto żdąda nowej mapki
             SendTCPData(_packet);
         }   
     }
-       public static void DownloadLatestUpdateVersionNumber()
+       public static void DownloadLatestMapData(LOCATIONS _location, MAPTYPE _maptype)
     {
-        print("Wysłanie proźby oaktualny numer update'a");
-          using (Packet _packet = new Packet((int)ClientPackets.download_recentMapVersion)) {
+     //   print($"Wysłanie proźby o przysłanie nowego update dla [{_location.ToString()}][{_maptype.ToString()}]");
+          using (Packet _packet = new Packet((int)ClientPackets.downloadLatestMapUpdate)) {
+            _packet.Write(true); // true-> informacja ze gracz ma sprecyzowane żądania
+            _packet.Write(Client.instance.myId); // kto żdąda nowej mapki
+            _packet.Write((int)_location);
+            _packet.Write((int)_maptype);
             SendTCPData(_packet);
         }   
     }
 
-    public static void SendServerPlayerNewLocalisation(Locations enterNewLocation)
+       public static void DownloadLatestUpdateVersionNumber()
+        {
+            print("Wysłanie proźby oaktualny numer update'a");
+              using (Packet _packet = new Packet((int)ClientPackets.download_recentMapVersion)) {
+                SendTCPData(_packet);
+            }   
+        }
+ 
+
+    public static void SendServerPlayerNewLocalisation(LOCATIONS enterNewLocation)
     {
        print("Wysylanie na serwer info o zmianie lokalizacji gracza");
         using (Packet _packet = new Packet((int)ClientPackets.clientChangeLocalisation)) {
@@ -140,5 +152,6 @@ public class ClientSend : MonoBehaviour
             SendTCPData(_packet);
         }
     }
+
     #endregion
 }
