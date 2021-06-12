@@ -1,0 +1,80 @@
+Date : 2021-06-11 22:30:42
+Directory : d:\Programowanie\Unity\MMOG-Client
+Total : 41 files,  5649 codes, 316 comments, 970 blanks, all 6935 lines
+
+Languages
++-----------+------------+------------+------------+------------+------------+
+| language  | files      | code       | comment    | blank      | total      |
++-----------+------------+------------+------------+------------+------------+
+| ShaderLab |         13 |      2,011 |         61 |        559 |      2,631 |
+| C#        |         17 |      1,895 |        227 |        315 |      2,437 |
+| XML       |          2 |        705 |          7 |          0 |        712 |
+| JSON      |          4 |        668 |          0 |          5 |        673 |
+| HLSL      |          4 |        323 |         21 |         87 |        431 |
+| Log       |          1 |         47 |          0 |          4 |         51 |
++-----------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                            | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                               |         41 |      5,649 |        316 |        970 |      6,935 |
+| Assets                                                                                          |         35 |      4,384 |        309 |        963 |      5,656 |
+| Assets\Scripts                                                                                  |         17 |      1,895 |        227 |        315 |      2,437 |
+| Assets\Scripts\CLIENT-SERVER-SHARED-SCRIPTS                                                     |          5 |        622 |        110 |         81 |        813 |
+| Assets\Scripts\Components                                                                       |          4 |        264 |         17 |         40 |        321 |
+| Assets\TextMesh Pro                                                                             |         18 |      2,489 |         82 |        648 |      3,219 |
+| Assets\TextMesh Pro\Shaders                                                                     |         17 |      2,334 |         82 |        646 |      3,062 |
+| Assets\TextMesh Pro\Sprites                                                                     |          1 |        155 |          0 |          2 |        157 |
+| DATA                                                                                            |          1 |         54 |          0 |          1 |         55 |
+| Logs                                                                                            |          1 |         47 |          0 |          4 |         51 |
+| Packages                                                                                        |          2 |        459 |          0 |          2 |        461 |
++-------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------------------------------------+-----------+------------+------------+------------+------------+
+| filename                                                                                        | language  | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------+-----------+------------+------------+------------+------------+
+| d:\Programowanie\Unity\MMOG-Client\Assembly-CSharp.csproj                                       | XML       |        701 |          7 |          0 |        708 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\BotScript.cs                                  | C#        |         37 |          2 |         10 |         49 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\CLIENT-SERVER-SHARED-SCRIPTS\Constants.cs     | C#        |         34 |          4 |          2 |         40 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\CLIENT-SERVER-SHARED-SCRIPTS\Packet.cs        | C#        |        294 |         76 |         29 |        399 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\CLIENT-SERVER-SHARED-SCRIPTS\ThreadManager.cs | C#        |         43 |          3 |          7 |         53 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\CLIENT-SERVER-SHARED-SCRIPTS\UPDATE_NOTES.cs  | C#        |         83 |          0 |         15 |         98 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\CLIENT-SERVER-SHARED-SCRIPTS\UpdateChecker.cs | C#        |        168 |         27 |         28 |        223 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\ChatController.cs                             | C#        |         31 |          2 |          8 |         41 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\Client.cs                                     | C#        |        283 |          8 |         47 |        338 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\ClientHandle.cs                               | C#        |        276 |         32 |         60 |        368 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\ClientSend.cs                                 | C#        |        117 |         22 |         19 |        158 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\Components\BorderScript.cs                    | C#        |         35 |          0 |          5 |         40 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\Components\MovementScript.cs                  | C#        |        169 |          5 |         25 |        199 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\Components\NPCDetector.cs                     | C#        |         50 |         11 |          6 |         67 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\Components\WindowScript.cs                    | C#        |         10 |          1 |          4 |         15 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\GameManager.cs                                | C#        |        114 |         27 |         31 |        172 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\PlayerManager.cs                              | C#        |         68 |          2 |         10 |         80 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\UIManager.cs                                  | C#        |         83 |          5 |          9 |         97 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_Bitmap-Custom-Atlas.shader   | ShaderLab |        109 |          2 |         33 |        144 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader         | ShaderLab |        112 |          3 |         31 |        146 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader                | ShaderLab |        109 |          2 |         33 |        144 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader           | ShaderLab |        243 |          4 |         71 |        318 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader               | ShaderLab |        241 |          4 |         66 |        311 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader    | ShaderLab |        188 |         10 |         50 |        248 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader    | ShaderLab |        183 |          8 |         50 |        241 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile SSD.shader        | ShaderLab |         82 |          4 |         21 |        107 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader            | ShaderLab |        183 |          8 |         50 |        241 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader    | ShaderLab |        103 |          8 |         28 |        139 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_SDF-Surface.shader           | ShaderLab |        122 |          4 |         33 |        159 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_SDF.shader                   | ShaderLab |        243 |          4 |         71 |        318 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_Sprite.shader                | ShaderLab |         93 |          0 |         22 |        115 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMPro.cginc                      | HLSL      |         63 |          2 |         20 |         85 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc               | HLSL      |        122 |          2 |         34 |        158 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMPro_Properties.cginc           | HLSL      |         62 |         10 |         14 |         86 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMPro_Surface.cginc              | HLSL      |         76 |          7 |         19 |        102 |
+| d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Sprites\EmojiOne.json                    | JSON      |        155 |          0 |          2 |        157 |
+| d:\Programowanie\Unity\MMOG-Client\DATA\Client_UpdateNotes.json                                 | JSON      |         54 |          0 |          1 |         55 |
+| d:\Programowanie\Unity\MMOG-Client\Logs\Packages-Update.log                                     | Log       |         47 |          0 |          4 |         51 |
+| d:\Programowanie\Unity\MMOG-Client\Packages\manifest.json                                       | JSON      |         49 |          0 |          1 |         50 |
+| d:\Programowanie\Unity\MMOG-Client\Packages\packages-lock.json                                  | JSON      |        410 |          0 |          1 |        411 |
+| d:\Programowanie\Unity\MMOG-Client\packages.config                                              | XML       |          4 |          0 |          0 |          4 |
+| Total                                                                                           |           |      5,649 |        316 |        970 |      6,935 |
++-------------------------------------------------------------------------------------------------+-----------+------------+------------+------------+------------+

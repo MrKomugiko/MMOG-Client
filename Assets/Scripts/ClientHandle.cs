@@ -48,30 +48,31 @@ print("spawn player");
         UIManager.instance.PrintCurrentOnlineUsers();
         
     }
-    public static void PlayerPosition(Packet _packet) {
+    public static void PlayerPosition(Packet _packet)
+    {
         int _id = _packet.ReadInt();
         Vector3 _position = _packet.ReadVector3();
 
-       // print("otrzymana nowa pozycja:"+_position);
+        // print("otrzymana nowa pozycja:"+_position);
 
-       if(_id == Client.instance.myId)
-       {
-           if(GameManager.instance.LocationMaps.ContainsKey(Vector3Int.CeilToInt(_position)))
-           {
-                GameManager.instance.EnterNewLocation(Vector3Int.CeilToInt(_position),GameManager.players[_id]);
-           }
-       } try{
-        GameManager.players[_id].MoveToPositionInGrid(new Vector3Int((int)_position.x,(int)_position.y,(int)_position.z));
+        if (_id == Client.instance.myId) {
+            if (GameManager.instance.LocationMaps.ContainsKey(Vector3Int.CeilToInt(_position)))
+            {
+                GameManager.instance.EnterNewLocation(Vector3Int.CeilToInt(_position), GameManager.players[_id]);
+            }
         }
-    catch(Exception _Ex){
-                print("GameManager.players[_id].MoveToPositionInGrid(new Vector3Int((int)_position.x,(int)_position.y,(int)_position.z))r -> "+_Ex.Message);
-            }
-       try{
-        GameManager.players[_id].movementScript.waitingForServerAnswer = false;
-    }
-    catch(Exception _Ex){
-                print("GameManager.players[_id].movementScript.waitingForServerAnswer -> "+_Ex.Message);
-            }
+
+        try {
+            GameManager.players[_id].MoveToPositionInGrid(new Vector3Int((int)_position.x, (int)_position.y, (int)_position.z));
+        } catch (Exception _Ex) {
+            print("GameManager.players[_id].MoveToPositionInGrid(new Vector3Int((int)_position.x,(int)_position.y,(int)_position.z))r -> " + _Ex.Message);
+        }
+
+        try {
+            GameManager.players[_id].movementScript.waitingForServerAnswer = false;
+        } catch (Exception _Ex) {
+            print("GameManager.players[_id].movementScript.waitingForServerAnswer -> " + _Ex.Message);
+        }
     }
     public static void UpdateChat(Packet _packet) {
         string _msg = _packet.ReadString();
@@ -138,13 +139,28 @@ print("spawn player");
         if(UpdateChecker.CLIENT_UPDATE_VERSIONS == null) 
         {
             print("no pathnote file, assign exact file from server, but remove updateverions number");
-            UpdateChecker.CLIENT_UPDATE_VERSIONS = UpdateChecker.GetPathNoteWithClearMAPDATASVersionNumbers(UpdateChecker.SERVER_UPDATE_VERSIONS);
+            UpdateChecker.CLIENT_UPDATE_VERSIONS = UpdateChecker.GetUpdateNotesFromServerWithWipedOffVersionNumbers(UpdateChecker.SERVER_UPDATE_VERSIONS);
             UpdateChecker.SaveChangesToFile();
         }
         try
         {
-            UpdateChecker.CLIENT_UPDATE_VERSIONS._Data[location][mapType]._Version = newMapVersion;
-            UpdateChecker.SaveChangesToFile(); 
+              try
+              {
+                UpdateChecker.CLIENT_UPDATE_VERSIONS._Data[location][mapType]._Version = newMapVersion;
+                UpdateChecker.SaveChangesToFile(); 
+                }
+                catch(Exception ex)
+                {
+                    UpdateChecker.CLIENT_UPDATE_VERSIONS._Data[location][mapType] = UpdateChecker.GetUpdateNotesFromServerWithWipedOffVersionNumbers(UpdateChecker.SERVER_UPDATE_VERSIONS)._Data[location][mapType];
+                    print("dodano wyzerowaną kopie z wersji serwerowej");
+                    UpdateChecker.CLIENT_UPDATE_VERSIONS._Data[location][mapType]._Version = newMapVersion;
+                    print("aktualizacja versji mapy");
+                    UpdateChecker.SaveChangesToFile(); 
+                    // print("Tutaj bedzie trzeba dodać wyzerowaną kopie z pliku serwerowego, \nnastępnie przepuścić checka jeszcze raz do czasu gdy nie bedzie wyzerwanych elementow");
+                    // print("UpdateChecker.CLIENT_UPDATE_VERSIONS._Data[location][mapType]._Version = newMapVersion;"+ex.Message);
+                }
+
+
         }
         catch (System.Exception)
         {
@@ -192,9 +208,9 @@ print("spawn player");
         }
         return (mapdata,tilemap);
     }
-    private static void LoadMapDataFromFile(LOCATIONS _location, MAPTYPE _mapType)
+    public static void LoadMapDataFromFile(LOCATIONS _location, MAPTYPE _mapType)
     {
-
+        print("ładowanie mapy");
         var references = GetReferencesByMaptype(_location, _mapType);
         Tilemap REFERENCE_TILEMAP = references.tilemap;
         Dictionary<Vector3Int,string> REFERENCE_MAPDATA = references.mapdata;
@@ -279,15 +295,16 @@ print("spawn player");
     }
     private static Dictionary<Vector3Int, string> ReadMapDataFromFile(LOCATIONS _location, MAPTYPE _mapType)
     {
+        var TEMP_MAPDATA_FROM_FILE = new Dictionary<Vector3Int, string>();
+
         string path = GetFilePath(DATATYPE.Locations, _location, _mapType);
         if (!File.Exists(path)) {
             Console.WriteLine("Brak pliku z danymi mapy"); 
-            throw new Exception();
         };
 
-        var TEMP_MAPDATA_FROM_FILE = new Dictionary<Vector3Int, string>();
         string line;
         StreamReader file = new StreamReader(path);
+        
         while ((line = file.ReadLine()) != null)
         {
             string text = line.Replace("(", "").Replace(")", "");
@@ -305,7 +322,8 @@ print("spawn player");
 
             TEMP_MAPDATA_FROM_FILE.Add(new Vector3Int(iX, iY, iZ), value);
         }
-        file.Close();
+            file.Close();
+            
 
         return TEMP_MAPDATA_FROM_FILE;
     }

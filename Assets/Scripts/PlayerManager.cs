@@ -10,6 +10,7 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] BorderScript borderScript;
     [SerializeField] public MovementScript movementScript;
     [SerializeField] private LOCATIONS currentLocation;
+    [SerializeField] public SpriteRenderer SRenderer;
 
 
     public int Id
@@ -28,7 +29,7 @@ public class PlayerManager : MonoBehaviour
         set
         {
             currentPosition_GRID = value;
-
+            
             if (IsLocal)
             {
                 nPCDetector.CheckForNPC(value);
@@ -50,8 +51,25 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public LOCATIONS CurrentLocation { get => currentLocation; set => currentLocation = value; }
+    public LOCATIONS CurrentLocation { 
+        get => currentLocation;
+        set {
+            print("przeniesienie gracza:" + Username + " do "+value.ToString());
+            switch(value) {
+                case LOCATIONS.Start_First_Floor:
+                    gameObject.transform.parent = GameManager.instance.StartLocationFirstFloorContainer.transform;
+                    break;
+                case LOCATIONS.Start_Second_Floor:
+                    gameObject.transform.parent = GameManager.instance.StartLocationSeconFloorContainer.transform;
+                    break;
+            }
+            currentLocation = value;
+        }
+    }
 
+    private void Awake() {
+        SRenderer = GetComponent<SpriteRenderer>();
+    }
     private void Start()
     {
         ClearDuplicatedLocalPlayersOnStart();

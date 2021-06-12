@@ -125,7 +125,7 @@ public class ClientSend : MonoBehaviour
     }
        public static void DownloadLatestMapData(LOCATIONS _location, MAPTYPE _maptype)
     {
-     //   print($"Wysłanie proźby o przysłanie nowego update dla [{_location.ToString()}][{_maptype.ToString()}]");
+        print($"Wysłanie proźby o przysłanie nowego update dla [{_location.ToString()}][{_maptype.ToString()}]");
           using (Packet _packet = new Packet((int)ClientPackets.downloadLatestMapUpdate)) {
             _packet.Write(true); // true-> informacja ze gracz ma sprecyzowane żądania
             _packet.Write(Client.instance.myId); // kto żdąda nowej mapki

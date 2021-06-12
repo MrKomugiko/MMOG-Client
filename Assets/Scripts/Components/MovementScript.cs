@@ -6,14 +6,34 @@ public class MovementScript : MonoBehaviour
 {
     public bool moving;
     public bool waitingForServerAnswer = false;
-    public int CurrentFloor = 2;
+    [SerializeField] private int currentFloor = 2;
     [SerializeField] Transform _transform;
     [SerializeField] Vector3Int lastPosition_Grid = Vector3Int.zero;
     [SerializeField] PlayerManager PManager;
     [SerializeField] float jumpFrames = 16;
     [SerializeField] float walkFrames = 6;
 
-
+    public int CurrentFloor 
+    { 
+        get => currentFloor; 
+        set {
+            // zmiana wartwy sortowania w zaleznosci od wysokosci gracza
+            // 7jednostek = +2 sorting order
+            if(value>=0 && value<14)
+            {
+                PManager.SRenderer.sortingOrder = 0;
+            }
+             if(value>=14 && value<28)
+            {
+                PManager.SRenderer.sortingOrder = 2;
+            }
+              if(value>=28 && value<42)
+            {
+                PManager.SRenderer.sortingOrder = 4;
+            }
+            currentFloor = value;
+        }
+    }
     public void InstallConponent(PlayerManager playermanager)
     {
         PManager = playermanager;
@@ -78,6 +98,7 @@ public class MovementScript : MonoBehaviour
     }
     public void ExecuteMovingAnimation(Vector3Int newPosition_Grid)
     {
+        if(this.gameObject.activeSelf == false) return;
         if (moving) return;
 
         float newX = 0;

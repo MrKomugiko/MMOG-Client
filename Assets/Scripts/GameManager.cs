@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -16,7 +17,6 @@ public partial class GameManager : MonoBehaviour
     [SerializeField]  public GameObject StartLocationFirstFloorContainer;
     public Tilemap _tileMap;
     public Tilemap _tileMap_GROUND;
-    
     public static Dictionary<Vector3Int,string> MAPDATA {get; set;}
     public static Dictionary<Vector3Int,string> MAPDATA_Ground  {get; set;}
 
@@ -113,20 +113,20 @@ public partial class GameManager : MonoBehaviour
         Application.Quit(); 
         print("quit");
     }
-    public void CheckForUpdates()
-    {
-        //TODO: dodac numer update`a do sprawdzanmia
+    // public void CheckForUpdates()
+    // {
+    //     //TODO: dodac numer update`a do sprawdzanmia
 
-        // zablokowanie gry na czas sciagania mapy
+    //     // zablokowanie gry na czas sciagania mapy
 
-        // wyslanie proźby o nową wersje mapy
+    //     // wyslanie proźby o nową wersje mapy
 
-        // zakttualizowanie mapy
+    //     // zakttualizowanie mapy
 
-        // odblokowanie gry
+    //     // odblokowanie gry
 
-        // connect
-    }
+    //     // connect
+    // }
 
     public Dictionary<Vector3Int, LOCATIONS[]> LocationMaps = 
    // zmienic  Locations na zwykłą klase zawierającą szcegolowe info o mapie - np wysokosc ;d 
@@ -138,32 +138,37 @@ public partial class GameManager : MonoBehaviour
  
     public void EnterNewLocation(Vector3Int locationCoord_Grid, PlayerManager player)
     {
-        if(player.IsLocal == false) return;
-
-        // nie zmieniaj nic jezeli gracz juz tu jest
 
         var enterNewLocation = LocationMaps[locationCoord_Grid];
+        var new_location = enterNewLocation[0] == player.CurrentLocation?enterNewLocation[1]:enterNewLocation[0];
+
+        if(player.IsLocal == false) {
+            player.CurrentLocation = new_location;
+            Debug.Log(player.Username+"  entered " + new_location.ToString());
+            return;
+            
+        }
+
 
         // if(enterNewLocation.Contains(player.CurrentLocation)) return;
         // TODO: jakos to zautomatyzować
-        var new_location = enterNewLocation[0] == player.CurrentLocation?enterNewLocation[1]:enterNewLocation[0];
         switch(new_location)
         {
             case LOCATIONS.Start_First_Floor:
-                player.GetComponent<SpriteRenderer>().sortingOrder = 0;
+           //     player.GetComponent<SpriteRenderer>().sortingOrder = 0;
                 //TODO: dodać liste lokalizacji ( gameobiektow) do listy
                 StartLocationSeconFloorContainer.SetActive(false);
             break;
 
 
             case LOCATIONS.Start_Second_Floor:
-                player.GetComponent<SpriteRenderer>().sortingOrder = 2;
+          //      player.GetComponent<SpriteRenderer>().sortingOrder = 2;
                 StartLocationSeconFloorContainer.SetActive(true);
                 // StartLocationFirstFloorContainer.SetActive(false);
             break;
         }
 
-        Debug.Log("You entered "+enterNewLocation.ToString());
+        Debug.Log("You entered "+new_location.ToString());
         player.CurrentLocation = new_location;
         ClientSend.SendServerPlayerNewLocalisation(new_location);
         }

@@ -1,0 +1,43 @@
+"filename", "language", "JSON", "XML", "ShaderLab", "HLSL", "C#", "Log", "comment", "blank", "total"
+"d:\Programowanie\Unity\MMOG-Client\Assembly-CSharp.csproj", "XML", 0, 701, 0, 0, 0, 0, 7, 0, 708
+"d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\BotScript.cs", "C#", 0, 0, 0, 0, 37, 0, 2, 10, 49
+"d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\CLIENT-SERVER-SHARED-SCRIPTS\Constants.cs", "C#", 0, 0, 0, 0, 34, 0, 4, 2, 40
+"d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\CLIENT-SERVER-SHARED-SCRIPTS\Packet.cs", "C#", 0, 0, 0, 0, 294, 0, 76, 29, 399
+"d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\CLIENT-SERVER-SHARED-SCRIPTS\ThreadManager.cs", "C#", 0, 0, 0, 0, 43, 0, 3, 7, 53
+"d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\CLIENT-SERVER-SHARED-SCRIPTS\UPDATE_NOTES.cs", "C#", 0, 0, 0, 0, 83, 0, 0, 15, 98
+"d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\CLIENT-SERVER-SHARED-SCRIPTS\UpdateChecker.cs", "C#", 0, 0, 0, 0, 168, 0, 27, 28, 223
+"d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\ChatController.cs", "C#", 0, 0, 0, 0, 31, 0, 2, 8, 41
+"d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\Client.cs", "C#", 0, 0, 0, 0, 283, 0, 8, 47, 338
+"d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\ClientHandle.cs", "C#", 0, 0, 0, 0, 276, 0, 32, 60, 368
+"d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\ClientSend.cs", "C#", 0, 0, 0, 0, 117, 0, 22, 19, 158
+"d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\Components\BorderScript.cs", "C#", 0, 0, 0, 0, 35, 0, 0, 5, 40
+"d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\Components\MovementScript.cs", "C#", 0, 0, 0, 0, 169, 0, 5, 25, 199
+"d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\Components\NPCDetector.cs", "C#", 0, 0, 0, 0, 50, 0, 11, 6, 67
+"d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\Components\WindowScript.cs", "C#", 0, 0, 0, 0, 10, 0, 1, 4, 15
+"d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\GameManager.cs", "C#", 0, 0, 0, 0, 114, 0, 27, 31, 172
+"d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\PlayerManager.cs", "C#", 0, 0, 0, 0, 68, 0, 2, 10, 80
+"d:\Programowanie\Unity\MMOG-Client\Assets\Scripts\UIManager.cs", "C#", 0, 0, 0, 0, 83, 0, 5, 9, 97
+"d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_Bitmap-Custom-Atlas.shader", "ShaderLab", 0, 0, 109, 0, 0, 0, 2, 33, 144
+"d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader", "ShaderLab", 0, 0, 112, 0, 0, 0, 3, 31, 146
+"d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader", "ShaderLab", 0, 0, 109, 0, 0, 0, 2, 33, 144
+"d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader", "ShaderLab", 0, 0, 243, 0, 0, 0, 4, 71, 318
+"d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader", "ShaderLab", 0, 0, 241, 0, 0, 0, 4, 66, 311
+"d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader", "ShaderLab", 0, 0, 188, 0, 0, 0, 10, 50, 248
+"d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader", "ShaderLab", 0, 0, 183, 0, 0, 0, 8, 50, 241
+"d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile SSD.shader", "ShaderLab", 0, 0, 82, 0, 0, 0, 4, 21, 107
+"d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader", "ShaderLab", 0, 0, 183, 0, 0, 0, 8, 50, 241
+"d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader", "ShaderLab", 0, 0, 103, 0, 0, 0, 8, 28, 139
+"d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_SDF-Surface.shader", "ShaderLab", 0, 0, 122, 0, 0, 0, 4, 33, 159
+"d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_SDF.shader", "ShaderLab", 0, 0, 243, 0, 0, 0, 4, 71, 318
+"d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMP_Sprite.shader", "ShaderLab", 0, 0, 93, 0, 0, 0, 0, 22, 115
+"d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMPro.cginc", "HLSL", 0, 0, 0, 63, 0, 0, 2, 20, 85
+"d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc", "HLSL", 0, 0, 0, 122, 0, 0, 2, 34, 158
+"d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMPro_Properties.cginc", "HLSL", 0, 0, 0, 62, 0, 0, 10, 14, 86
+"d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Shaders\TMPro_Surface.cginc", "HLSL", 0, 0, 0, 76, 0, 0, 7, 19, 102
+"d:\Programowanie\Unity\MMOG-Client\Assets\TextMesh Pro\Sprites\EmojiOne.json", "JSON", 155, 0, 0, 0, 0, 0, 0, 2, 157
+"d:\Programowanie\Unity\MMOG-Client\DATA\Client_UpdateNotes.json", "JSON", 54, 0, 0, 0, 0, 0, 0, 1, 55
+"d:\Programowanie\Unity\MMOG-Client\Logs\Packages-Update.log", "Log", 0, 0, 0, 0, 0, 47, 0, 4, 51
+"d:\Programowanie\Unity\MMOG-Client\Packages\manifest.json", "JSON", 49, 0, 0, 0, 0, 0, 0, 1, 50
+"d:\Programowanie\Unity\MMOG-Client\Packages\packages-lock.json", "JSON", 410, 0, 0, 0, 0, 0, 0, 1, 411
+"d:\Programowanie\Unity\MMOG-Client\packages.config", "XML", 0, 4, 0, 0, 0, 0, 0, 0, 4
+"Total", "-", 668, 705, 2011, 323, 1895, 47, 316, 970, 6935
