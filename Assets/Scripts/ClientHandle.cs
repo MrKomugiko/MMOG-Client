@@ -34,7 +34,7 @@ public class ClientHandle : MonoBehaviour
     }
     public static void SpawnPlayer(Packet _packet)
     {
-print("spawn player");
+        print("spawn player");
         int _id = _packet.ReadInt();
         string _username = _packet.ReadString();
         Vector3 _position = _packet.ReadVector3();
@@ -53,26 +53,14 @@ print("spawn player");
         int _id = _packet.ReadInt();
         Vector3 _position = _packet.ReadVector3();
 
-        // print("otrzymana nowa pozycja:"+_position);
-
         if (_id == Client.instance.myId) {
+            print("otrzymanie nowej pozycji z serwera");
             if (GameManager.instance.LocationMaps.ContainsKey(Vector3Int.CeilToInt(_position)))
             {
                 GameManager.instance.EnterNewLocation(Vector3Int.CeilToInt(_position), GameManager.players[_id]);
             }
         }
-
-        try {
-            GameManager.players[_id].MoveToPositionInGrid(new Vector3Int((int)_position.x, (int)_position.y, (int)_position.z));
-        } catch (Exception _Ex) {
-            print("GameManager.players[_id].MoveToPositionInGrid(new Vector3Int((int)_position.x,(int)_position.y,(int)_position.z))r -> " + _Ex.Message);
-        }
-
-        try {
-            GameManager.players[_id].movementScript.waitingForServerAnswer = false;
-        } catch (Exception _Ex) {
-            print("GameManager.players[_id].movementScript.waitingForServerAnswer -> " + _Ex.Message);
-        }
+       GameManager.players[_id].MoveToPositionInGrid(new Vector3Int((int)_position.x, (int)_position.y, (int)_position.z));
     }
     public static void UpdateChat(Packet _packet) {
         string _msg = _packet.ReadString();
@@ -210,61 +198,64 @@ print("spawn player");
     }
     public static void LoadMapDataFromFile(LOCATIONS _location, MAPTYPE _mapType)
     {
-        print("ładowanie mapy");
-        var references = GetReferencesByMaptype(_location, _mapType);
-        Tilemap REFERENCE_TILEMAP = references.tilemap;
-        Dictionary<Vector3Int,string> REFERENCE_MAPDATA = references.mapdata;
+      // GameManager.instance.ANDROIDLOGGER.text += $"LoadMapDataFromFile {_location}{_mapType}\n";
+            print("ładowanie mapy");
+            var references = GetReferencesByMaptype(_location, _mapType);
+            Tilemap REFERENCE_TILEMAP = references.tilemap;
+            Dictionary<Vector3Int,string> REFERENCE_MAPDATA = references.mapdata;
 
-      //  print($"Ladowanie danych mapy [{_mapType.ToString()}] z pliku do pamięci");
-        int modifiedCounter = 0, wrongDataRecords = 0, deletedCounter = 0, newAddedCounter = 0;
-        Dictionary<Vector3Int, string> TEMP_MAPDATA_FROM_FILE = ReadMapDataFromFile(_location, _mapType);
+          //  print($"Ladowanie danych mapy [{_mapType.ToString()}] z pliku do pamięci");
+            int modifiedCounter = 0, wrongDataRecords = 0, deletedCounter = 0, newAddedCounter = 0;
+            Dictionary<Vector3Int, string> TEMP_MAPDATA_FROM_FILE = ReadMapDataFromFile(_location, _mapType);
 
-        references.tilemap.ClearAllTiles();
-         // ---------- MODYFIKACJA ISTNIEJĄCYCH DANYCH SERVERA
-        // --------- JEZELI NIE MA ZAPISANYCH DANYCH NA SERWERZE Z AUTOMATU WSZYSTKO PRZYPISUJEMY JAK Z PLIKU
-        if (REFERENCE_MAPDATA.Count == 0)
-        {
-            REFERENCE_MAPDATA = TEMP_MAPDATA_FROM_FILE;
-        }
-        if (REFERENCE_MAPDATA.Count > 0)
-        {
-            if (TEMP_MAPDATA_FROM_FILE.Count == 0) print("Plik jest pusty -> Brak zapisanych danych mapy");
-
-            // porownanie i dodanie/zamiana danych z istniejącym zapisem w pamiec
-            foreach (var kvp in TEMP_MAPDATA_FROM_FILE)
+            references.tilemap.ClearAllTiles();
+             // ---------- MODYFIKACJA ISTNIEJĄCYCH DANYCH SERVERA
+            // --------- JEZELI NIE MA ZAPISANYCH DANYCH NA SERWERZE Z AUTOMATU WSZYSTKO PRZYPISUJEMY JAK Z PLIKU
+            if (REFERENCE_MAPDATA.Count == 0)
             {
-                if (REFERENCE_MAPDATA.ContainsKey(kvp.Key))
+                REFERENCE_MAPDATA = TEMP_MAPDATA_FROM_FILE;
+            }
+            if (REFERENCE_MAPDATA.Count > 0)
+            {
+                if (TEMP_MAPDATA_FROM_FILE.Count == 0) print("Plik jest pusty -> Brak zapisanych danych mapy");
+
+                // porownanie i dodanie/zamiana danych z istniejącym zapisem w pamiec
+                foreach (var kvp in TEMP_MAPDATA_FROM_FILE)
                 {
-                    if (REFERENCE_MAPDATA[kvp.Key] != kvp.Value)
+                    if (REFERENCE_MAPDATA.ContainsKey(kvp.Key))
                     {
-                        REFERENCE_MAPDATA[kvp.Key] = kvp.Value;
-                        modifiedCounter++;
+                        if (REFERENCE_MAPDATA[kvp.Key] != kvp.Value)
+                        {
+                            REFERENCE_MAPDATA[kvp.Key] = kvp.Value;
+                            modifiedCounter++;
+                        }
+                    }
+                    else
+                    {
+                        REFERENCE_MAPDATA.Add(kvp.Key, kvp.Value);
+                        newAddedCounter++;
                     }
                 }
-                else
+               // usuniecie nieaktualnych pól
+               
+                foreach (var pole in REFERENCE_MAPDATA.Where(pole => TEMP_MAPDATA_FROM_FILE.ContainsKey(pole.Key) == false).Select(pole => pole.Key).ToList()) 
                 {
-                    REFERENCE_MAPDATA.Add(kvp.Key, kvp.Value);
-                    newAddedCounter++;
+                    REFERENCE_MAPDATA.Remove(pole);
+                    deletedCounter++;
                 }
             }
-           // usuniecie nieaktualnych pól
-               
-            foreach (var pole in REFERENCE_MAPDATA.Where(pole => TEMP_MAPDATA_FROM_FILE.ContainsKey(pole.Key) == false).Select(pole => pole.Key).ToList()) 
-            {
-                REFERENCE_MAPDATA.Remove(pole);
-                deletedCounter++;
-            }
-        }
 
         // ----------------------------------PODSUMOWANIE ----------------------------------
-        print(
-            $"Odczytano: .................. {TEMP_MAPDATA_FROM_FILE.Count}\n" +
-            $"Dodano: ..................... {newAddedCounter}\n" +
-            $"Zmodyfikowano: .............. {modifiedCounter}\n" +
-            $"Usunięto: ................... {deletedCounter}\n" +
-            $"Uszkodzonych danych: ........ {wrongDataRecords}");
+        GameManager.instance.ANDROIDLOGGER.text += $"\nOdczytano: {TEMP_MAPDATA_FROM_FILE.Count}\n";
+            print(
+                $"Odczytano: .................. {TEMP_MAPDATA_FROM_FILE.Count}\n" +
+                $"Dodano: ..................... {newAddedCounter}\n" +
+                $"Zmodyfikowano: .............. {modifiedCounter}\n" +
+                $"Usunięto: ................... {deletedCounter}\n" +
+                $"Uszkodzonych danych: ........ {wrongDataRecords}");
 
-        PopulateTilemapWithCorrectTiles(_data: REFERENCE_MAPDATA, _tilemap: REFERENCE_TILEMAP);
+            PopulateTilemapWithCorrectTiles(_data: REFERENCE_MAPDATA, _tilemap: REFERENCE_TILEMAP);
+
     }
     private static void SaveMapDataToFile(LOCATIONS location, MAPTYPE mapType, Dictionary<Vector3, string> mapData)
     {
@@ -295,10 +286,12 @@ print("spawn player");
     }
     private static Dictionary<Vector3Int, string> ReadMapDataFromFile(LOCATIONS _location, MAPTYPE _mapType)
     {
+     //   GameManager.instance.ANDROIDLOGGER.text += "ReadMapDataFromFile\n";
         var TEMP_MAPDATA_FROM_FILE = new Dictionary<Vector3Int, string>();
 
         string path = GetFilePath(DATATYPE.Locations, _location, _mapType);
         if (!File.Exists(path)) {
+            //GameManager.instance.ANDROIDLOGGER.text += "Brak pliku z danymi mapy\n";
             Console.WriteLine("Brak pliku z danymi mapy"); 
         };
 
@@ -321,6 +314,7 @@ print("spawn player");
             string value = data[3];
 
             TEMP_MAPDATA_FROM_FILE.Add(new Vector3Int(iX, iY, iZ), value);
+
         }
             file.Close();
             
@@ -329,6 +323,7 @@ print("spawn player");
     }
     private static void PopulateTilemapWithCorrectTiles(Dictionary<Vector3Int, string> _data, Tilemap _tilemap)
     {
+        //GameManager.instance.ANDROIDLOGGER.text += "PopulateTilemapWithCorrectTiles\n";
         Console.WriteLine("zastosowywanie zmian w mapie, podmiana tilesów na aktualne");
         foreach (KeyValuePair<Vector3Int, string> kvp in _data)
         {
@@ -358,12 +353,15 @@ print("spawn player");
 
         public static string GetFilePath(DATATYPE dataType, LOCATIONS locations, MAPTYPE mapType)
         {
+           // return $"{ Application.persistentDataPath}\\DATA\\{dataType.ToString()}\\{locations.ToString()}\\{mapType.ToString()}.txt";
             return $"DATA\\{dataType.ToString()}\\{locations.ToString()}\\{mapType.ToString()}.txt";
-        }
-        public static void CreateFolder(DATATYPE? dataType, LOCATIONS? locations)
+
+    }
+    public static void CreateFolder(DATATYPE? dataType, LOCATIONS? locations)
         {
-            Directory.CreateDirectory($"DATA\\{dataType.ToString()}\\{locations.ToString()}");
-        }
+        //    Directory.CreateDirectory($"{Application.persistentDataPath}\\DATA\\{dataType.ToString()}\\{locations.ToString()}");
+        Directory.CreateDirectory($"DATA\\{dataType.ToString()}\\{locations.ToString()}");
+    }
         
 
         public static int GetKeyFromMapLocationAndType(LOCATIONS location, MAPTYPE mapType) => (int)location * 10 + (int)mapType + 1;

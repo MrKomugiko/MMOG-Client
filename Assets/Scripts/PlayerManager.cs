@@ -86,12 +86,13 @@ public class PlayerManager : MonoBehaviour
     }
     public void MoveToPositionInGrid(Vector3Int newPosition)
     {
+        print("zmiana pozycji na nową");
         //zapisywanie nowejaktualnej pozycji
         CurrentPosition_GRID = newPosition;
         // wykonanie animacji ruchu z wczesniejszej pozycji na aktualną
         movementScript.ExecuteMovingAnimation(newPosition_Grid: newPosition);
         
-        if(isLocal) movementScript.moving = true;
+        
     }
 
 }

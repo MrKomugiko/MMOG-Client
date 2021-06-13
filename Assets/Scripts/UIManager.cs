@@ -36,6 +36,7 @@ public class UIManager : MonoBehaviour
     public void EnterGame()
     {
         print("Aktywowanie sceny gry / Enter Game");
+      //  GameManager.instance.ANDROIDLOGGER.text += "Aktywowanie sceny gry / Enter Game\n";
         startMenu.SetActive(false);
         buttonsPanel.SetActive(true);
         czatPanel.SetActive(true);

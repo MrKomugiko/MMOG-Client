@@ -174,28 +174,28 @@ public class UpdateChecker : MonoBehaviour
         var mapTypesCount = Enum.GetNames(typeof(MAPTYPE)).Length;
 
         // sprawdzenie czy dane zostały załadowane i czy istnieja
-        if(CLIENT_UPDATE_VERSIONS == null)
-         {
+        if (CLIENT_UPDATE_VERSIONS == null) {
             print("pusty klient patchnotes, pomin sprawdzanie, pobierz z serwera cały pakiet xD");
             ClientSend.DownloadLatestMapData();
             return;
         }
 
-        for (int location = 0; location < LocationCount; location++) {
-            for (int maptype = 0; maptype < mapTypesCount; maptype++) {
-            
-                int clientVersion = GetVersionOf(CLIENT_UPDATE_VERSIONS, (LOCATIONS)location, (MAPTYPE)maptype);
-                int servertVersion = GetVersionOf(SERVER_UPDATE_VERSIONS, (LOCATIONS)location, (MAPTYPE)maptype);
+            for (int location = 0; location < LocationCount; location++) {
+                for (int maptype = 0; maptype < mapTypesCount; maptype++) {
 
-//                print($"MAPA: [{(LOCATIONS)location}][{(MAPTYPE)maptype}]  Client:{clientVersion} | Server:{servertVersion}");
+                    int clientVersion = GetVersionOf(CLIENT_UPDATE_VERSIONS, (LOCATIONS)location, (MAPTYPE)maptype);
+                    int servertVersion = GetVersionOf(SERVER_UPDATE_VERSIONS, (LOCATIONS)location, (MAPTYPE)maptype);
 
-                if(clientVersion != servertVersion) ClientSend.DownloadLatestMapData((LOCATIONS)location, (MAPTYPE)maptype);
+                    //                print($"MAPA: [{(LOCATIONS)location}][{(MAPTYPE)maptype}]  Client:{clientVersion} | Server:{servertVersion}");
 
-                // jezeli mapka jest aktualna, zastosuj ją
-                if (clientVersion == servertVersion) ClientHandle.LoadMapDataFromFile((LOCATIONS)location, (MAPTYPE)maptype);
+                    if (clientVersion != servertVersion) ClientSend.DownloadLatestMapData((LOCATIONS)location, (MAPTYPE)maptype);
+
+                    // jezeli mapka jest aktualna, zastosuj ją
+                    if (clientVersion == servertVersion) ClientHandle.LoadMapDataFromFile((LOCATIONS)location, (MAPTYPE)maptype);
+                }
             }
-        }
-    }
 
+        
+        }
   
 }

@@ -11,7 +11,7 @@ public class BotScript : MonoBehaviour
       //  print("starting new routine");
         while(isRunning)
         {
-            if(_movementScript.waitingForServerAnswer) continue;
+           // if(_movementScript.waitingForServerAnswer) continue;
 
             _movementScript.NavigationButtonPressed(key: GetDirectionKey(Random.Range(1,5)));
 

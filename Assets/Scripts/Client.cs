@@ -9,7 +9,10 @@ public class Client : MonoBehaviour
     public static Client instance;
     public static int dataBufferSize = 4096;
 
-    public string ip = "192.168.144.39";
+
+    // public string ip = "20.52.121.149";
+
+   public string ip = "192.168.144.39";
     public int port = 5555;
     public int myId = 0 ;
     public TCP tcp;
@@ -33,6 +36,7 @@ public class Client : MonoBehaviour
     }
     private void Start()
     {
+        print("Start");
         tcp = new TCP();
         udp = new UDP();
     }
@@ -42,6 +46,7 @@ public class Client : MonoBehaviour
     
     public void ConnectToServer()
     {
+        print("test");
         InitializeClientData();
         isConnected = true;
         tcp.Connect();

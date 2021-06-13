@@ -1,10 +1,11 @@
-﻿using System.Collections;
+﻿using System.IO.Compression;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class MovementScript : MonoBehaviour
 {
-    public bool moving;
+    public bool movingAnimationInProgress;
     public bool waitingForServerAnswer = false;
     [SerializeField] private int currentFloor = 2;
     [SerializeField] Transform _transform;
@@ -52,8 +53,9 @@ public class MovementScript : MonoBehaviour
     {
         // wyłączenie update'a na innych klientach
         if(PManager.IsLocal == false) return;
-        if (waitingForServerAnswer) return;
-
+        if (waitingForServerAnswer == true) return;
+        if(movingAnimationInProgress) return;
+        
         if (Input.GetKeyDown(KeyCode.W))
             NavigationButtonPressed(KeyCode.W);
         else if (Input.GetKeyDown(KeyCode.S))
@@ -72,9 +74,12 @@ public class MovementScript : MonoBehaviour
     }
     public void NavigationButtonPressed(KeyCode key)
     {
-        if (moving) return;
-        waitingForServerAnswer = true;
+        if(PManager.IsLocal == false) return;
+        if (waitingForServerAnswer == true) return;
+        if(movingAnimationInProgress) return;
 
+        waitingForServerAnswer = true;
+    
         bool[] _inputsFromButton = new bool[4];
         switch (key)
         {
@@ -99,8 +104,11 @@ public class MovementScript : MonoBehaviour
     public void ExecuteMovingAnimation(Vector3Int newPosition_Grid)
     {
         if(this.gameObject.activeSelf == false) return;
-        if (moving) return;
-
+        if(Client.instance.myId == PManager.Id )
+        {
+            movingAnimationInProgress = true;
+        }
+        
         float newX = 0;
         float newY = 0;
         var direction = lastPosition_Grid - newPosition_Grid;
@@ -130,6 +138,7 @@ public class MovementScript : MonoBehaviour
         if (jumpDirection == 0) StartCoroutine(WalkAnimation(newX, newY));
         if (jumpDirection != 0) StartCoroutine(JumpAnimation(newPosition_Grid, jumpDirection, (Vector3Int?)lastPosition_Grid));
         lastPosition_Grid = newPosition_Grid;
+     
     }
     private int CheckIfPlayerMakeJump(int old_Z, int new_Z)
     {
@@ -156,7 +165,9 @@ public class MovementScript : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
 
-        moving = false;
+        movingAnimationInProgress = false;
+
+        GameManager.players[PManager.Id].movementScript.waitingForServerAnswer = false;
         yield return null;
     }
     private IEnumerator JumpAnimation(Vector3Int newPosition_Grid, int direction, Vector3Int? startPodition_Grid = null)
@@ -165,11 +176,11 @@ public class MovementScript : MonoBehaviour
         Vector3 highestJumpPosition_World = GetMediumHightPoint(newPosition_Grid, direction, startPodition_Grid);
         Vector3 endPosition_World = GameManager.instance._tileMap.CellToWorld(newPosition_Grid);
 
-        int z = 0;
-        Vector3 _startPoint = new Vector3(startPosition_World.x, startPosition_World.y, transform.position.z);
-        z = direction > 0 ? (startPodition_Grid.Value.z + 3) : (startPodition_Grid.Value.z + 3);
-        Vector3 _highMiddlePoint = new Vector3(highestJumpPosition_World.x, highestJumpPosition_World.y, z + 1);
-        Vector3 _finalPoint = new Vector3(endPosition_World.x, endPosition_World.y, z);
+        float z = 0;
+        Vector3 _startPoint = new Vector3(startPosition_World.x, startPosition_World.y, transform.position.z+(direction>0?2:4));
+        z = direction > 0 ? (_transform.position.z + 2) : (_transform.position.z - 2);
+        Vector3 _highMiddlePoint = new Vector3(highestJumpPosition_World.x, highestJumpPosition_World.y, z+(direction>0?2:4));
+        Vector3 _finalPoint = new Vector3(endPosition_World.x, endPosition_World.y, z+(direction>0?2:4));
 
         float frames = direction > 0 ? jumpFrames: jumpFrames/2;
         for (float i = 0; i < 1.1; i += (1f / frames))
@@ -180,6 +191,7 @@ public class MovementScript : MonoBehaviour
                 _transform.localScale = Vector3.Lerp(new Vector3(1,1.1f,1),Vector3.one,(i+1)/2);
 
             _transform.position = Vector3.Lerp(_startPoint, _highMiddlePoint, i);
+            
             yield return new WaitForEndOfFrame();
         }
         frames = direction > 0 ? jumpFrames/2: jumpFrames;
@@ -192,6 +204,8 @@ public class MovementScript : MonoBehaviour
             _transform.position = Vector3.Lerp(_highMiddlePoint, _finalPoint, i);
             yield return new WaitForEndOfFrame();
         }
+        _transform.position = new Vector3(_finalPoint.x,_finalPoint.y,z);
+
         for (float i = 0; i < 1.1; i += (1f / (frames/2)))
         {
             // dogniatanie
@@ -203,7 +217,8 @@ public class MovementScript : MonoBehaviour
         }
         
         CurrentFloor += direction > 0 ? 2 : -2;
-        moving = false;
+        movingAnimationInProgress = false;
+        GameManager.players[PManager.Id].movementScript.waitingForServerAnswer = false;
         yield return null;
 
     }

@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 
 public partial class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-
+    [SerializeField] public Text ANDROIDLOGGER;
     [SerializeField] public GameObject shopWindow;
     [SerializeField] public GameObject NPC_Glowing_SPRITE_PREFAB;
     [SerializeField] public List<Tile> listaDostepnychTilesow;

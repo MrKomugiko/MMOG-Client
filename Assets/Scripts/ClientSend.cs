@@ -33,8 +33,7 @@ public class ClientSend : MonoBehaviour
         }
         public static void PlayerMovement(bool[] _inputs) 
         {
-         // print("Wysłanie informacji o ruchu na serwer do przetworzenia");
-          //  
+         print("send input to server");
             using (Packet _packet = new Packet((int)ClientPackets.playerMovement)) {
                 _packet.Write(_inputs.Length);
                 foreach(bool _input in _inputs) {
