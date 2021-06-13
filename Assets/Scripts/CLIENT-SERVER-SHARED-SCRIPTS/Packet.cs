@@ -24,6 +24,7 @@ using UnityEngine;
     public enum ClientPackets
     {
         welcomeReceived = 1,
+        LogMeIn = 2,
        // updTestReceived,
         playerMovement,
         SendChatMessage,
@@ -31,7 +32,7 @@ using UnityEngine;
         SEND_MAPDATA_TO_SERVER,
         downloadLatestMapUpdate,
         download_recentMapVersion,
-        clientChangeLocalisation
+        clientChangeLocalisation,
 }
 public class Packet : IDisposable
 {

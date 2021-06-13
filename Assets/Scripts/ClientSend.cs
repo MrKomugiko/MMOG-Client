@@ -20,16 +20,32 @@ public class ClientSend : MonoBehaviour
     #region Packets
         public static void WelcomeReceived()
         {
-            print("Wysłanie do serwera pingu Welcom z id i nickiem");
-            using (Packet _packet = new Packet((int)ClientPackets.welcomeReceived))
-            {
-                _packet.Write(Client.instance.myId);
-                _packet.Write(UIManager.instance.usernameField.text);
+            // TODO:  podzielenie na 2 opcje odesłąnia info welcome, jendo standardowe, logowanie jako guest, 
+            //          a drugie chęc sprawdzenia zgodności danych i logowanie do swojego konta
+          
+                print("Wysłanie do serwera pingu Welcom z id i nickiem");
+                using (Packet _packet = new Packet((int)ClientPackets.welcomeReceived))
+                {
+                    _packet.Write(Client.instance.myId);
+                    _packet.Write(UIManager.instance.usernameField.text);
 
-                SendTCPData(_packet);
-            }
+                    SendTCPData(_packet);
+                }
 
                 ClientSend.DownloadLatestUpdateVersionNumber();
+        }
+        public static void SendLoginCreditionals(string username, string password)
+        {
+            print("Wysłanie do serwera podanych danych do logowania");
+                using (Packet _packet = new Packet((int)ClientPackets.LogMeIn))
+                {
+                    _packet.Write(Client.instance.myId);
+                    _packet.Write(username);
+                    _packet.Write(password);
+
+                    SendTCPData(_packet);
+                }
+                    // TODO: CZEKANIEZ A ODEBRANIEM PAKIETU< YOU R ALLOWED TO JOIN XD
         }
         public static void PlayerMovement(bool[] _inputs) 
         {

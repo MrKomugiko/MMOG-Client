@@ -14,6 +14,7 @@ public class UIManager : MonoBehaviour
     public GameObject czatPanel;
     public GameObject grid;
     public InputField usernameField;
+    
 
     private void Awake()
     {
@@ -28,10 +29,24 @@ public class UIManager : MonoBehaviour
             Destroy(this);
         }
     }
+    public static string ConnectingMode = "";
     public void ConnectToServer()
     {
+        ConnectingMode = "";
         usernameField.interactable = false;
         Client.instance.ConnectToServer();
+    }
+    public void LogInToServer()
+    {
+        ConnectingMode = "LOGIN";
+        usernameField.interactable = false;
+        Client.instance.ConnectToServer();
+    }
+      public void RegisterNewAccount()
+    {
+        // OPEN NEW WINDOW
+
+      
     }
     public void EnterGame()
     {

@@ -84,8 +84,11 @@ public partial class GameManager : MonoBehaviour
     }
     public void SpawnPlayer(int _id, string _username, Vector3 _position, Quaternion _rotation, Vector3Int tileCoordPosition, LOCATIONS _currentLocation)
     {
-       if(players.ContainsKey(_id)) return;
-
+       if(players.ContainsKey(_id)) 
+       {
+           print("w grze jest juz taki gracz z tym id");
+           return;
+       }
         bool _isLocal;
         GameObject _player;
         if(_id == Client.instance.myId) 

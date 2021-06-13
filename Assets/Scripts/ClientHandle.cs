@@ -11,20 +11,42 @@ public class ClientHandle : MonoBehaviour
 {
     public static void Welcome(Packet _packet)
     {
-       ThreadManager.ExecuteOnMainThread(()=>UIManager.instance.EnterGame());
 
         string _msg = _packet.ReadString();
-        int _myId = _packet.ReadInt();
-
-        Debug.Log($"Message from server: {_msg}");
+        int _myId = _packet.ReadInt(); // nasze serwerowe id ( tymczasowe, zmienne )
         Client.instance.myId = _myId;
-        ClientSend.WelcomeReceived();
 
+        if(UIManager.ConnectingMode == "LOGIN")
+        {
+            print("sprawdzanie danych do logowania poczekaj");
+            print("Gracz chce sie zalogowac - wysłanie do sprawdzenia pary nicku ( wpisanego + z pamięci, hasło )");
+            // po rejestracji, haslo zapisze sie na urządzeniu i bedzie wysylane razem z niskiem w komplecie?
+            ClientSend.SendLoginCreditionals(UIManager.instance.usernameField.text, "player");
+        }
+        else if(UIManager.ConnectingMode == "")
+        {
+            Debug.Log($"Message from server: {_msg}");
+            ThreadManager.ExecuteOnMainThread(()=>UIManager.instance.EnterGame());
+            print("Gracz chce wejsc do gry jako gość");
+            ClientSend.WelcomeReceived();
+        }
         Client.instance.udp.Connect(((IPEndPoint)Client.instance.tcp.socket.Client.LocalEndPoint).Port);
-
-
-
     }
+
+     public static void LoginRespondRecieved(Packet _packet)
+    {
+            //TODO:
+            // bool isAccesGranted = _packet.ReadBool();
+            // if(isAccesGranted)
+            //{
+                // initiate load process and load all player data from, server
+            //}
+            //else
+            //{
+                // back to start menu
+            //}
+    }
+    
     public static void UDPTest(Packet _packet)
     {
         string _msg = _packet.ReadString();
@@ -34,7 +56,12 @@ public class ClientHandle : MonoBehaviour
     }
     public static void SpawnPlayer(Packet _packet)
     {
-        print("spawn player");
+        // TODO: wykonac po akceptacji logowania ze strony serwera
+        UIManager.instance.EnterGame();
+        ClientSend.DownloadLatestUpdateVersionNumber();
+            //----------------------------------------
+
+        print("spawn");
         int _id = _packet.ReadInt();
         string _username = _packet.ReadString();
         Vector3 _position = _packet.ReadVector3();
@@ -46,7 +73,6 @@ public class ClientHandle : MonoBehaviour
         //print($"spawn[{_username}] at: position:{_position} / tilecoord:{_tileMapCoordinates}");
 
         UIManager.instance.PrintCurrentOnlineUsers();
-        
     }
     public static void PlayerPosition(Packet _packet)
     {

@@ -46,7 +46,6 @@ public class Client : MonoBehaviour
     
     public void ConnectToServer()
     {
-        print("test");
         InitializeClientData();
         isConnected = true;
         tcp.Connect();
@@ -337,6 +336,6 @@ public class Client : MonoBehaviour
                 Debug.Log("Disconnectef from server.");
             }
             ThreadManager.ExecuteOnMainThread(()=>UIManager.instance.BackToStartScreen());
-          //  UIManager.instance.BackToStartScreen();
+           UIManager.instance.BackToStartScreen();
         }
 }
