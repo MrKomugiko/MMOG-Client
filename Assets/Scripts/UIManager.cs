@@ -44,14 +44,13 @@ public class UIManager : MonoBehaviour
     }
       public void RegisterNewAccount()
     {
-        // OPEN NEW WINDOW
-
+       
       
     }
     public void EnterGame()
     {
         print("Aktywowanie sceny gry / Enter Game");
-      //  GameManager.instance.ANDROIDLOGGER.text += "Aktywowanie sceny gry / Enter Game\n";
+      
         startMenu.SetActive(false);
         buttonsPanel.SetActive(true);
         czatPanel.SetActive(true);
@@ -64,18 +63,11 @@ public class UIManager : MonoBehaviour
         {
             try
             {
-                //print("usuniecie tilesów graczy");
-                GameManager.instance._tileMap.SetTile(player.CurrentPosition_GRID, null);
-            }
-            catch { }
-            try
-            {
                // print("usunięcie obiektów graczy");
                 if(player.IsLocal)
                 {
-                    var camera = GameObject.Find("Main Camera").gameObject;
-                    camera.transform.parent = null;
-                    camera.transform.localPosition = Vector3.zero;
+                    GameManager.instance.cam.transform.parent = GameManager.instance.gameObject.transform;
+                    GameManager.instance.cam.transform.localPosition = Vector3.zero;
                 }
                 Destroy(player.gameObject);
             }

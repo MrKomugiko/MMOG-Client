@@ -18,8 +18,7 @@ public class MovementScript : MonoBehaviour
     { 
         get => currentFloor; 
         set {
-            // zmiana wartwy sortowania w zaleznosci od wysokosci gracza
-            // 7jednostek = +2 sorting order
+           //TODO: z ręki zakodowane 3 piętra, ale mozna zrobic to automatycznie
             if(value>=0 && value<14)
             {
                 PManager.SRenderer.sortingOrder = 0;
@@ -48,7 +47,6 @@ public class MovementScript : MonoBehaviour
         _transform.position += new Vector3(0, 0, .9f);
         if (PManager.IsLocal) AssignFunctionToLocalPlayerButtons();
     }
-    
     private void Update()
     {
         // wyłączenie update'a na innych klientach
@@ -135,15 +133,23 @@ public class MovementScript : MonoBehaviour
             newY = 0.25f;
         }
 
-        if (jumpDirection == 0) StartCoroutine(WalkAnimation(newX, newY));
-        if (jumpDirection != 0) StartCoroutine(JumpAnimation(newPosition_Grid, jumpDirection, (Vector3Int?)lastPosition_Grid));
+        if(this.gameObject.activeInHierarchy== true)
+        {
+            if (jumpDirection == 0) StartCoroutine(WalkAnimation(newX, newY));
+            if (jumpDirection != 0) StartCoroutine(JumpAnimation(newPosition_Grid, jumpDirection, (Vector3Int?)lastPosition_Grid));
+        }
+        else{
+         // sam teleport bez animacji jezeli obiekt jest nieaktywny
+         // nie rób z nim nic ? TODO: sprawdzic jak dziala
+        }
+
         lastPosition_Grid = newPosition_Grid;
      
     }
     private int CheckIfPlayerMakeJump(int old_Z, int new_Z)
     {
         int heightDifferenceValue = (new_Z - old_Z);
-        // print($"Gracz idzie {(heightDifferenceValue>0?"do góry":"na dół")}.");
+   
         return heightDifferenceValue;
     }
     private IEnumerator WalkAnimation(float xShift = 0, float yShift = 0)
@@ -222,7 +228,9 @@ public class MovementScript : MonoBehaviour
         yield return null;
 
     }
-    static Vector3 GetMediumHightPoint(Vector3Int newPosition_Grid, int direction, Vector3Int? startPodition_Grid)
+
+  //--------------------------------------------------------------------------------------
+   static Vector3 GetMediumHightPoint(Vector3Int newPosition_Grid, int direction, Vector3Int? startPodition_Grid)
     {
         Vector3 h_pos_1 = GameManager.instance._tileMap.CellToWorld(startPodition_Grid.Value + new Vector3Int(0, 0, direction > 0 ? 2 : 2));
         Vector3 h_pos_2 = GameManager.instance._tileMap.CellToWorld(newPosition_Grid + new Vector3Int(0, 0, direction > 0 ? 2 : 2));
