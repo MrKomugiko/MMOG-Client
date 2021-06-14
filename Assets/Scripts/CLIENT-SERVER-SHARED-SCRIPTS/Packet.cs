@@ -17,7 +17,9 @@ using UnityEngine;
         ping_ALL,
         downloadMapData,
         sendCurrentUpdateNumber,
-        SEND_MAPDATA_TO_CLIENT
+        SEND_MAPDATA_TO_CLIENT,
+        RegistrationResponse,
+        LoginResponse
     }
 
     /// <summary>Sent from client to server.</summary>

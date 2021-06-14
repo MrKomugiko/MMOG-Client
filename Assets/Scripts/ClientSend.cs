@@ -27,14 +27,14 @@ public class ClientSend : MonoBehaviour
                 using (Packet _packet = new Packet((int)ClientPackets.welcomeReceived))
                 {
                     _packet.Write(Client.instance.myId);
-                    _packet.Write(UIManager.instance.usernameField.text);
+                    _packet.Write(UIManager.Login_InputUsername.text);
 
                     SendTCPData(_packet);
                 }
 
-                ClientSend.DownloadLatestUpdateVersionNumber();
+                
         }
-        public static void SendLoginCreditionals(string username, string password)
+        public static void SendLoginCreditionals(string username, string password, string MODE)
         {
             print("Wysłanie do serwera podanych danych do logowania");
                 using (Packet _packet = new Packet((int)ClientPackets.LogMeIn))
@@ -42,6 +42,7 @@ public class ClientSend : MonoBehaviour
                     _packet.Write(Client.instance.myId);
                     _packet.Write(username);
                     _packet.Write(password);
+                    _packet.Write(MODE); // rodzaj , czy logowanie czy rejestracja gracza
 
                     SendTCPData(_packet);
                 }

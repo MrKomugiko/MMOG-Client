@@ -1,6 +1,8 @@
 ﻿using TMPro;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class UIManager : MonoBehaviour
 {
@@ -13,12 +15,24 @@ public class UIManager : MonoBehaviour
     public GameObject buttonsPanel;
     public GameObject czatPanel;
     public GameObject grid;
-    public InputField usernameField;
-    
+    public static InputField Login_InputUsername;
+    public static InputField Login_InputPassword;
+    public static InputField Register_InputUsername;
+    public static InputField Register_InputPassword;
+
+    [SerializeField] public GameObject LoadingWindow;
+    [SerializeField] public LoadingAnimation LoadingAnimation;
+    [SerializeField] public GameObject RegistrationWindow;
+
 
     private void Awake()
     {
         czatTMP = czat;
+        
+        Login_InputUsername = startMenu.transform.Find("Login_InputUsername").GetComponent<InputField>();
+        Login_InputPassword = startMenu.transform.Find("Login_InputPassword").GetComponent<InputField>();
+        Register_InputPassword = RegistrationWindow.transform.Find("Register_InputPassword").GetComponent<InputField>();
+        Register_InputUsername = RegistrationWindow.transform.Find("Register_InputUseranem").GetComponent<InputField>();
         if (instance == null)
         {
             instance = this;
@@ -29,25 +43,38 @@ public class UIManager : MonoBehaviour
             Destroy(this);
         }
     }
-    public static string ConnectingMode = "";
-    public void ConnectToServer()
+
+    public void ClearMessage(float time, TextMeshProUGUI responsMessage)
     {
-        ConnectingMode = "";
-        usernameField.interactable = false;
-        Client.instance.ConnectToServer();
+        StartCoroutine(ClearMessageAfterTime(time,responsMessage));
+    }
+
+    public void EnterAsGuest()
+    {
+        print("Gracz chce wejsc do gry jako gość");
+        ThreadManager.ExecuteOnMainThread(()=>UIManager.instance.LoadGameScene());
+        ClientSend.WelcomeReceived();
     }
     public void LogInToServer()
     {
-        ConnectingMode = "LOGIN";
-        usernameField.interactable = false;
-        Client.instance.ConnectToServer();
+        Login_InputUsername.interactable = false;
+        // Client.instance.ConnectToServer();
+        print("sprawdzanie danych do logowania poczekaj");
+        print("Gracz chce sie zalogowac - wysłanie do sprawdzenia pary nicku ( wpisanego + z pamięci, hasło )");
+        // po rejestracji, haslo zapisze sie na urządzeniu i bedzie wysylane razem z niskiem w komplecie?
+        ClientSend.SendLoginCreditionals(UIManager.Login_InputUsername.text, UIManager.Register_InputPassword.text, "LOGIN");
     }
       public void RegisterNewAccount()
     {
-       
-      
+        LoadingWindow.SetActive(true);
+
+        // ThreadManager.ExecuteOnMainThread(()=>UIManager.instance.EnterGame());
+        print("Gracz chce stworzyc nowe konto");
+        ClientSend.SendLoginCreditionals(UIManager.Register_InputUsername.text, UIManager.Register_InputPassword.text,"REGISTER");
     }
-    public void EnterGame()
+ 
+
+    public void LoadGameScene()
     {
         print("Aktywowanie sceny gry / Enter Game");
       
@@ -101,4 +128,12 @@ public class UIManager : MonoBehaviour
                 PlayersOnlineText.SetText(PlayersOnlineText.text + $"\n- [{player.Id}] [{player.Username}]");
             }
         }
+
+
+    private IEnumerator ClearMessageAfterTime(float time, TextMeshProUGUI textTMP)
+    {
+        print("za "+time+" sekund zniknie wiadomosc");
+        yield return new WaitForSeconds(time);
+        textTMP.SetText("");
+    }
 }

@@ -162,13 +162,13 @@ public class MovementScript : MonoBehaviour
         {
             _transform.position += UP_shift_Vector;
             _transform.position += Height_shift_Vector;
-            yield return new WaitForEndOfFrame();
+            yield return new WaitForFixedUpdate();
         }
         for (int i = 0; i < walkFrames; i++)
         {
             _transform.position += Down_shift_Vector;
             _transform.position -= Height_shift_Vector;
-            yield return new WaitForEndOfFrame();
+            yield return new WaitForFixedUpdate();
         }
 
         movingAnimationInProgress = false;
@@ -198,7 +198,7 @@ public class MovementScript : MonoBehaviour
 
             _transform.position = Vector3.Lerp(_startPoint, _highMiddlePoint, i);
             
-            yield return new WaitForEndOfFrame();
+            yield return new WaitForFixedUpdate();
         }
         frames = direction > 0 ? jumpFrames/2: jumpFrames;
       
@@ -208,7 +208,7 @@ public class MovementScript : MonoBehaviour
             if(i>0.5)_transform.localScale = Vector3.Lerp(Vector3.one, direction>0?new Vector3(1,.9f,1):new Vector3(1,.8f,1),(i+1)/2);
             
             _transform.position = Vector3.Lerp(_highMiddlePoint, _finalPoint, i);
-            yield return new WaitForEndOfFrame();
+            yield return new WaitForFixedUpdate();
         }
         _transform.position = new Vector3(_finalPoint.x,_finalPoint.y,z);
 
@@ -219,7 +219,7 @@ public class MovementScript : MonoBehaviour
 
         // wyprostowywanie sie
             _transform.localScale = Vector3.Lerp(direction>0?new Vector3(1,.8f,1):new Vector3(1,.6f,1),Vector3.one,i);
-            yield return new WaitForEndOfFrame();
+            yield return new WaitForFixedUpdate();
         }
         
         CurrentFloor += direction > 0 ? 2 : -2;

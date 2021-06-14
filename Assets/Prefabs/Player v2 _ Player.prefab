@@ -96,14 +96,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7e7d068aecaf6848a4675b8841a9e73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moving: 0
+  movingAnimationInProgress: 0
   waitingForServerAnswer: 0
-  CurrentFloor: 2
+  currentFloor: 2
   _transform: {fileID: 164629180767317850}
   lastPosition_Grid: {x: 0, y: 0, z: 0}
   PManager: {fileID: 164629180767317855}
-  jumpFrames: 16
-  walkFrames: 6
+  jumpFrames: 4
+  walkFrames: 2
 --- !u!114 &164629180767317855
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -119,8 +119,7 @@ MonoBehaviour:
   _id: 0
   _username: 
   currentPosition_GRID: {x: 0, y: 0, z: 2}
-  isLocal: 0
-  nPCDetector: {fileID: 0}
   borderScript: {fileID: 0}
   movementScript: {fileID: 164629180767317849}
   currentLocation: 0
+  SRenderer: {fileID: 0}

@@ -39,6 +39,9 @@ public class Client : MonoBehaviour
         print("Start");
         tcp = new TCP();
         udp = new UDP();
+
+        print("establish connection");
+        Client.instance.ConnectToServer();
     }
     private void OnApplicationQuit() {
         Disconnect();
@@ -316,7 +319,10 @@ public class Client : MonoBehaviour
             { (int)ServerPackets.ping_ALL, ClientHandle.PingBackToServer },                             // zwykły heartbeat co 5 sekund czy klient nadal aktywny
             { (int)ServerPackets.downloadMapData, ClientHandle.SendMapToServer },                       // klient ma wysłać swoją mape na serwer
             { (int)ServerPackets.sendCurrentUpdateNumber, ClientHandle.ReceivedUpdateNumber },          // otrzymanie info o nowym Update
-            { (int)ServerPackets.SEND_MAPDATA_TO_CLIENT, ClientHandle.NewMapDataFromServerReceived }    // otrzymano nową mape
+            { (int)ServerPackets.SEND_MAPDATA_TO_CLIENT, ClientHandle.NewMapDataFromServerReceived },   // otrzymano nową mape
+            { (int)ServerPackets.RegistrationResponse, ClientHandle.RetievedRegistrationResponse },     // informacja zwrotna na wysłanie danych rejestracji konta na serwerze
+            { (int)ServerPackets.LoginResponse, ClientHandle.RetievedLoginResponse }                     // informacja zwrotna na dotycząca proby logowania
+
             // TODO:     // otrzymanie info o szczegółach zebranego przedmiotu
             // TODO:     // otrzymanie szczegółów dotycznących napotkanego NPC'a 
             // TODO:     // otrzymanie info o aktualnych ofertach w sklepie (jeze,lli ktos cos sprzeda to bedzie mozna to odkupic od npc ?)
