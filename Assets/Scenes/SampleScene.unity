@@ -869,7 +869,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 84.40001}
+  m_AnchoredPosition: {x: 0, y: -67.1}
   m_SizeDelta: {x: 300, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &300787082
@@ -1730,7 +1730,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -365.5, y: -12.435135}
+  m_AnchoredPosition: {x: -365.5, y: -12.435089}
   m_SizeDelta: {x: -774.3459, y: -57.729782}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &518769298
@@ -5206,7 +5206,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1397615460}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 300787081}
@@ -5214,8 +5214,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -10, y: -10}
+  m_AnchoredPosition: {x: 0, y: -2.5}
+  m_SizeDelta: {x: -20, y: -15}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1397615462
 MonoBehaviour:
@@ -5264,7 +5264,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 48.2
+  m_fontSize: 46.55
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -6289,11 +6289,9 @@ MonoBehaviour:
   buttonsPanel: {fileID: 1308098861}
   czatPanel: {fileID: 518769296}
   grid: {fileID: 148496125}
-  usernameField: {fileID: 1515344031}
   LoadingWindow: {fileID: 1611934304}
   LoadingAnimation: {fileID: 1638896641}
   RegistrationWindow: {fileID: 1700920406}
-  TempStoredUserPassword: 
   PlayersOnlineText: {fileID: 976961063}
 --- !u!114 &1556098154
 MonoBehaviour:
@@ -7488,7 +7486,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1700920407
 RectTransform:
   m_ObjectHideFlags: 0

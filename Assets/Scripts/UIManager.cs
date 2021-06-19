@@ -62,7 +62,8 @@ public class UIManager : MonoBehaviour
         print("sprawdzanie danych do logowania poczekaj");
         print("Gracz chce sie zalogowac - wysłanie do sprawdzenia pary nicku ( wpisanego + z pamięci, hasło )");
         // po rejestracji, haslo zapisze sie na urządzeniu i bedzie wysylane razem z niskiem w komplecie?
-        ClientSend.SendLoginCreditionals(UIManager.Login_InputUsername.text, UIManager.Register_InputPassword.text, "LOGIN");
+        ClientSend.SendLoginCreditionals(UIManager.Login_InputUsername.text, UIManager.Login_InputPassword.text, "LOGIN");
+
     }
       public void RegisterNewAccount()
     {
