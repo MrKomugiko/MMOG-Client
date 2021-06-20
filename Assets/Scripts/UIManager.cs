@@ -1,9 +1,14 @@
-﻿using TMPro;
+﻿using System.Runtime.InteropServices.ComTypes;
+using System.Net.Security;
+using TMPro;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class UIManager : MonoBehaviour
 {
+    [SerializeField] public InventoryScript PlayerInventroy;
     [SerializeField] private TextMeshProUGUI czat;
     [SerializeField] private GameObject updateAndMapVersion;
     public static UIManager instance;
@@ -13,11 +18,24 @@ public class UIManager : MonoBehaviour
     public GameObject buttonsPanel;
     public GameObject czatPanel;
     public GameObject grid;
-    public InputField usernameField;
+    public static InputField Login_InputUsername;
+    public static InputField Login_InputPassword;
+    public static InputField Register_InputUsername;
+    public static InputField Register_InputPassword;
+
+    [SerializeField] public GameObject LoadingWindow;
+    [SerializeField] public LoadingAnimation LoadingAnimation;
+    [SerializeField] public GameObject RegistrationWindow;
+
 
     private void Awake()
     {
         czatTMP = czat;
+        
+        Login_InputUsername = startMenu.transform.Find("Login_InputUsername").GetComponent<InputField>();
+        Login_InputPassword = startMenu.transform.Find("Login_InputPassword").GetComponent<InputField>();
+        Register_InputPassword = RegistrationWindow.transform.Find("Register_InputPassword").GetComponent<InputField>();
+        Register_InputUsername = RegistrationWindow.transform.Find("Register_InputUseranem").GetComponent<InputField>();
         if (instance == null)
         {
             instance = this;
@@ -28,15 +46,72 @@ public class UIManager : MonoBehaviour
             Destroy(this);
         }
     }
-    public void ConnectToServer()
+
+
+    public void ClearMessage(float time, TextMeshProUGUI responsMessage)
     {
-        usernameField.interactable = false;
-        Client.instance.ConnectToServer();
+        StartCoroutine(ClearMessageAfterTime(time,responsMessage));
     }
-    public void EnterGame()
+
+    public void EnterAsGuest()
+    {
+        if(Client.isConnected)
+        {
+            print("Gracz chce wejsc do gry jako gość");
+         //   ThreadManager.ExecuteOnMainThread(()=>UIManager.instance.LoadGameScene());
+            ClientSend.WelcomeReceived();
+        }
+        else
+        {
+            ShowReconnectWindow();
+        }
+    }
+    
+    public void LogInToServer()
+    {
+        if(Client.isConnected){
+            Login_InputUsername.interactable = false;
+            // Client.instance.ConnectToServer();
+            print("sprawdzanie danych do logowania poczekaj");
+            print("Gracz chce sie zalogowac - wysłanie do sprawdzenia pary nicku ( wpisanego + z pamięci, hasło )");
+            // po rejestracji, haslo zapisze sie na urządzeniu i bedzie wysylane razem z niskiem w komplecie?
+            ClientSend.SendLoginCreditionals(UIManager.Login_InputUsername.text, UIManager.Login_InputPassword.text, "LOGIN");
+        }
+        else
+        {
+            
+     ShowReconnectWindow();
+        }
+    }
+
+      public void RegisterNewAccount()
+    {
+        if(Client.isConnected){
+        LoadingWindow.SetActive(true);
+
+        print("Gracz chce stworzyc nowe konto");
+        ClientSend.SendLoginCreditionals(UIManager.Register_InputUsername.text, UIManager.Register_InputPassword.text,"REGISTER");
+      }
+    else
+    {
+        RegistrationWindow.SetActive(false);
+        ShowReconnectWindow();
+    }
+    }
+    public GameObject reconnectWindow;
+    public void ShowReconnectWindow()
+    {
+        startMenu.SetActive(false);
+        reconnectWindow.SetActive(true);
+    }
+    public void OnClick_Reconnect()
+    {
+         UIManager.instance.reconnectWindow.GetComponent<WindowScript>().OnClick_ConnectToServer();
+    }
+    public void LoadGameScene()
     {
         print("Aktywowanie sceny gry / Enter Game");
-      //  GameManager.instance.ANDROIDLOGGER.text += "Aktywowanie sceny gry / Enter Game\n";
+      
         startMenu.SetActive(false);
         buttonsPanel.SetActive(true);
         czatPanel.SetActive(true);
@@ -49,22 +124,17 @@ public class UIManager : MonoBehaviour
         {
             try
             {
-                //print("usuniecie tilesów graczy");
-                GameManager.instance._tileMap.SetTile(player.CurrentPosition_GRID, null);
-            }
-            catch { }
-            try
-            {
                // print("usunięcie obiektów graczy");
                 if(player.IsLocal)
                 {
-                    var camera = GameObject.Find("Main Camera").gameObject;
-                    camera.transform.parent = null;
-                    camera.transform.localPosition = Vector3.zero;
+                    GameManager.instance.cam.transform.parent = GameManager.instance.gameObject.transform;
+                    GameManager.instance.cam.transform.localPosition = Vector3.zero;
                 }
                 Destroy(player.gameObject);
             }
-            catch { }
+            catch {
+                Console.WriteLine("back to start menu error");
+             }
         }
       //  print("usuniecie graczy z pamieci");
         GameManager.players.Clear();
@@ -72,7 +142,6 @@ public class UIManager : MonoBehaviour
         grid.SetActive(false);
         buttonsPanel.SetActive(false);
         czatPanel.SetActive(false);
-        startMenu.SetActive(true);
     }
 
     public void UpdateBuildIndicatorOnScreen(int _currentBuildVersion = 0000, bool _isDownloadAvaiable = false)
@@ -94,4 +163,12 @@ public class UIManager : MonoBehaviour
                 PlayersOnlineText.SetText(PlayersOnlineText.text + $"\n- [{player.Id}] [{player.Username}]");
             }
         }
+
+
+    private IEnumerator ClearMessageAfterTime(float time, TextMeshProUGUI textTMP)
+    {
+        print("za "+time+" sekund zniknie wiadomosc");
+        yield return new WaitForSeconds(time);
+        textTMP.SetText("");
+    }
 }

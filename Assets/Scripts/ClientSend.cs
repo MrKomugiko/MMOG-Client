@@ -20,20 +20,37 @@ public class ClientSend : MonoBehaviour
     #region Packets
         public static void WelcomeReceived()
         {
-            print("Wysłanie do serwera pingu Welcom z id i nickiem");
-            using (Packet _packet = new Packet((int)ClientPackets.welcomeReceived))
-            {
-                _packet.Write(Client.instance.myId);
-                _packet.Write(UIManager.instance.usernameField.text);
+            // TODO:  podzielenie na 2 opcje odesłąnia info welcome, jendo standardowe, logowanie jako guest, 
+            //          a drugie chęc sprawdzenia zgodności danych i logowanie do swojego konta
+          
+                print("Wysłanie do serwera pingu Welcom z id i nickiem");
+                using (Packet _packet = new Packet((int)ClientPackets.welcomeReceived))
+                {
+                    _packet.Write(Client.instance.myId);
+                    _packet.Write(UIManager.Login_InputUsername.text);
 
-                SendTCPData(_packet);
-            }
+                    SendTCPData(_packet);
+                }
 
-                ClientSend.DownloadLatestUpdateVersionNumber();
+                
+        }
+        public static void SendLoginCreditionals(string username, string password, string MODE)
+        {
+            print("Wysłanie do serwera podanych danych do logowania");
+                using (Packet _packet = new Packet((int)ClientPackets.LogMeIn))
+                {
+                    _packet.Write(Client.instance.myId);
+                    _packet.Write(username);
+                    _packet.Write(password);
+                    _packet.Write(MODE); // rodzaj , czy logowanie czy rejestracja gracza
+
+                    SendTCPData(_packet);
+                }
+                    // TODO: CZEKANIEZ A ODEBRANIEM PAKIETU< YOU R ALLOWED TO JOIN XD
         }
         public static void PlayerMovement(bool[] _inputs) 
         {
-         print("send input to server");
+        // print("send input to server");
             using (Packet _packet = new Packet((int)ClientPackets.playerMovement)) {
                 _packet.Write(_inputs.Length);
                 foreach(bool _input in _inputs) {
@@ -80,16 +97,6 @@ public class ClientSend : MonoBehaviour
             Tilemap TILEMAP = locationContainer.GetComponentsInChildren<Tilemap>().Select(t=>t).Where(t=>t.gameObject.name == mapType.ToString()).FirstOrDefault();
              //print("2."+TILEMAP.ToString());
             print($"Wysłanie na serwer {locationContainer.ToString()} / tilemap {TILEMAP.ToString()}");
-
-            // switch (mapType)
-            // {
-            //     case MAPTYPE.GROUND_MAP_CLIENT:
-            //         TILEMAP = GameManager.instance._tileMap_GROUND;
-            //     break;
-            //         case MAPTYPE.OBSTACLE_MAP_CLIENT:
-            //         TILEMAP = GameManager.instance._tileMap;
-            //     break;
-            // }
 
             Dictionary<Vector3, string> temp = new Dictionary<Vector3, string>();
             foreach (Vector3Int position in TILEMAP.cellBounds.allPositionsWithin) {

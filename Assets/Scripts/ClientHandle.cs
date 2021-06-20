@@ -1,4 +1,5 @@
-﻿using System.Data.Common;
+﻿using System.Security.Principal;
+using System.Data.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,20 +12,36 @@ public class ClientHandle : MonoBehaviour
 {
     public static void Welcome(Packet _packet)
     {
-       ThreadManager.ExecuteOnMainThread(()=>UIManager.instance.EnterGame());
-
         string _msg = _packet.ReadString();
-        int _myId = _packet.ReadInt();
-
-        Debug.Log($"Message from server: {_msg}");
+        int _myId = _packet.ReadInt(); // nasze serwerowe id ( tymczasowe, zmienne )
         Client.instance.myId = _myId;
-        ClientSend.WelcomeReceived();
 
+        Debug.Log($"Zwykle polaczenie z serwerem sukces ");
+        print("server:"+_msg);
+        
         Client.instance.udp.Connect(((IPEndPoint)Client.instance.tcp.socket.Client.LocalEndPoint).Port);
-
-
-
+        UIManager.instance.LoadingAnimation.ReceivedMessageFromServer = true;
+        UIManager.instance.startMenu.SetActive(true);
+        UIManager.instance.reconnectWindow.SetActive(false);
+        UIManager.instance.RegistrationWindow.GetComponent<WindowScript>().ShowServerMessage("CONNECTION-SUCCES");
+        
+        ClientSend.DownloadLatestUpdateVersionNumber();
     }
+
+     public static void LoginRespondRecieved(Packet _packet)
+    {
+            //TODO:
+            // bool isAccesGranted = _packet.ReadBool();
+            // if(isAccesGranted)
+            //{
+                // initiate load process and load all player data from, server
+            //}
+            //else
+            //{
+                // back to start menu
+            //}
+    }
+    
     public static void UDPTest(Packet _packet)
     {
         string _msg = _packet.ReadString();
@@ -34,32 +51,55 @@ public class ClientHandle : MonoBehaviour
     }
     public static void SpawnPlayer(Packet _packet)
     {
-        print("spawn player");
+        // TODO: wykonac po akceptacji logowania ze strony serwera
+        UIManager.instance.LoadGameScene();
+        ClientSend.DownloadLatestUpdateVersionNumber();
+            //----------------------------------------
+
+        print("spawn");
         int _id = _packet.ReadInt();
         string _username = _packet.ReadString();
         Vector3 _position = _packet.ReadVector3();
         Quaternion _rotation = _packet.ReadQuaternion();
         LOCATIONS _currentLocation = (LOCATIONS)_packet.ReadInt();
+        int _currentfloor = _packet.ReadInt();
         Vector3Int _tileMapCoordinates = new Vector3Int((int)_position.x,(int)_position.y,(int)_position.z);
         
-        GameManager.instance.SpawnPlayer(_id,_username,_position,_rotation, _tileMapCoordinates,_currentLocation);
-        //print($"spawn[{_username}] at: position:{_position} / tilecoord:{_tileMapCoordinates}");
+        GameManager.instance.SpawnPlayer(_id,_username,_position,_rotation, _tileMapCoordinates,_currentLocation, _currentfloor);
 
         UIManager.instance.PrintCurrentOnlineUsers();
+    }
+    private static void Teleport(Packet _packet)
+    {
+         int _id = _packet.ReadInt();
+        Vector3 _position = _packet.ReadVector3();
+        print("teleport to: "+_position.ToString());
+
+            //TODO: teleportowanie na inną mape jest niemożliwe - chyba ze sprawdzane  czy pozycja znajduje sie wewnątrz mapy, a nie bramy
+            // if (GameManager.instance.LocationMaps.ContainsKey(Vector3Int.CeilToInt(_position)))
+            // {
+            //     GameManager.instance.EnterNewLocation(Vector3Int.CeilToInt(_position), GameManager.players[_id]);
+            // }
         
+       GameManager.players[_id].TeleportToPositionInGrid(new Vector3Int((int)_position.x, (int)_position.y, (int)_position.z));
     }
     public static void PlayerPosition(Packet _packet)
     {
+        bool teleport = _packet.ReadBool();
+        if(teleport)
+        {
+            Teleport(_packet);
+            return;
+        }
+
         int _id = _packet.ReadInt();
         Vector3 _position = _packet.ReadVector3();
 
-        if (_id == Client.instance.myId) {
-            print("otrzymanie nowej pozycji z serwera");
             if (GameManager.instance.LocationMaps.ContainsKey(Vector3Int.CeilToInt(_position)))
             {
                 GameManager.instance.EnterNewLocation(Vector3Int.CeilToInt(_position), GameManager.players[_id]);
             }
-        }
+        //}
        GameManager.players[_id].MoveToPositionInGrid(new Vector3Int((int)_position.x, (int)_position.y, (int)_position.z));
     }
     public static void UpdateChat(Packet _packet) {
@@ -85,6 +125,14 @@ public class ClientHandle : MonoBehaviour
         // sprawdzenie czy id gracza istnieje 
         if(!GameManager.players.ContainsKey(_id)) return;
 
+        if(Client.instance.myId == _id)
+        {
+            // to znaczy ze server nas Kicknął ;x
+            print("zostałeś wyrzucony z serwera");
+
+            Client.instance.Disconnect();
+        }
+        
         // usunięcie obiektu gracza
             Destroy(GameManager.players[_id].gameObject);
         // usunięcie afka z listy graczy
@@ -137,7 +185,7 @@ public class ClientHandle : MonoBehaviour
                 UpdateChecker.CLIENT_UPDATE_VERSIONS._Data[location][mapType]._Version = newMapVersion;
                 UpdateChecker.SaveChangesToFile(); 
                 }
-                catch(Exception ex)
+                catch(Exception )
                 {
                     UpdateChecker.CLIENT_UPDATE_VERSIONS._Data[location][mapType] = UpdateChecker.GetUpdateNotesFromServerWithWipedOffVersionNumbers(UpdateChecker.SERVER_UPDATE_VERSIONS)._Data[location][mapType];
                     print("dodano wyzerowaną kopie z wersji serwerowej");
@@ -198,8 +246,10 @@ public class ClientHandle : MonoBehaviour
     }
     public static void LoadMapDataFromFile(LOCATIONS _location, MAPTYPE _mapType)
     {
+        
+
       // GameManager.instance.ANDROIDLOGGER.text += $"LoadMapDataFromFile {_location}{_mapType}\n";
-            print("ładowanie mapy");
+         //   print("ładowanie mapy");
             var references = GetReferencesByMaptype(_location, _mapType);
             Tilemap REFERENCE_TILEMAP = references.tilemap;
             Dictionary<Vector3Int,string> REFERENCE_MAPDATA = references.mapdata;
@@ -257,6 +307,44 @@ public class ClientHandle : MonoBehaviour
             PopulateTilemapWithCorrectTiles(_data: REFERENCE_MAPDATA, _tilemap: REFERENCE_TILEMAP);
 
     }
+
+    internal static void CollectAndPickUPItem(Packet _packet)
+    {
+        int whiPickItem = _packet.ReadInt(); // INT server current player ID
+
+        Item itemFromServer = new Item(
+            _packet.ReadInt(),     // ID
+            _packet.ReadString(),  // Name 
+            _packet.ReadInt(),     // Value             
+            _packet.ReadInt(),    // Level                                         
+            _packet.ReadBool(),     // Stackable                                        
+            _packet.ReadInt(),     // Stack size                             
+            _packet.ReadString()   // Description                                                                                  
+        );
+        
+        Console.WriteLine($"Podniosleś przedmiot: {itemFromServer.ToString()}");
+        Inventory.Items_LIST.Add(itemFromServer);
+
+        InventoryScript.instance.InventoryDATA.AddItemToInventory(itemFromServer);
+        
+    }
+
+    internal static void RetievedLoginResponse(Packet _packet)
+    {
+        string meessageFromServer = _packet.ReadString();
+        print(meessageFromServer);
+        UIManager.Login_InputUsername.interactable = true; // mozliwosc ponownego wproawdzenia danych
+        UIManager.instance.RegistrationWindow.GetComponent<WindowScript>().ShowServerMessage(meessageFromServer);
+    }
+
+    public static void RetievedRegistrationResponse(Packet _packet)
+    {
+        string response = _packet.ReadString();
+        print("Status rejestracji konta: "+response);
+        UIManager.instance.RegistrationWindow.GetComponent<WindowScript>().ShowServerMessage(response);
+        UIManager.instance.LoadingAnimation.ReceivedMessageFromServer = true;
+    }
+
     private static void SaveMapDataToFile(LOCATIONS location, MAPTYPE mapType, Dictionary<Vector3, string> mapData)
     {
         

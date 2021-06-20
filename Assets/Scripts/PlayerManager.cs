@@ -1,16 +1,19 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
     [SerializeField] private int _id;
     [SerializeField] private string _username;
     [SerializeField] private Vector3Int currentPosition_GRID;
-    [SerializeField] private bool isLocal;
-    [SerializeField] NPCDetector nPCDetector;
+    private bool isLocal;
+    NPCDetector nPCDetector;
     [SerializeField] BorderScript borderScript;
     [SerializeField] public MovementScript movementScript;
     [SerializeField] private LOCATIONS currentLocation;
-    [SerializeField] public SpriteRenderer SRenderer;
+    public SpriteRenderer SRenderer;
+
+    InventoryScript myInventory;
 
 
     public int Id
@@ -29,7 +32,6 @@ public class PlayerManager : MonoBehaviour
         set
         {
             currentPosition_GRID = value;
-            
             if (IsLocal)
             {
                 nPCDetector.CheckForNPC(value);
@@ -45,16 +47,18 @@ public class PlayerManager : MonoBehaviour
             isLocal = value;
             if (isLocal == true)
             {
-                GameObject.Find("Main Camera").gameObject.transform.parent = this.gameObject.transform.Find("Player-xray-border").gameObject.transform; ;
+                GameManager.instance.cam.transform.parent = this.gameObject.transform.Find("Player-xray-border").gameObject.transform; ;
+                GameManager.instance.cam.transform.localPosition = Vector3.zero;
                 nPCDetector = GetComponentInChildren<NPCDetector>();
+                myInventory = UIManager.instance.PlayerInventroy;
+                print(myInventory.name);
             }
         }
     }
-
     public LOCATIONS CurrentLocation { 
         get => currentLocation;
         set {
-            print("przeniesienie gracza:" + Username + " do "+value.ToString());
+           // print("przeniesienie gracza:" + Username + " do "+value.ToString());
             switch(value) {
                 case LOCATIONS.Start_First_Floor:
                     gameObject.transform.parent = GameManager.instance.StartLocationFirstFloorContainer.transform;
@@ -80,19 +84,28 @@ public class PlayerManager : MonoBehaviour
         foreach (var pm in GetComponentsInParent<PlayerManager>())
         {
             if (pm == this) continue;
-
             Destroy(pm.gameObject);
         }
     }
     public void MoveToPositionInGrid(Vector3Int newPosition)
     {
-        print("zmiana pozycji na nową");
-        //zapisywanie nowejaktualnej pozycji
+        if(isLocal) GameManager.instance.cam.transform.localPosition = Vector3.zero;
+    
         CurrentPosition_GRID = newPosition;
-        // wykonanie animacji ruchu z wczesniejszej pozycji na aktualną
-        movementScript.ExecuteMovingAnimation(newPosition_Grid: newPosition);
-        
-        
+        movementScript.ExecuteMovingAnimation(newPosition_Grid: newPosition);        
     }
 
+    internal void TeleportToPositionInGrid(Vector3Int newPosition)
+    {
+         CurrentPosition_GRID = newPosition;
+         movementScript.Teleport(newPosition);
+    }
+
+    private void OnDestroy() 
+    {
+        // w przypadku kikcka z serwera obbiekt gracza zostanie usunięty, 
+        //  dlatego najpierw trzeba odczepić od niego kamere        
+        print("detach camera from local player object");
+        GameManager.instance.cam.transform.SetParent(null);
+    }
 }

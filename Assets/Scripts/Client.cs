@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Net.Security;
+using System.Collections.Generic;
 using UnityEngine;
 using System.Net;
 using System.Net.Sockets;
@@ -18,10 +19,10 @@ public class Client : MonoBehaviour
     public TCP tcp;
     public UDP udp;
 
-    private bool isConnected = false;
+    public static bool isConnected = false;
     private delegate void PacketHandler(Packet _packet);
     private static Dictionary<int, PacketHandler> packetHandlers;
-
+    public static bool dataInitialized;
     private void Awake()
     {
         if (instance == null)
@@ -39,6 +40,9 @@ public class Client : MonoBehaviour
         print("Start");
         tcp = new TCP();
         udp = new UDP();
+
+        print("establish connection");
+        Client.instance.ConnectToServer();
     }
     private void OnApplicationQuit() {
         Disconnect();
@@ -46,8 +50,8 @@ public class Client : MonoBehaviour
     
     public void ConnectToServer()
     {
-        print("test");
-        InitializeClientData();
+        if(dataInitialized == false) InitializeClientData();
+
         isConnected = true;
         tcp.Connect();
     }
@@ -67,10 +71,17 @@ public class Client : MonoBehaviour
             {
                 tcpClient.Connect(instance.ip, instance.port);
                 print("Port open");
+           
             } 
             catch (Exception)
             {
+                UIManager.instance.startMenu.SetActive(false);
+                UIManager.instance.LoadingAnimation.ReceivedMessageFromServer = true;
+                Client.isConnected = false;
                 print("Port closed");
+                UIManager.instance.RegistrationWindow.GetComponent<WindowScript>().ShowServerMessage("CONNECTION-FAILED");
+                UIManager.instance.reconnectWindow.SetActive(true);
+                
                 return;
             }
 
@@ -114,6 +125,7 @@ public class Client : MonoBehaviour
             catch (Exception _ex)
             {
                 Debug.Log($"Error sending data to server via TCP: {_ex}");
+                instance.Disconnect();
             }
         }
 
@@ -317,7 +329,11 @@ public class Client : MonoBehaviour
             { (int)ServerPackets.ping_ALL, ClientHandle.PingBackToServer },                             // zwykły heartbeat co 5 sekund czy klient nadal aktywny
             { (int)ServerPackets.downloadMapData, ClientHandle.SendMapToServer },                       // klient ma wysłać swoją mape na serwer
             { (int)ServerPackets.sendCurrentUpdateNumber, ClientHandle.ReceivedUpdateNumber },          // otrzymanie info o nowym Update
-            { (int)ServerPackets.SEND_MAPDATA_TO_CLIENT, ClientHandle.NewMapDataFromServerReceived }    // otrzymano nową mape
+            { (int)ServerPackets.SEND_MAPDATA_TO_CLIENT, ClientHandle.NewMapDataFromServerReceived },   // otrzymano nową mape
+            { (int)ServerPackets.RegistrationResponse, ClientHandle.RetievedRegistrationResponse },     // informacja zwrotna na wysłanie danych rejestracji konta na serwerze
+            { (int)ServerPackets.LoginResponse, ClientHandle.RetievedLoginResponse },                   // informacja zwrotna na dotycząca proby logowania
+            { (int)ServerPackets.colectItem, ClientHandle.CollectAndPickUPItem }         
+
             // TODO:     // otrzymanie info o szczegółach zebranego przedmiotu
             // TODO:     // otrzymanie szczegółów dotycznących napotkanego NPC'a 
             // TODO:     // otrzymanie info o aktualnych ofertach w sklepie (jeze,lli ktos cos sprzeda to bedzie mozna to odkupic od npc ?)
@@ -325,18 +341,23 @@ public class Client : MonoBehaviour
             // TODO:     // otrzymanie aktualnych informacji dotyczące innego gracza ( level, pozycja, w zakladce "party" jezeli jestescie w grupie )   
         };
         Debug.Log("Initialized packets.");
-    }
-    
-    private void Disconnect() {
-            if(isConnected) {
+        dataInitialized = true;
+    }   
+     public void Disconnect() 
+     {
+            UIManager.instance.startMenu.SetActive(false);
+            UIManager.instance.RegistrationWindow.SetActive(false);
+            UIManager.instance.ShowReconnectWindow();
+            if(isConnected) 
+            {
+                Debug.Log("Disconnectef from server.");
+
                 isConnected = false;
-                
                 tcp.socket.Close();
                 udp.socket.Close();
 
-                Debug.Log("Disconnectef from server.");
             }
             ThreadManager.ExecuteOnMainThread(()=>UIManager.instance.BackToStartScreen());
-          //  UIManager.instance.BackToStartScreen();
+          // UIManager.instance.BackToStartScreen();
         }
 }
