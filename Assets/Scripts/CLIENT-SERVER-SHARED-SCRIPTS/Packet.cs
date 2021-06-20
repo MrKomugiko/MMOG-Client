@@ -17,13 +17,17 @@ using UnityEngine;
         ping_ALL,
         downloadMapData,
         sendCurrentUpdateNumber,
-        SEND_MAPDATA_TO_CLIENT
+        SEND_MAPDATA_TO_CLIENT,
+        RegistrationResponse,
+        LoginResponse,
+        colectItem
     }
 
     /// <summary>Sent from client to server.</summary>
     public enum ClientPackets
     {
         welcomeReceived = 1,
+        LogMeIn = 2,
        // updTestReceived,
         playerMovement,
         SendChatMessage,
@@ -31,7 +35,7 @@ using UnityEngine;
         SEND_MAPDATA_TO_SERVER,
         downloadLatestMapUpdate,
         download_recentMapVersion,
-        clientChangeLocalisation
+        clientChangeLocalisation,
 }
 public class Packet : IDisposable
 {
