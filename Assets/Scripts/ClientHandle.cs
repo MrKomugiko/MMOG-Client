@@ -20,7 +20,11 @@ public class ClientHandle : MonoBehaviour
         print("server:"+_msg);
         
         Client.instance.udp.Connect(((IPEndPoint)Client.instance.tcp.socket.Client.LocalEndPoint).Port);
-
+        UIManager.instance.LoadingAnimation.ReceivedMessageFromServer = true;
+        UIManager.instance.startMenu.SetActive(true);
+        UIManager.instance.reconnectWindow.SetActive(false);
+        UIManager.instance.RegistrationWindow.GetComponent<WindowScript>().ShowServerMessage("CONNECTION-SUCCES");
+        
         ClientSend.DownloadLatestUpdateVersionNumber();
     }
 
@@ -62,17 +66,35 @@ public class ClientHandle : MonoBehaviour
         Vector3Int _tileMapCoordinates = new Vector3Int((int)_position.x,(int)_position.y,(int)_position.z);
         
         GameManager.instance.SpawnPlayer(_id,_username,_position,_rotation, _tileMapCoordinates,_currentLocation, _currentfloor);
-        //print($"spawn[{_username}] at: position:{_position} / tilecoord:{_tileMapCoordinates}");
 
         UIManager.instance.PrintCurrentOnlineUsers();
     }
+    private static void Teleport(Packet _packet)
+    {
+         int _id = _packet.ReadInt();
+        Vector3 _position = _packet.ReadVector3();
+        print("teleport to: "+_position.ToString());
+
+            //TODO: teleportowanie na inną mape jest niemożliwe - chyba ze sprawdzane  czy pozycja znajduje sie wewnątrz mapy, a nie bramy
+            // if (GameManager.instance.LocationMaps.ContainsKey(Vector3Int.CeilToInt(_position)))
+            // {
+            //     GameManager.instance.EnterNewLocation(Vector3Int.CeilToInt(_position), GameManager.players[_id]);
+            // }
+        
+       GameManager.players[_id].TeleportToPositionInGrid(new Vector3Int((int)_position.x, (int)_position.y, (int)_position.z));
+    }
     public static void PlayerPosition(Packet _packet)
     {
+        bool teleport = _packet.ReadBool();
+        if(teleport)
+        {
+            Teleport(_packet);
+            return;
+        }
+
         int _id = _packet.ReadInt();
         Vector3 _position = _packet.ReadVector3();
 
-       // if (_id == Client.instance.myId) {
-           // print("otrzymanie nowej pozycji z serwera");
             if (GameManager.instance.LocationMaps.ContainsKey(Vector3Int.CeilToInt(_position)))
             {
                 GameManager.instance.EnterNewLocation(Vector3Int.CeilToInt(_position), GameManager.players[_id]);
@@ -103,6 +125,14 @@ public class ClientHandle : MonoBehaviour
         // sprawdzenie czy id gracza istnieje 
         if(!GameManager.players.ContainsKey(_id)) return;
 
+        if(Client.instance.myId == _id)
+        {
+            // to znaczy ze server nas Kicknął ;x
+            print("zostałeś wyrzucony z serwera");
+
+            Client.instance.Disconnect();
+        }
+        
         // usunięcie obiektu gracza
             Destroy(GameManager.players[_id].gameObject);
         // usunięcie afka z listy graczy
@@ -216,6 +246,8 @@ public class ClientHandle : MonoBehaviour
     }
     public static void LoadMapDataFromFile(LOCATIONS _location, MAPTYPE _mapType)
     {
+        
+
       // GameManager.instance.ANDROIDLOGGER.text += $"LoadMapDataFromFile {_location}{_mapType}\n";
          //   print("ładowanie mapy");
             var references = GetReferencesByMaptype(_location, _mapType);
@@ -274,6 +306,27 @@ public class ClientHandle : MonoBehaviour
 
             PopulateTilemapWithCorrectTiles(_data: REFERENCE_MAPDATA, _tilemap: REFERENCE_TILEMAP);
 
+    }
+
+    internal static void CollectAndPickUPItem(Packet _packet)
+    {
+        int whiPickItem = _packet.ReadInt(); // INT server current player ID
+
+        Item itemFromServer = new Item(
+            _packet.ReadInt(),     // ID
+            _packet.ReadString(),  // Name 
+            _packet.ReadInt(),     // Value             
+            _packet.ReadInt(),    // Level                                         
+            _packet.ReadBool(),     // Stackable                                        
+            _packet.ReadInt(),     // Stack size                             
+            _packet.ReadString()   // Description                                                                                  
+        );
+        
+        Console.WriteLine($"Podniosleś przedmiot: {itemFromServer.ToString()}");
+        Inventory.Items_LIST.Add(itemFromServer);
+
+        InventoryScript.instance.InventoryDATA.AddItemToInventory(itemFromServer);
+        
     }
 
     internal static void RetievedLoginResponse(Packet _packet)

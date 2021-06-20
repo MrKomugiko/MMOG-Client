@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class MovementScript : MonoBehaviour
 {
@@ -99,9 +100,17 @@ public class MovementScript : MonoBehaviour
         }
         ClientSend.PlayerMovement(_inputsFromButton);
     }
+
+    internal void Teleport(Vector3Int vector3Int)
+    {
+        // TODO: Teleport na inne piętra niemożliwy, do zrobienia przeliczanie Z względem wysokosci
+        Vector3 worldPosition = GameManager.instance._tileMap.CellToWorld(Vector3Int.CeilToInt(vector3Int));
+        _transform.position =  new Vector3(worldPosition.x,worldPosition.y,_transform.position.z );
+
+    }
+
     public void ExecuteMovingAnimation(Vector3Int newPosition_Grid)
     {
-        if(this.gameObject.activeSelf == false) return;
         if(Client.instance.myId == PManager.Id )
         {
             movingAnimationInProgress = true;
@@ -138,10 +147,20 @@ public class MovementScript : MonoBehaviour
             if (jumpDirection == 0) StartCoroutine(WalkAnimation(newX, newY));
             if (jumpDirection != 0) StartCoroutine(JumpAnimation(newPosition_Grid, jumpDirection, (Vector3Int?)lastPosition_Grid));
         }
-        else{
-         // sam teleport bez animacji jezeli obiekt jest nieaktywny
-         // nie rób z nim nic ? TODO: sprawdzic jak dziala
+        else
+        {
+           print("inactive object : "+jumpDirection);
+            if (jumpDirection == 0){ // walk
+                _transform.position += new Vector3(newX, newY,0);
+            }
+            if (jumpDirection != 0){ // jump
+
+                _transform.position =  GameManager.instance._tileMap.CellToWorld(newPosition_Grid);
+                _transform.position += new Vector3(0,0,(jumpDirection>0?2:4));
+              //  CurrentFloor += jumpDirection > 0 ? 2 : -2;
+            }
         }
+        
 
         lastPosition_Grid = newPosition_Grid;
      

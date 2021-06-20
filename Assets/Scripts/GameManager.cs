@@ -53,11 +53,9 @@ public partial class GameManager : MonoBehaviour
     }
 
     public static Dictionary<int,PlayerManager> players = new Dictionary<int, PlayerManager>();
-    
+
     public GameObject localPlayerPrefab; // lokalny gracz 
-    public Tile localPlayerTile;
     public GameObject playerPrefab; // inni gracze na serwerze
-    public Tile playerTile;
     [SerializeField] private int currentUpdateVersion;
     Vector3Int startingLocationOnGrid = new Vector3Int(0,0,2);
     Vector3 basePodition = new Vector3(0,0,2);
@@ -95,8 +93,8 @@ public partial class GameManager : MonoBehaviour
         if(_id == Client.instance.myId) 
         {
             _player = Instantiate(localPlayerPrefab, _position,_rotation);
-    
             _isLocal = true;
+            InventoryScript.instance.SetupInventory();
         }
         else
         {

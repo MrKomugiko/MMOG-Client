@@ -12,6 +12,7 @@ public class LoadingAnimation : MonoBehaviour
 
     private void OnEnable() 
     {
+        
        ReceivedMessageFromServer = false;
        StartCoroutine(SpiningAnimation());
        spinVector = new Vector3(0,0,spingAnglePerFrame);

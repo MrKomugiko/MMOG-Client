@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] public MovementScript movementScript;
     [SerializeField] private LOCATIONS currentLocation;
     public SpriteRenderer SRenderer;
+
+    InventoryScript myInventory;
 
 
     public int Id
@@ -47,6 +50,8 @@ public class PlayerManager : MonoBehaviour
                 GameManager.instance.cam.transform.parent = this.gameObject.transform.Find("Player-xray-border").gameObject.transform; ;
                 GameManager.instance.cam.transform.localPosition = Vector3.zero;
                 nPCDetector = GetComponentInChildren<NPCDetector>();
+                myInventory = UIManager.instance.PlayerInventroy;
+                print(myInventory.name);
             }
         }
     }
@@ -90,4 +95,17 @@ public class PlayerManager : MonoBehaviour
         movementScript.ExecuteMovingAnimation(newPosition_Grid: newPosition);        
     }
 
+    internal void TeleportToPositionInGrid(Vector3Int newPosition)
+    {
+         CurrentPosition_GRID = newPosition;
+         movementScript.Teleport(newPosition);
+    }
+
+    private void OnDestroy() 
+    {
+        // w przypadku kikcka z serwera obbiekt gracza zostanie usunięty, 
+        //  dlatego najpierw trzeba odczepić od niego kamere        
+        print("detach camera from local player object");
+        GameManager.instance.cam.transform.SetParent(null);
+    }
 }

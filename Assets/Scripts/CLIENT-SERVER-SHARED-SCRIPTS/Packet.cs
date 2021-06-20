@@ -19,7 +19,8 @@ using UnityEngine;
         sendCurrentUpdateNumber,
         SEND_MAPDATA_TO_CLIENT,
         RegistrationResponse,
-        LoginResponse
+        LoginResponse,
+        colectItem
     }
 
     /// <summary>Sent from client to server.</summary>

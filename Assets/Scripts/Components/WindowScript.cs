@@ -19,7 +19,14 @@ public class WindowScript : MonoBehaviour
         this.transform.gameObject.SetActive(false);
     }
 
-   
+    public void OnClick_OpenCloseWindow(GameObject window)
+    {
+        window.transform.gameObject.SetActive(!window.activeSelf);
+    }
+   public void OnClick_ConnectToServer()
+   {
+       Client.instance.ConnectToServer();
+   }
         
     
     public void ShowServerMessage(string _response)
@@ -35,6 +42,14 @@ public class WindowScript : MonoBehaviour
                 responsMessage.SetText($"<color=red>Nazwa użytkownika jest już zajęta.</color>"); 
             break;
 
+            case "CONNECTION-FAILED":
+                  responsMessage.SetText($"<color=orange>Błąd łączenia z serwerem, spróbuj ponownie.</color>"); 
+            break;
+            
+            case "CONNECTION-SUCCES":
+                  responsMessage.SetText($"<color=green>Połączyłeś się z serwerem.</color>"); 
+            break;
+            
             default:
             // wyswietlenie dowolnej wioadomosci
              responsMessage.SetText($"<color=white>{_response}</color>"); 
