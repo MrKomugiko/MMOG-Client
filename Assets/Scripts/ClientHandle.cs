@@ -308,6 +308,19 @@ public class ClientHandle : MonoBehaviour
 
     }
 
+    internal static void RemoveItemFromMap(Packet _packet)
+    {
+        print("gracz podniosl x item");
+        LOCATIONS _location = (LOCATIONS)_packet.ReadInt();
+        MAPTYPE _mapType = (MAPTYPE)_packet.ReadInt();
+        Vector3Int position_grid = Vector3Int.CeilToInt(_packet.ReadVector3());
+
+
+        var refference = GetReferencesByMaptype(_location, _mapType);        
+        refference.mapdata[position_grid] = "";
+        refference.tilemap.SetTile(position_grid,null);
+    }
+
     internal static void CollectAndPickUPItem(Packet _packet)
     {
         int whiPickItem = _packet.ReadInt(); // INT server current player ID

@@ -332,8 +332,8 @@ public class Client : MonoBehaviour
             { (int)ServerPackets.SEND_MAPDATA_TO_CLIENT, ClientHandle.NewMapDataFromServerReceived },   // otrzymano nową mape
             { (int)ServerPackets.RegistrationResponse, ClientHandle.RetievedRegistrationResponse },     // informacja zwrotna na wysłanie danych rejestracji konta na serwerze
             { (int)ServerPackets.LoginResponse, ClientHandle.RetievedLoginResponse },                   // informacja zwrotna na dotycząca proby logowania
-            { (int)ServerPackets.colectItem, ClientHandle.CollectAndPickUPItem }         
-
+            { (int)ServerPackets.colectItem, ClientHandle.CollectAndPickUPItem },         
+            { (int)ServerPackets.removeItemFromMap, ClientHandle.RemoveItemFromMap }         
             // TODO:     // otrzymanie info o szczegółach zebranego przedmiotu
             // TODO:     // otrzymanie szczegółów dotycznących napotkanego NPC'a 
             // TODO:     // otrzymanie info o aktualnych ofertach w sklepie (jeze,lli ktos cos sprzeda to bedzie mozna to odkupic od npc ?)
