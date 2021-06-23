@@ -334,6 +334,7 @@ public class Client : MonoBehaviour
             { (int)ServerPackets.LoginResponse, ClientHandle.RetievedLoginResponse },                   // informacja zwrotna na dotycząca proby logowania
             { (int)ServerPackets.colectItem, ClientHandle.CollectAndPickUPItem },         
             { (int)ServerPackets.removeItemFromMap, ClientHandle.RemoveItemFromMap }         
+            
             // TODO:     // otrzymanie info o szczegółach zebranego przedmiotu
             // TODO:     // otrzymanie szczegółów dotycznących napotkanego NPC'a 
             // TODO:     // otrzymanie info o aktualnych ofertach w sklepie (jeze,lli ktos cos sprzeda to bedzie mozna to odkupic od npc ?)

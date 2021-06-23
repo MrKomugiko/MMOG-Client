@@ -120,7 +120,7 @@ public class ClientSend : MonoBehaviour
                 SendTCPData(_packet);
             }
         }
-    public static void DownloadLatestMapData()
+        public static void DownloadLatestMapData()
     {
       //  print("Wysłanie proźby o przysłanie nowego pakietu mapy dla aktualnego update`a");
           using (Packet _packet = new Packet((int)ClientPackets.downloadLatestMapUpdate)) {
@@ -129,7 +129,7 @@ public class ClientSend : MonoBehaviour
             SendTCPData(_packet);
         }   
     }
-       public static void DownloadLatestMapData(LOCATIONS _location, MAPTYPE _maptype)
+        public static void DownloadLatestMapData(LOCATIONS _location, MAPTYPE _maptype)
     {
         print($"Wysłanie proźby o przysłanie nowego update dla [{_location.ToString()}][{_maptype.ToString()}]");
           using (Packet _packet = new Packet((int)ClientPackets.downloadLatestMapUpdate)) {
@@ -140,17 +140,14 @@ public class ClientSend : MonoBehaviour
             SendTCPData(_packet);
         }   
     }
-
-       public static void DownloadLatestUpdateVersionNumber()
+        public static void DownloadLatestUpdateVersionNumber()
         {
             print("Wysłanie proźby oaktualny numer update'a");
               using (Packet _packet = new Packet((int)ClientPackets.download_recentMapVersion)) {
                 SendTCPData(_packet);
             }   
         }
- 
-
-    public static void SendServerPlayerNewLocalisation(LOCATIONS enterNewLocation)
+        public static void SendServerPlayerNewLocalisation(LOCATIONS enterNewLocation)
     {
        print("Wysylanie na serwer info o zmianie lokalizacji gracza");
         using (Packet _packet = new Packet((int)ClientPackets.clientChangeLocalisation)) {
@@ -159,5 +156,19 @@ public class ClientSend : MonoBehaviour
         }
     }
 
+        public enum PlayerActions
+        {
+            TransformToStairs = 1
+        }
+        public static void SendServerPlayerActionCommand(PlayerActions playerAction, bool isActive)
+        {
+            using (Packet _packet = new Packet((int)ClientPackets.PlayerMakeAction)) 
+            {
+                print("WYSŁANIE DO SERWERA INFORMACJI O WYSKONANIU AKCJI: "+playerAction.ToString());
+                _packet.Write((int)playerAction);   // int
+                _packet.Write(isActive);            // bool
+                SendTCPData(_packet);
+            }
+        }
     #endregion
 }

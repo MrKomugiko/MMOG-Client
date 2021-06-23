@@ -95,12 +95,23 @@ public class ClientHandle : MonoBehaviour
         int _id = _packet.ReadInt();
         Vector3 _position = _packet.ReadVector3();
 
-            if (GameManager.instance.LocationMaps.ContainsKey(Vector3Int.CeilToInt(_position)))
-            {
-                GameManager.instance.EnterNewLocation(Vector3Int.CeilToInt(_position), GameManager.players[_id]);
-            }
+        if (GameManager.instance.LocationMaps.ContainsKey(Vector3Int.CeilToInt(_position)))
+        {
+            GameManager.instance.EnterNewLocation(Vector3Int.CeilToInt(_position), GameManager.players[_id]);
+        }
         //}
-       GameManager.players[_id].MoveToPositionInGrid(new Vector3Int((int)_position.x, (int)_position.y, (int)_position.z));
+        // w przypadku gdy gracz dostanie w odpowiedzi niezmieniona aktualna pozycje nie ma potrzebny wykonywac animacji
+        if(Vector3Int.CeilToInt(_position) == GameManager.players[_id].CurrentPosition_GRID)
+        {
+            GameManager.players[_id].movementScript.movingAnimationInProgress = false;
+            GameManager.players[_id].movementScript.waitingForServerAnswer = false;
+
+        }
+        else
+        {
+            // zostanie wykonany jakis ruch
+            GameManager.players[_id].MoveToPositionInGrid(Vector3Int.CeilToInt(_position));
+        }
     }
     public static void UpdateChat(Packet _packet) {
         string _msg = _packet.ReadString();
@@ -449,6 +460,7 @@ public class ClientHandle : MonoBehaviour
         LOCATIONS mapLocation = (LOCATIONS)_packet.ReadInt();
         print("server chce mape typu: "+mapType.ToString()+" dla lokalizacji: "+ mapLocation.ToString());
         ClientSend.SendMapDataToServer(mapType,mapLocation);
+        
     }
 
 

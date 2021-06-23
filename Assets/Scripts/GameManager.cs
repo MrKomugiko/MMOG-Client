@@ -70,6 +70,7 @@ public partial class GameManager : MonoBehaviour
 
         ListaDostepnychLokalizacji.Add(StartLocationFirstFloorContainer);
         ListaDostepnychLokalizacji.Add(StartLocationSeconFloorContainer);
+        
 
         if (instance == null)
         {

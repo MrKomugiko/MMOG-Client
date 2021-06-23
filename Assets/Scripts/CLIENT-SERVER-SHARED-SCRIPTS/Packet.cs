@@ -38,6 +38,7 @@ using UnityEngine;
         downloadLatestMapUpdate,
         download_recentMapVersion,
         clientChangeLocalisation,
+        PlayerMakeAction,
 }
 public class Packet : IDisposable
 {

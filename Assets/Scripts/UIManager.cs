@@ -16,6 +16,7 @@ public class UIManager : MonoBehaviour
     
     public GameObject startMenu;
     public GameObject buttonsPanel;
+
     public GameObject czatPanel;
     public GameObject grid;
     public static InputField Login_InputUsername;
@@ -154,8 +155,9 @@ public class UIManager : MonoBehaviour
     }
 
     [SerializeField] TextMeshProUGUI PlayersOnlineText;
+    [SerializeField] public FixedJoystick joystick;
 
-        public void PrintCurrentOnlineUsers()
+    public void PrintCurrentOnlineUsers()
         {
             PlayersOnlineText.SetText("");
             foreach(var player in GameManager.players.Values)

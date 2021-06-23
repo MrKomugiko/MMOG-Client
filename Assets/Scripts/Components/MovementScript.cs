@@ -1,8 +1,6 @@
-﻿using System.IO.Compression;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
 
 public class MovementScript : MonoBehaviour
 {
@@ -14,7 +12,7 @@ public class MovementScript : MonoBehaviour
     [SerializeField] PlayerManager PManager;
     [SerializeField] float jumpFrames = 16;
     [SerializeField] float walkFrames = 6;
-
+    [SerializeField] FixedJoystick Joystick;
     public int CurrentFloor 
     { 
         get => currentFloor; 
@@ -40,39 +38,165 @@ public class MovementScript : MonoBehaviour
         PManager = playermanager;
         Configure();
     }
+    Button X_Btn, Y_Btn, B_Btn, A_Btn;
+    ColorBlock originalColorBlock = ColorBlock.defaultColorBlock;
+    ColorBlock pressedColorBlock = ColorBlock.defaultColorBlock;
     void Configure()
     {
         lastPosition_Grid = PManager.CurrentPosition_GRID;
         _transform = GetComponent<Transform>();
         _transform.position = GameManager.instance._tileMap_GROUND.CellToWorld(PManager.CurrentPosition_GRID);
         _transform.position += new Vector3(0, 0, .9f);
-        if (PManager.IsLocal) AssignFunctionToLocalPlayerButtons();
+        if (PManager.IsLocal) {
+          //  AssignFunctionToLocalPlayerButtons();
+            // dodanie obslugi joisticka
+            Joystick = UIManager.instance.joystick;
+
+        X_Btn = GameObject.Find("X_Btn").GetComponent<Button>();
+        Y_Btn = GameObject.Find("Y_Btn").GetComponent<Button>();
+        B_Btn = GameObject.Find("B_Btn").GetComponent<Button>();
+        A_Btn = GameObject.Find("A_Btn").GetComponent<Button>();
+        }
+
+        
+
     }
     private void Update()
-    {
+    {        
         // wyłączenie update'a na innych klientach
         if(PManager.IsLocal == false) return;
+
+        HandleGamepadButtons();
+
         if (waitingForServerAnswer == true) return;
         if(movingAnimationInProgress) return;
-        
-        if (Input.GetKeyDown(KeyCode.W))
-            NavigationButtonPressed(KeyCode.W);
-        else if (Input.GetKeyDown(KeyCode.S))
-            NavigationButtonPressed(KeyCode.S);
-        else if (Input.GetKeyDown(KeyCode.A))
-            NavigationButtonPressed(KeyCode.A);
-        else if (Input.GetKeyDown(KeyCode.D))
-            NavigationButtonPressed(KeyCode.D);
+        if(ExecutingActionWhichBlockMovement) return;
+
+        NavigationButtonPressed(GetDirectionFromKeyboardKeyPressed());
+        NavigationButtonPressed(GetDirectionFromJoystickInput()); 
+        NavigationButtonPressed(GetDirectionFromGamepadJoystickInput());       
     }
-    private void AssignFunctionToLocalPlayerButtons()
+    private KeyCode GetDirectionFromJoystickInput()
+    {    // W 
+
+        if(Joystick.Direction.x == 0 && Joystick.Direction.y == 0) return KeyCode.None;
+
+        if(Joystick.Direction.x >= -1 && Joystick.Direction.x <= 0 && Joystick.Direction.y >= 0 && Joystick.Direction.y <= 1)
+        {
+            return KeyCode.W;
+        }
+        // S
+          if(Joystick.Direction.x >=0 && Joystick.Direction.x <= 1 && Joystick.Direction.y >= -1 && Joystick.Direction.y <= 0)
+        {
+            return KeyCode.S;
+        }
+        // A
+          if(Joystick.Direction.x >= -1 && Joystick.Direction.x <= 0 && Joystick.Direction.y >= -1 && Joystick.Direction.y <= 0)
+        {
+            return KeyCode.A;
+        }
+        // D
+          if(Joystick.Direction.x >= 0 && Joystick.Direction.x <= 1 && Joystick.Direction.y >= 0 && Joystick.Direction.y <= 1)
+        {
+            return KeyCode.D;
+        }
+         
+         return KeyCode.None;
+    }
+    private KeyCode GetDirectionFromGamepadJoystickInput()
+    {    
+        float x = Input.GetAxis("Horizontal");
+        float y = Input.GetAxis("Vertical"); 
+        if(x==0 && y ==0 ) return KeyCode.None;
+        // W
+        if( x >= -1.0f &&  x <= 0 && y >= 0 && y <= 1.0f) return KeyCode.W;
+        // S
+        if( x >= 0 &&  x <= 1.0f && y >= -1.0f && y <= 0) return KeyCode.S;
+        // A
+        if( x >= -1.0f &&  x <= 0 && y >= -1.0f && y <= 0) return KeyCode.A;
+        // D
+        if( x >= 0 &&  x <= 1.0f && y >= 0 && y <= 1.0f) return KeyCode.D;
+       
+        return KeyCode.None;
+    }
+    private KeyCode GetDirectionFromKeyboardKeyPressed()
     {
-        GameObject.Find("W_Btn").GetComponent<Button>().onClick.AddListener(() => NavigationButtonPressed(KeyCode.W));
-        GameObject.Find("S_Btn").GetComponent<Button>().onClick.AddListener(() => NavigationButtonPressed(KeyCode.S));
-        GameObject.Find("A_Btn").GetComponent<Button>().onClick.AddListener(() => NavigationButtonPressed(KeyCode.A));
-        GameObject.Find("D_Btn").GetComponent<Button>().onClick.AddListener(() => NavigationButtonPressed(KeyCode.D));
+        if (Input.GetKeyDown(KeyCode.W)) return KeyCode.W; 
+        else if (Input.GetKeyDown(KeyCode.S)) return KeyCode.S;
+        else if (Input.GetKeyDown(KeyCode.A)) return KeyCode.A;   
+        else if (Input.GetKeyDown(KeyCode.D)) return KeyCode.D;   
+        else return KeyCode.None;
     }
+    private bool ExecutingActionWhichBlockMovement = false;
+    private void  HandleGamepadButtons()
+    {
+   // X = transformacja w schodek xD
+        if(Input.GetKeyDown("joystick button "+2))
+        {
+            ExecutingActionWhichBlockMovement = true;
+            pressedColorBlock.normalColor = Color.blue;
+            PManager.TransformIntoStairs(true);
+            X_Btn.colors = pressedColorBlock;
+        }
+        else if(Input.GetKeyUp("joystick button "+2))
+        {
+            ExecutingActionWhichBlockMovement = false;
+            X_Btn.colors = originalColorBlock;
+            PManager.TransformIntoStairs(false);
+            print("koeniec wciskania X");
+        }
+        
+        if(Input.GetKeyDown("joystick button "+3))
+        {
+            pressedColorBlock.normalColor = Color.yellow;
+            print("y jest wcisniete");
+            Y_Btn.colors = pressedColorBlock;
+        }
+        else if(Input.GetKeyUp("joystick button "+3))
+        {
+            Y_Btn.colors = originalColorBlock;
+            print("koeniec wciskania y");
+        }
+
+        if(Input.GetKeyDown("joystick button "+1))
+        {
+            pressedColorBlock.normalColor = Color.red;
+            print("b jest wcisniete");
+            B_Btn.colors = pressedColorBlock;
+        }
+        else if(Input.GetKeyUp("joystick button "+1))
+        {
+            B_Btn.colors = originalColorBlock;
+            print("koeniec wciskania b");
+        }
+
+        if(Input.GetKeyDown("joystick button "+0))
+        {
+                pressedColorBlock.normalColor = Color.green;
+            print("a jest wcisniete");
+            A_Btn.colors = pressedColorBlock;
+        }
+        else if(Input.GetKeyUp("joystick button "+0))
+        {
+            A_Btn.colors = originalColorBlock;
+            print("koeniec wciskania a");
+        }
+    }
+    // private void AssignFunctionToLocalPlayerButtons()
+    // {
+    //     GameObject.Find("W_Btn").GetComponent<Button>().onClick.AddListener(() => NavigationButtonPressed(KeyCode.W));
+    //     GameObject.Find("S_Btn").GetComponent<Button>().onClick.AddListener(() => NavigationButtonPressed(KeyCode.S));
+    //     GameObject.Find("A_Btn").GetComponent<Button>().onClick.AddListener(() => NavigationButtonPressed(KeyCode.A));
+    //     GameObject.Find("D_Btn").GetComponent<Button>().onClick.AddListener(() => NavigationButtonPressed(KeyCode.D));
+
+    //     X_Btn.onClick.AddListener(() => NavigationButtonPressed(KeyCode.X));
+    //     Y_Btn.onClick.AddListener(() => NavigationButtonPressed(KeyCode.Y));
+    //     B_Btn.onClick.AddListener(() => NavigationButtonPressed(KeyCode.B));
+    //     A_Btn.onClick.AddListener(() => NavigationButtonPressed(KeyCode.A));
+    // }
     public void NavigationButtonPressed(KeyCode key)
     {
+        if(key == KeyCode.None) return;
         if(PManager.IsLocal == false) return;
         if (waitingForServerAnswer == true) return;
         if(movingAnimationInProgress) return;
@@ -97,18 +221,18 @@ public class MovementScript : MonoBehaviour
             case KeyCode.D: // 3
                 _inputsFromButton[3] = true;
                 break;
+
+
         }
         ClientSend.PlayerMovement(_inputsFromButton);
     }
-
-    internal void Teleport(Vector3Int vector3Int)
+    public void Teleport(Vector3Int vector3Int)
     {
         // TODO: Teleport na inne piętra niemożliwy, do zrobienia przeliczanie Z względem wysokosci
         Vector3 worldPosition = GameManager.instance._tileMap.CellToWorld(Vector3Int.CeilToInt(vector3Int));
         _transform.position =  new Vector3(worldPosition.x,worldPosition.y,_transform.position.z );
 
     }
-
     public void ExecuteMovingAnimation(Vector3Int newPosition_Grid)
     {
         if(Client.instance.myId == PManager.Id )
@@ -208,7 +332,7 @@ public class MovementScript : MonoBehaviour
         Vector3 _finalPoint = new Vector3(endPosition_World.x, endPosition_World.y, z+(direction>0?2:4));
 
         float frames = direction > 0 ? jumpFrames: jumpFrames/2;
-        for (float i = 0; i < 1.1; i += (1f / frames))
+        for (float i = 0; i < 1; i += (1f / frames))
         {
             if(i<0.5)
                 _transform.localScale = Vector3.Lerp(Vector3.one, new Vector3(1,1.1f,1),i*2);
@@ -221,7 +345,7 @@ public class MovementScript : MonoBehaviour
         }
         frames = direction > 0 ? jumpFrames/2: jumpFrames;
       
-        for (float i = 0; i < 1.1; i += (1f / (frames)))
+        for (float i = 0; i < 1; i += (1f / (frames)))
         {
             // wgniatanie
             if(i>0.5)_transform.localScale = Vector3.Lerp(Vector3.one, direction>0?new Vector3(1,.9f,1):new Vector3(1,.8f,1),(i+1)/2);
@@ -231,7 +355,7 @@ public class MovementScript : MonoBehaviour
         }
         _transform.position = new Vector3(_finalPoint.x,_finalPoint.y,z);
 
-        for (float i = 0; i < 1.1; i += (1f / (frames/2)))
+        for (float i = 0; i < 1; i += (1f / (frames/2)))
         {
             // dogniatanie
             if(i<0.5) _transform.localScale = Vector3.Lerp(direction>0?new Vector3(1,.9f,1):new Vector3(1,.8f,1),direction>0?new Vector3(1,.8f,1):new Vector3(1,.6f,1),i*2);
@@ -240,14 +364,13 @@ public class MovementScript : MonoBehaviour
             _transform.localScale = Vector3.Lerp(direction>0?new Vector3(1,.8f,1):new Vector3(1,.6f,1),Vector3.one,i);
             yield return new WaitForFixedUpdate();
         }
-        
+         _transform.localScale = Vector3.one;
         CurrentFloor += direction > 0 ? 2 : -2;
         movingAnimationInProgress = false;
         GameManager.players[PManager.Id].movementScript.waitingForServerAnswer = false;
         yield return null;
 
     }
-
   //--------------------------------------------------------------------------------------
    static Vector3 GetMediumHightPoint(Vector3Int newPosition_Grid, int direction, Vector3Int? startPodition_Grid)
     {
@@ -257,5 +380,4 @@ public class MovementScript : MonoBehaviour
         Vector3 highestJumpPosition_World = (h_pos_1 + h_pos_2) / 2;
         return highestJumpPosition_World;
     }
-
 }

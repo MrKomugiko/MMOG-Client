@@ -108,4 +108,12 @@ public class PlayerManager : MonoBehaviour
         print("detach camera from local player object");
         GameManager.instance.cam.transform.SetParent(null);
     }
+
+    public void TransformIntoStairs(bool isActive)
+    {
+        ClientSend.SendServerPlayerActionCommand(ClientSend.PlayerActions.TransformToStairs, isActive);  
+    }
+
 }
+
+
