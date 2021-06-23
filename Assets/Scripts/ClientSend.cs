@@ -170,5 +170,14 @@ public class ClientSend : MonoBehaviour
                 SendTCPData(_packet);
             }
         }
+
+    public static void TeleportMe(LOCATIONS dungeonName)
+    {
+       using (Packet _packet = new Packet((int)ClientPackets.TeleportMe)) 
+            {
+                _packet.Write((int)dungeonName);   // int - dungeon number
+                SendTCPData(_packet);
+            }
+    }
     #endregion
 }

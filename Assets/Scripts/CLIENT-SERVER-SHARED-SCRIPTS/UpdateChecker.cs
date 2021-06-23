@@ -119,7 +119,7 @@ public class UpdateChecker : MonoBehaviour
         int versionNumber= 0000;
         try
         {
-        versionNumber = source._Data[_location][_maptype]._Version;
+            versionNumber = source._Data[_location][_maptype]._Version;
         }
         catch (System.Exception ex)
         {

@@ -28,6 +28,12 @@ public partial class GameManager : MonoBehaviour
     public static Dictionary<Vector3Int, string> MAPDATA2ndFloor_Ground { get; internal set; }
     public static Dictionary<Vector3Int, string> MAPDATA2ndFloor { get; internal set; }
 
+
+    public Tilemap _tilemapDUNGEON;
+    public Tilemap _tilemapDUNGEON_GROUND;
+    public static Dictionary<Vector3Int, string> MAPDATA_DUNGEON { get; internal set; }
+    public static Dictionary<Vector3Int, string> MAPDATA_DUNGEON_GROUND { get; internal set; }
+
    [Obsolete] public int CurrentUpdateVersion 
     { 
         get => currentUpdateVersion; 
@@ -121,12 +127,12 @@ public partial class GameManager : MonoBehaviour
     }
    // TODO:zmienic  Locations na zwykłą klase zawierającą szcegolowe info o mapie - np wysokosc ;d 
     public Dictionary<Vector3Int, LOCATIONS[]> LocationMaps = 
-        new Dictionary<Vector3Int, LOCATIONS[]>{
+        new Dictionary<Vector3Int, LOCATIONS[]>
         { 
-            new Vector3Int( 7, -2, 14), new LOCATIONS[2]{LOCATIONS.Start_First_Floor,LOCATIONS.Start_Second_Floor}
-        }
-    };
- 
+            {new Vector3Int( 7, -2, 14), new LOCATIONS[2]{LOCATIONS.Start_First_Floor,LOCATIONS.Start_Second_Floor}},
+            {new Vector3Int( -14, -1, 2), new LOCATIONS[2]{LOCATIONS.DUNGEON_1,LOCATIONS.Start_Second_Floor}}
+        };
+   
     public void EnterNewLocation(Vector3Int locationCoord_Grid, PlayerManager player)
     {
         var enterNewLocation = LocationMaps[locationCoord_Grid];
@@ -138,18 +144,26 @@ public partial class GameManager : MonoBehaviour
             return;            
         }
 
-        // TODO: jakos to zautomatyzować
-        switch(new_location)
-        {
-            case LOCATIONS.Start_First_Floor:
-                //TODO: dodać liste lokalizacji ( gameobiektow) do listy
-                StartLocationSeconFloorContainer.SetActive(false);
-            break;
+            foreach(var mapa in GameManager.instance.ListaDostepnychLokalizacji)
+            {
+                mapa.SetActive(false);
+            }
+            switch(new_location)
+            {
+                case LOCATIONS.Start_First_Floor:
+                    GameManager.instance.ListaDostepnychLokalizacji.Where(loc=>loc.name == new_location.ToString()).First().SetActive(true);
+                break;
 
-            case LOCATIONS.Start_Second_Floor:        
-                StartLocationSeconFloorContainer.SetActive(true);
-            break;
-        }
+                case LOCATIONS.Start_Second_Floor:        
+                    GameManager.instance.ListaDostepnychLokalizacji.Where(loc=>loc.name == new_location.ToString()).First().SetActive(true);
+                    // UWAGA: na piętro 2 wejdziemy tylko z piętra 1, więc konieczne jest zostawienie piętra 1 nadal aktywnego
+                    GameManager.instance.ListaDostepnychLokalizacji.Where(loc=>loc.name == LOCATIONS.Start_First_Floor.ToString()).First().SetActive(true);
+                break;
+
+                case LOCATIONS.DUNGEON_1:        
+                    GameManager.instance.ListaDostepnychLokalizacji.Where(loc=>loc.name == new_location.ToString()).First().SetActive(true);
+                break;
+            }
 
         Debug.Log("You entered "+new_location.ToString());
         player.CurrentLocation = new_location;
@@ -162,21 +176,61 @@ public partial class GameManager : MonoBehaviour
         player.movementScript.CurrentFloor = _currentfloor;
         if(player.IsLocal)
         {
+            // pozamykanie innych otwartych map
+            foreach(var mapa in GameManager.instance.ListaDostepnychLokalizacji)
+            {
+                mapa.SetActive(false);
+            }
             switch(location)
             {
                 case LOCATIONS.Start_First_Floor:
-                    //TODO: dodać liste lokalizacji ( gameobiektow) do listy
-                    StartLocationSeconFloorContainer.SetActive(false);
+                    GameManager.instance.ListaDostepnychLokalizacji.Where(loc=>loc.name == location.ToString()).First().SetActive(true);
                 break;
 
                 case LOCATIONS.Start_Second_Floor:        
-                    StartLocationSeconFloorContainer.SetActive(true);
+                    GameManager.instance.ListaDostepnychLokalizacji.Where(loc=>loc.name == location.ToString()).First().SetActive(true);
+                    // UWAGA: na piętro 2 wejdziemy tylko z piętra 1, więc konieczne jest zostawienie piętra 1 nadal aktywnego
+                    GameManager.instance.ListaDostepnychLokalizacji.Where(loc=>loc.name == LOCATIONS.Start_First_Floor.ToString()).First().SetActive(true);
+                break;
+
+                case LOCATIONS.DUNGEON_1:        
+                    GameManager.instance.ListaDostepnychLokalizacji.Where(loc=>loc.name == location.ToString()).First().SetActive(true);
                 break;
             }
         }
 
         Debug.Log("You entered "+location.ToString());
         player.CurrentLocation = location;
+    }
+
+    public enum DUNGEONS{
+        DUNGEON_1
+    }
+    public void OnClick_EnterTheDungeon(string dungeonName)
+    {
+        LOCATIONS dungeon;
+        Enum.TryParse<LOCATIONS>(dungeonName,out dungeon);
+        switch(dungeon)
+        {
+            case LOCATIONS.DUNGEON_1:
+                print("prośba o teleport na -14/-1/2 /n wchodzisz o dungeonu nr 1"); // 
+                ClientSend.TeleportMe(dungeon);
+                // TODO: ladowanie danych do mapdaty i tilemapy sciagnietej z serwera dla dungeonu nr 1
+                
+
+
+                // TODO: w tym przypadku gracze beda sie komunikowac ze soba przez serwer, dane mapy dot tego dungeona nie zostaja zmieniane na serwerze
+                //  pozwoli to na utworzenie kilku roznych , niezaleznych instancji, ?
+
+            
+                
+                // potem:
+                // 1. utworzenie nowej instacji na serwerze
+                
+
+
+            break;
+        }
     }
     }
 

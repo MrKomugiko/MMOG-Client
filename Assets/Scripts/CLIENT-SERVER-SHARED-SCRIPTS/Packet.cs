@@ -39,6 +39,7 @@ using UnityEngine;
         download_recentMapVersion,
         clientChangeLocalisation,
         PlayerMakeAction,
+    TeleportMe,
 }
 public class Packet : IDisposable
 {

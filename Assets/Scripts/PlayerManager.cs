@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
@@ -59,14 +60,8 @@ public class PlayerManager : MonoBehaviour
         get => currentLocation;
         set {
            // print("przeniesienie gracza:" + Username + " do "+value.ToString());
-            switch(value) {
-                case LOCATIONS.Start_First_Floor:
-                    gameObject.transform.parent = GameManager.instance.StartLocationFirstFloorContainer.transform;
-                    break;
-                case LOCATIONS.Start_Second_Floor:
-                    gameObject.transform.parent = GameManager.instance.StartLocationSeconFloorContainer.transform;
-                    break;
-            }
+             gameObject.transform.parent = GameManager.instance.ListaDostepnychLokalizacji.Where(loc=>loc.name == value.ToString()).First().transform;
+      
             currentLocation = value;
         }
     }

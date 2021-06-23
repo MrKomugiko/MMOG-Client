@@ -75,11 +75,10 @@ public class ClientHandle : MonoBehaviour
         Vector3 _position = _packet.ReadVector3();
         print("teleport to: "+_position.ToString());
 
-            //TODO: teleportowanie na inną mape jest niemożliwe - chyba ze sprawdzane  czy pozycja znajduje sie wewnątrz mapy, a nie bramy
-            // if (GameManager.instance.LocationMaps.ContainsKey(Vector3Int.CeilToInt(_position)))
-            // {
-            //     GameManager.instance.EnterNewLocation(Vector3Int.CeilToInt(_position), GameManager.players[_id]);
-            // }
+        if (GameManager.instance.LocationMaps.ContainsKey(Vector3Int.CeilToInt(_position)))
+        {
+            GameManager.instance.EnterNewLocation(Vector3Int.CeilToInt(_position), GameManager.players[_id]);
+        }
         
        GameManager.players[_id].TeleportToPositionInGrid(new Vector3Int((int)_position.x, (int)_position.y, (int)_position.z));
     }
@@ -252,6 +251,21 @@ public class ClientHandle : MonoBehaviour
                 mapdata = GameManager.MAPDATA2ndFloor;
                 tilemap = GameManager.instance._tileMap2ndFloor;
             break;
+
+            case 21:
+                GameManager.MAPDATA_DUNGEON_GROUND = new Dictionary<Vector3Int, string>();
+                mapdata = GameManager.MAPDATA_DUNGEON_GROUND;
+                tilemap = GameManager.instance.ListaDostepnychLokalizacji.Where(loc=>loc.name == "DUNGEON_1").First().transform.Find("Ground_MAP").GetComponent<Tilemap>();
+                GameManager.instance._tilemapDUNGEON_GROUND = tilemap;
+
+            break;
+
+            case 22:
+                GameManager.MAPDATA_DUNGEON = new Dictionary<Vector3Int, string>();
+                mapdata = GameManager.MAPDATA_DUNGEON;
+                tilemap = GameManager.instance.ListaDostepnychLokalizacji.Where(loc=>loc.name == "DUNGEON_1").First().transform.Find("Obstacle_MAP").GetComponent<Tilemap>();
+                GameManager.instance._tilemapDUNGEON = tilemap;
+            break;
         }
         return (mapdata,tilemap);
     }
@@ -261,6 +275,7 @@ public class ClientHandle : MonoBehaviour
 
       // GameManager.instance.ANDROIDLOGGER.text += $"LoadMapDataFromFile {_location}{_mapType}\n";
          //   print("ładowanie mapy");
+//            print("Get reference"+_location.ToString()+"  , "+_mapType.ToString());
             var references = GetReferencesByMaptype(_location, _mapType);
             Tilemap REFERENCE_TILEMAP = references.tilemap;
             Dictionary<Vector3Int,string> REFERENCE_MAPDATA = references.mapdata;
@@ -401,10 +416,16 @@ public class ClientHandle : MonoBehaviour
      //   GameManager.instance.ANDROIDLOGGER.text += "ReadMapDataFromFile\n";
         var TEMP_MAPDATA_FROM_FILE = new Dictionary<Vector3Int, string>();
 
+
         string path = GetFilePath(DATATYPE.Locations, _location, _mapType);
         if (!File.Exists(path)) {
             //GameManager.instance.ANDROIDLOGGER.text += "Brak pliku z danymi mapy\n";
-            Console.WriteLine("Brak pliku z danymi mapy"); 
+            print("Brak pliku z danymi mapy"); 
+            using (StreamWriter sw = File.CreateText(path))
+            {
+                // sw.WriteLine();
+            }	
+       //     throw new Exception("brak pliku");
         };
 
         string line;
@@ -460,12 +481,14 @@ public class ClientHandle : MonoBehaviour
         LOCATIONS mapLocation = (LOCATIONS)_packet.ReadInt();
         print("server chce mape typu: "+mapType.ToString()+" dla lokalizacji: "+ mapLocation.ToString());
         ClientSend.SendMapDataToServer(mapType,mapLocation);
-        
+
     }
 
 
         public static string GetFilePath(DATATYPE dataType, LOCATIONS locations, MAPTYPE mapType)
         {
+             CreateFolder(DATATYPE.Locations,locations);
+
            // return $"{ Application.persistentDataPath}\\DATA\\{dataType.ToString()}\\{locations.ToString()}\\{mapType.ToString()}.txt";
             return $"DATA\\{dataType.ToString()}\\{locations.ToString()}\\{mapType.ToString()}.txt";
 
