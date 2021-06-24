@@ -179,5 +179,14 @@ public class ClientSend : MonoBehaviour
                 SendTCPData(_packet);
             }
     }
+
+    internal static void CreateNewDungeonLobby(LOCATIONS dungeon)
+    {
+        using (Packet _packet = new Packet((int)ClientPackets.CreateLobby)) 
+            {
+                _packet.Write((int)dungeon);   // int - dungeon number
+                SendTCPData(_packet);
+            }
+    }
     #endregion
 }

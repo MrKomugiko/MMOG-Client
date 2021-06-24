@@ -60,7 +60,7 @@ public class NPCDetector : MonoBehaviour
     
     public void OnClick_test()
     {
-       GameManager.instance.shopWindow.SetActive(true);
+       GameManager.instance.dungeonsWindow.SetActive(true);
     }
 
 }

@@ -40,6 +40,7 @@ using UnityEngine;
         clientChangeLocalisation,
         PlayerMakeAction,
     TeleportMe,
+    CreateLobby,
 }
 public class Packet : IDisposable
 {

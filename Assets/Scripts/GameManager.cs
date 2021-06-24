@@ -11,7 +11,7 @@ public partial class GameManager : MonoBehaviour
     [SerializeField] public Camera cam;
     public static GameManager instance;
     [SerializeField] public Text ANDROIDLOGGER;
-    [SerializeField] public GameObject shopWindow;
+    [SerializeField] public GameObject dungeonsWindow;
     [SerializeField] public GameObject NPC_Glowing_SPRITE_PREFAB;
     [SerializeField] public List<Tile> listaDostepnychTilesow;
 
@@ -215,7 +215,7 @@ public partial class GameManager : MonoBehaviour
             case LOCATIONS.DUNGEON_1:
                 print("prośba o teleport na -14/-1/2 /n wchodzisz o dungeonu nr 1"); // 
                 ClientSend.TeleportMe(dungeon);
-                // TODO: ladowanie danych do mapdaty i tilemapy sciagnietej z serwera dla dungeonu nr 1
+                ClientSend.CreateNewDungeonLobby(dungeon); // TODO: dokonczyc proses tworzenia lobby 
                 
 
 
@@ -231,6 +231,8 @@ public partial class GameManager : MonoBehaviour
 
             break;
         }
+        // zamkniecie okna wyboru dungeonow
+        dungeonsWindow.transform.Find("DungeonWindowChoose").GetComponent<WindowScript>().OnClick_Close();
     }
     }
 
