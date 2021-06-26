@@ -334,6 +334,15 @@ public class ClientHandle : MonoBehaviour
 
     }
 
+    internal static void RemoveNonExistingRoomFromScene(Packet _packet)
+    {
+        Console.WriteLine("usuniecie obiektu pokoju ze sceny i pamieci");
+        DUNGEONS dungeon = (DUNGEONS)_packet.ReadInt();
+        int roomID = _packet.ReadInt();
+
+        DungeonManager.instance.DiscposeRoom(dungeon,roomID);
+    }
+
     internal static void KickFromDungeonRoom(Packet _packet)
     {
         print("get info from server, you have to leave current room / kicked");
@@ -344,11 +353,15 @@ public class ClientHandle : MonoBehaviour
     public static void RetievedUpdatedDungeonList(Packet _packet)
     {
         print("otrzymano uaktualniona baze dungeon lobby rooms");
+        string _action = _packet.ReadString();
+        print("action =>"+_action);
+        
+        
         // odpakowywanie obiektu dungeonLobby
         List<DungeonsLobby> updatedDungeonLobbysListFromServer = new List<DungeonsLobby>();
 
         int listCount = _packet.ReadInt();
-        
+      print("olistCount => "+listCount);  
 
         for (int i = 0; i < listCount; i++)
         {
@@ -366,12 +379,25 @@ public class ClientHandle : MonoBehaviour
             }
             lobby.Players = playersList;
             updatedDungeonLobbysListFromServer.Add(lobby);
+        
+            switch(_action)
+            {
+                case "PlayerLeftRooom":
+                    print("dodatkowa akcja do wykonania: "+_action);
+                    print("np zablokowanie opcji startu, nie wiem :D?");
+                    break;
+                case "PlayerJoinToRoom":
+                    print("gracz dolaczyl do pokoju");
+                break;
+            }
         }
 
         foreach(DungeonsLobby lobbyRoom in updatedDungeonLobbysListFromServer)
         {
             DungeonManager.instance.UpdateLobbyData(lobbyRoom.LobbyID, lobbyRoom);
+            print("---------------------------------------"+lobbyRoom.LobbyID+"-------------------------------------");
         } 
+
     }
 
     internal static void RemoveItemFromMap(Packet _packet)

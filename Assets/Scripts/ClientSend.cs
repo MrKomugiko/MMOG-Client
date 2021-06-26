@@ -81,7 +81,18 @@ public class ClientSend : MonoBehaviour
                 SendTCPData(_packet);
             }
         }
-        public static void UDPTestReceived()
+
+    internal static void GetCurrentDungeonLobbysData(DUNGEONS dungeonType)
+    {
+              using (Packet _packet = new Packet((int)ClientPackets.InitDataDungeonLobby)) {
+                _packet.Write((int)dungeonType);  // zmienic to na proźbe o wszystkie dostepne dungeony, a nie pojedycnzo
+
+                SendTCPData(_packet);
+            }
+       
+    }
+
+    public static void UDPTestReceived()
         {
             // using (Packet _packet = new Packet((int)ClientPackets.updTestReceived))
             // {
@@ -212,6 +223,15 @@ public class ClientSend : MonoBehaviour
                 SendTCPData(_packet);
             }
     }
+  public static void LeaveLobbyRoom(DungeonsLobby _dungeonLobby)
+    {
+       using (Packet _packet = new Packet((int)ClientPackets.LeaveRoomBylayer)) 
+            {
+                print("wysłano do serwera info ze gracz wyszedł z pokoju ");
+                _packet.Write(_dungeonLobby.LobbyID);   // int - dungeon room id
 
+                SendTCPData(_packet);
+            }
+    }
     #endregion
 }

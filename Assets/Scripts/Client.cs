@@ -335,7 +335,8 @@ public class Client : MonoBehaviour
             { (int)ServerPackets.colectItem, ClientHandle.CollectAndPickUPItem },         
             { (int)ServerPackets.removeItemFromMap, ClientHandle.RemoveItemFromMap },     
             { (int)ServerPackets.kickFromDungeonRoom, ClientHandle.KickFromDungeonRoom },
-            { (int)ServerPackets.CurrentDungeonRoomsStatus, ClientHandle.RetievedUpdatedDungeonList }   
+            { (int)ServerPackets.CurrentDungeonRoomsStatus, ClientHandle.RetievedUpdatedDungeonList },
+            { (int)ServerPackets.removeLobbyRoom, ClientHandle.RemoveNonExistingRoomFromScene }   
 
             
                

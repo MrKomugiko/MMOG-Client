@@ -21,7 +21,8 @@ using UnityEngine;
         colectItem,
         removeItemFromMap,
         kickFromDungeonRoom,
-    CurrentDungeonRoomsStatus
+        CurrentDungeonRoomsStatus,
+        removeLobbyRoom
 }
 
     /// <summary>Sent from client to server.</summary>
@@ -41,7 +42,9 @@ using UnityEngine;
         TeleportMe,
         CreateLobby,
         RemoveLobby,
-        JoinLobby
+        JoinLobby,
+        InitDataDungeonLobby,
+        LeaveRoomBylayer
 }
 public class Packet : IDisposable
 {
