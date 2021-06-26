@@ -206,33 +206,33 @@ public partial class GameManager : MonoBehaviour
     public enum DUNGEONS{
         DUNGEON_1
     }
-    public void OnClick_EnterTheDungeon(string dungeonName)
-    {
-        LOCATIONS dungeon;
-        Enum.TryParse<LOCATIONS>(dungeonName,out dungeon);
-        switch(dungeon)
-        {
-            case LOCATIONS.DUNGEON_1:
-                print("prośba o teleport na -14/-1/2 /n wchodzisz o dungeonu nr 1"); // 
-                ClientSend.TeleportMe(dungeon);
-                ClientSend.CreateNewDungeonLobby(dungeon); // TODO: dokonczyc proses tworzenia lobby 
+    // public void OnClick_EnterTheDungeon(string dungeonName)
+    // {
+    //     LOCATIONS dungeon;
+    //     Enum.TryParse<LOCATIONS>(dungeonName,out dungeon);
+    //     switch(dungeon)
+    //     {
+    //         case LOCATIONS.DUNGEON_1:
+    //             print("prośba o teleport na -14/-1/2 /n wchodzisz o dungeonu nr 1"); // 
+    //             ClientSend.TeleportMe(dungeon);
+    //             ClientSend.CreateNewDungeonLobby(dungeon); // TODO: dokonczyc proses tworzenia lobby 
                 
 
 
-                // TODO: w tym przypadku gracze beda sie komunikowac ze soba przez serwer, dane mapy dot tego dungeona nie zostaja zmieniane na serwerze
-                //  pozwoli to na utworzenie kilku roznych , niezaleznych instancji, ?
+    //             // TODO: w tym przypadku gracze beda sie komunikowac ze soba przez serwer, dane mapy dot tego dungeona nie zostaja zmieniane na serwerze
+    //             //  pozwoli to na utworzenie kilku roznych , niezaleznych instancji, ?
 
             
                 
-                // potem:
-                // 1. utworzenie nowej instacji na serwerze
+    //             // potem:
+    //             // 1. utworzenie nowej instacji na serwerze
                 
 
 
-            break;
-        }
-        // zamkniecie okna wyboru dungeonow
-        dungeonsWindow.transform.Find("DungeonWindowChoose").GetComponent<WindowScript>().OnClick_Close();
-    }
+    //         break;
+    //     }
+    //     // zamkniecie okna wyboru dungeonow
+    //     dungeonsWindow.transform.Find("DungeonWindowChoose").GetComponent<WindowScript>().OnClick_Close();
+    // }
     }
 

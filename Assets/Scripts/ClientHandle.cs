@@ -334,6 +334,46 @@ public class ClientHandle : MonoBehaviour
 
     }
 
+    internal static void KickFromDungeonRoom(Packet _packet)
+    {
+        print("get info from server, you have to leave current room / kicked");
+        var dungeon = DungeonManager.GetDungeonLobbyByRoomID(_packet.ReadInt());
+        DungeonManager.instance.LeaveRoom(dungeon.LobbyID, Client.instance.myId);
+    }
+
+    public static void RetievedUpdatedDungeonList(Packet _packet)
+    {
+        print("otrzymano uaktualniona baze dungeon lobby rooms");
+        // odpakowywanie obiektu dungeonLobby
+        List<DungeonsLobby> updatedDungeonLobbysListFromServer = new List<DungeonsLobby>();
+
+        int listCount = _packet.ReadInt();
+        
+
+        for (int i = 0; i < listCount; i++)
+        {
+            DungeonsLobby lobby = new DungeonsLobby(
+               lobbyID: _packet.ReadInt(),
+               lobbyOwner: _packet.ReadString(),
+               dungeonLocation: (LOCATIONS)_packet.ReadInt(),
+               maxPlayersCapacity: _packet.ReadInt()
+                );
+            List<String> playersList = new List<string>();
+            int playersCount = _packet.ReadInt();
+            for (int j = 0; j < playersCount; j++)
+            {
+                playersList.Add(_packet.ReadString());
+            }
+            lobby.Players = playersList;
+            updatedDungeonLobbysListFromServer.Add(lobby);
+        }
+
+        foreach(DungeonsLobby lobbyRoom in updatedDungeonLobbysListFromServer)
+        {
+            DungeonManager.instance.UpdateLobbyData(lobbyRoom.LobbyID, lobbyRoom);
+        } 
+    }
+
     internal static void RemoveItemFromMap(Packet _packet)
     {
         print("gracz podniosl x item");
@@ -387,7 +427,7 @@ public class ClientHandle : MonoBehaviour
     private static void SaveMapDataToFile(LOCATIONS location, MAPTYPE mapType, Dictionary<Vector3, string> mapData)
     {
         
-        string path = GetFilePath(DATATYPE.Locations,location,mapType);
+        string path = Constants.GetFilePath(DATATYPE.Locations,location,mapType);
         //   print(path);
         // print($"Zapisywanie danych mapy[{location.ToString()}][{mapType.ToString()}] do pliku");
         //  if (!File.Exists(path)) 
@@ -399,7 +439,7 @@ public class ClientHandle : MonoBehaviour
        // Directory.CreateDirectory(path);
 
 
-       CreateFolder(DATATYPE.Locations,location);
+       Constants.CreateFolder(DATATYPE.Locations,location);
 
         using (FileStream fs = new FileStream(path, FileMode.Create))
         {
@@ -417,7 +457,7 @@ public class ClientHandle : MonoBehaviour
         var TEMP_MAPDATA_FROM_FILE = new Dictionary<Vector3Int, string>();
 
 
-        string path = GetFilePath(DATATYPE.Locations, _location, _mapType);
+        string path =Constants. GetFilePath(DATATYPE.Locations, _location, _mapType);
         if (!File.Exists(path)) {
             //GameManager.instance.ANDROIDLOGGER.text += "Brak pliku z danymi mapy\n";
             print("Brak pliku z danymi mapy"); 
@@ -485,19 +525,7 @@ public class ClientHandle : MonoBehaviour
     }
 
 
-        public static string GetFilePath(DATATYPE dataType, LOCATIONS locations, MAPTYPE mapType)
-        {
-             CreateFolder(DATATYPE.Locations,locations);
-
-           // return $"{ Application.persistentDataPath}\\DATA\\{dataType.ToString()}\\{locations.ToString()}\\{mapType.ToString()}.txt";
-            return $"DATA\\{dataType.ToString()}\\{locations.ToString()}\\{mapType.ToString()}.txt";
-
-    }
-    public static void CreateFolder(DATATYPE? dataType, LOCATIONS? locations)
-        {
-        //    Directory.CreateDirectory($"{Application.persistentDataPath}\\DATA\\{dataType.ToString()}\\{locations.ToString()}");
-        Directory.CreateDirectory($"DATA\\{dataType.ToString()}\\{locations.ToString()}");
-    }
+     
         
 
         public static int GetKeyFromMapLocationAndType(LOCATIONS location, MAPTYPE mapType) => (int)location * 10 + (int)mapType + 1;

@@ -180,13 +180,38 @@ public class ClientSend : MonoBehaviour
             }
     }
 
-    internal static void CreateNewDungeonLobby(LOCATIONS dungeon)
+    public static void CreateNewDungeonLobby(LOCATIONS dungeon, int roomId)
     {
         using (Packet _packet = new Packet((int)ClientPackets.CreateLobby)) 
             {
+                print("wysłano do serwera proźbę o utworzenie nowego serwera");
+                _packet.Write(roomId);
                 _packet.Write((int)dungeon);   // int - dungeon number
                 SendTCPData(_packet);
             }
     }
+    public static void RemoveExistingDungeonLobby(DungeonsLobby _dungeonLobby)
+    {
+        using (Packet _packet = new Packet((int)ClientPackets.RemoveLobby)) 
+            {
+                print("wysłano do serwera proźbę o anulowanie/usuniecie serwera z listy ");
+                _packet.Write((int)_dungeonLobby.DungeonLocation);   // int - dungeon number
+                _packet.Write(_dungeonLobby.LobbyID);   // int - dungeon room id
+
+                SendTCPData(_packet);
+            }
+    }
+
+    public static void JoinLobby(DungeonsLobby _dungeonLobby)
+    {
+       using (Packet _packet = new Packet((int)ClientPackets.JoinLobby)) 
+            {
+                print("wysłano do serwera info ze gracz dołącza do pokoju ");
+                _packet.Write(_dungeonLobby.LobbyID);   // int - dungeon room id
+
+                SendTCPData(_packet);
+            }
+    }
+
     #endregion
 }

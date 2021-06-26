@@ -333,7 +333,14 @@ public class Client : MonoBehaviour
             { (int)ServerPackets.RegistrationResponse, ClientHandle.RetievedRegistrationResponse },     // informacja zwrotna na wysłanie danych rejestracji konta na serwerze
             { (int)ServerPackets.LoginResponse, ClientHandle.RetievedLoginResponse },                   // informacja zwrotna na dotycząca proby logowania
             { (int)ServerPackets.colectItem, ClientHandle.CollectAndPickUPItem },         
-            { (int)ServerPackets.removeItemFromMap, ClientHandle.RemoveItemFromMap }         
+            { (int)ServerPackets.removeItemFromMap, ClientHandle.RemoveItemFromMap },     
+            { (int)ServerPackets.kickFromDungeonRoom, ClientHandle.KickFromDungeonRoom },
+            { (int)ServerPackets.CurrentDungeonRoomsStatus, ClientHandle.RetievedUpdatedDungeonList }   
+
+            
+               
+            
+               
             
             // TODO:     // otrzymanie info o szczegółach zebranego przedmiotu
             // TODO:     // otrzymanie szczegółów dotycznących napotkanego NPC'a 

@@ -1,3 +1,6 @@
+using System.Net.NetworkInformation;
+using System.ComponentModel;
+using System.Globalization;
 using System.Data.Common;
 using System;
 using System.Collections;
@@ -20,9 +23,22 @@ public class DungeonManager : MonoBehaviour
 
     [SerializeField] WindowScript WaitingLobbyRoomWindow;
 
-    private List<DungeonsLobby> ListOfDungeonLobby;
+    public static List<DungeonsLobby> ListOfDungeonLobby;
     [SerializeField] private List<GameObject> ListOfDungeonLobby_GameObject;
+    public static DungeonManager instance;
 
+    private void Awake() 
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else if (instance != this)
+        {
+            Debug.Log("Instance already exists, destroying object!");
+            Destroy(this);
+        }
+    }
     private void Start() 
     {
         ListOfDungeonLobby_GameObject = new List<GameObject>();
@@ -53,7 +69,7 @@ public class DungeonManager : MonoBehaviour
         SelectionWindow.OnClick_OpenCloseWindow(SelectionWindow.gameObject);
 
         SelectionWindow.gameObject.transform.Find("CreateButton").GetComponent<Button>().GetComponent<Button>().onClick.RemoveAllListeners();
-        SelectionWindow.gameObject.transform.Find("CreateButton").GetComponent<Button>().onClick.AddListener(()=>OnClick_CreateNewLobby(dungeonType, Client.instance.myId));
+        SelectionWindow.gameObject.transform.Find("CreateButton").GetComponent<Button>().onClick.AddListener(()=>OnClick_CreateAndJoinNewLobby(dungeonType, Client.instance.myId));
         DownloadDungeonsLobbyData(dungeonType);
     }
     public void DownloadDungeonsLobbyData(DUNGEONS dungeonType)
@@ -110,14 +126,21 @@ public class DungeonManager : MonoBehaviour
         
     }
     
-    public void OnClick_CreateNewLobby(DUNGEONS dungeonType, int clientId)
+    public void OnClick_CreateAndJoinNewLobby(DUNGEONS dungeonType, int clientId)
     {
-        print("cfreate");
+        LOCATIONS location;
+        Enum.TryParse<LOCATIONS>(dungeonType.ToString(),out location);
+
         PlayerManager player_leader = GameManager.players[clientId];
-        var newLobby = new DungeonsLobby(2, player_leader.Username, dungeonType);
+        var newLobby = new DungeonsLobby(UnityEngine.Random.Range(0,1_000_000), player_leader.Username, dungeonType);
+
+        print("utworzono lobby o id = "+newLobby.LobbyID);
+        ClientSend.CreateNewDungeonLobby(location, newLobby.LobbyID); // TODO: dokonczyc proses tworzenia lobby 
+
         UpdateLobbyData(newLobby.LobbyID, newLobby);
 
         // TODO: wyslanie info do serwera zeby dodal nowy wpis
+        // TODO: [WAŻNE] !synchronizacja, roomsID ! 
 
         // Edit text containing description and current users init (wpis z nickiem leadera)
         WaitingLobbyRoomWindow.gameObject.transform.Find("ContentText").GetComponent<TextMeshProUGUI>().SetText(
@@ -147,28 +170,17 @@ public class DungeonManager : MonoBehaviour
         WaitingLobbyRoomWindow.OnClick_Close();
         SelectionWindow.OnClick_OpenCloseWindow(SelectionWindow.gameObject);
         // usuniecie obiektu nieaktywnego juz lobby z listy
-        ListOfDungeonLobby.Remove(ListOfDungeonLobby.Where(room=>room.LobbyID==roomId).FirstOrDefault());
-        int roomIndex =ListOfDungeonLobby_GameObject.IndexOf(ListOfDungeonLobby_GameObject.Where(room=>room.name == $"ROOM_{roomId}").FirstOrDefault());
-      try
-      {
-          
+        DungeonsLobby lobbyToRemove = ListOfDungeonLobby.Where(room=>room.LobbyID==roomId).FirstOrDefault();
+        ClientSend.RemoveExistingDungeonLobby(lobbyToRemove);
+        ListOfDungeonLobby.Remove(lobbyToRemove);
+
+        int roomIndex =ListOfDungeonLobby_GameObject
+            .IndexOf(ListOfDungeonLobby_GameObject
+            .Where(room=>room.name == $"ROOM_{roomId}")
+            .FirstOrDefault());
+
         Destroy(ListOfDungeonLobby_GameObject[roomIndex]);
-      }
-      catch (System.Exception ex)
-      {
-          
-       print("error 1"+ ex.Message);
-      }
-        try
-      {
-          
         ListOfDungeonLobby_GameObject.RemoveAt(roomIndex);
-      }
-      catch (System.Exception ex)
-      {
-          
-            print("error 2"+ex.Message);
-      }
 
         print("anulujesz lobby, wszyscy wracacie do listy lobby");
     }
@@ -180,11 +192,11 @@ public class DungeonManager : MonoBehaviour
         LOCATIONS location;
         Enum.TryParse<LOCATIONS>(dungeonType.ToString(),out location);
         ClientSend.TeleportMe(location); // lider klikajacy start
+        // TODO: wyslanie do serwera info gameStarted i tam sprawdzi graczy i ich przeteleportuje
         // TODO: teleport other party members
         print("przechodzisz do dungeonu, a wraz z tobą cała zebrana druzyna");
     }
-
-    public void JoinToRoom(int roomId, int clientId)
+    private void JoinToRoom(int roomId, int clientId)
     {
         PlayerManager playerWhoWantJoin = GameManager.players[clientId];
         var existingLobby = ListOfDungeonLobby.Where(room=>room.LobbyID == roomId).First();
@@ -201,14 +213,16 @@ public class DungeonManager : MonoBehaviour
             cancelButton.GetComponentInChildren<TextMeshProUGUI>().SetText("Leave lobby");
             cancelButton.onClick.RemoveAllListeners();
             cancelButton.onClick.AddListener(()=>LeaveRoom(roomId,clientId));
+
+            ClientSend.JoinLobby(existingLobby);
         }
 
         SelectionWindow.OnClick_Close();
         WaitingLobbyRoomWindow.OnClick_OpenCloseWindow(WaitingLobbyRoomWindow.gameObject);
     }
-
-    private void LeaveRoom(int roomId, int clientId)
+    public void LeaveRoom(int roomId, int clientId)
     {
+        print("opuszczono dungeonLobby room");
         PlayerManager playerWhoWantJoin = GameManager.players[clientId];
         var leavingLobby = ListOfDungeonLobby.Where(room=>room.LobbyID == roomId).First();
 
@@ -219,6 +233,8 @@ public class DungeonManager : MonoBehaviour
         WaitingLobbyRoomWindow.OnClick_Close();
         SelectionWindow.OnClick_OpenCloseWindow(SelectionWindow.gameObject);
     }
+
+   public static DungeonsLobby GetDungeonLobbyByRoomID(int _roomID) => DungeonManager.ListOfDungeonLobby.Where(room=>room.LobbyID == _roomID).FirstOrDefault();
 }
 
 public class DungeonsLobby
@@ -235,6 +251,24 @@ public class DungeonsLobby
         LobbyID = lobbyID;
         LobbyOwner = lobbyOwner;
         DungeonLocation = dungeonLocation;
+        MaxPlayersCapacity = maxPlayersCapacity;
+
+        if(players == null)
+        {
+            Players.Add(LobbyOwner);
+        }
+        else
+        {
+            Players = players;
+        }
+    }
+    public DungeonsLobby(int lobbyID, string lobbyOwner, LOCATIONS dungeonLocation,int maxPlayersCapacity = 2, List<string> players = null)
+    {
+        LobbyID = lobbyID;
+        LobbyOwner = lobbyOwner;
+        DUNGEONS dungeonloc;
+        Enum.TryParse<DUNGEONS>(dungeonLocation.ToString(),out dungeonloc);
+        DungeonLocation = dungeonloc;
         MaxPlayersCapacity = maxPlayersCapacity;
 
         if(players == null)

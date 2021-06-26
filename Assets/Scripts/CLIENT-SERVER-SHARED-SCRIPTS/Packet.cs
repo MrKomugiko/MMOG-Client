@@ -9,8 +9,6 @@ using UnityEngine;
         welcome = 1,
         spawnPlayer,
         playerPosition,
-        //playerRotation,
-        // udpTest,
         updateChat,
         updateChat_NewUserPost,
         removeOfflinePlayer,
@@ -21,9 +19,10 @@ using UnityEngine;
         RegistrationResponse,
         LoginResponse,
         colectItem,
-        
-        removeItemFromMap
-    }
+        removeItemFromMap,
+        kickFromDungeonRoom,
+    CurrentDungeonRoomsStatus
+}
 
     /// <summary>Sent from client to server.</summary>
     public enum ClientPackets
@@ -39,8 +38,10 @@ using UnityEngine;
         download_recentMapVersion,
         clientChangeLocalisation,
         PlayerMakeAction,
-    TeleportMe,
-    CreateLobby,
+        TeleportMe,
+        CreateLobby,
+        RemoveLobby,
+        JoinLobby
 }
 public class Packet : IDisposable
 {
