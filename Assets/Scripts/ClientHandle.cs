@@ -51,14 +51,19 @@ public class ClientHandle : MonoBehaviour
     }
     public static void SpawnPlayer(Packet _packet)
     {
-        // TODO: wykonac po akceptacji logowania ze strony serwera
-        UIManager.instance.LoadGameScene();
-        ClientSend.DownloadLatestUpdateVersionNumber();
-            //----------------------------------------
 
         print("spawn");
         int _id = _packet.ReadInt();
         string _username = _packet.ReadString();
+ 
+        // TODO: wykonac po akceptacji logowania ze strony serwera
+        if(Client.instance.myId == _id)
+        {
+            UIManager.instance.LoadGameScene();
+            ClientSend.DownloadLatestUpdateVersionNumber();
+        }
+            //----------------------------------------
+ 
         Vector3 _position = _packet.ReadVector3();
         Quaternion _rotation = _packet.ReadQuaternion();
         LOCATIONS _currentLocation = (LOCATIONS)_packet.ReadInt();

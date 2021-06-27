@@ -24,7 +24,7 @@ public class DungeonManager : MonoBehaviour
     [SerializeField] WindowScript WaitingLobbyRoomWindow;
 
     public static List<DungeonsLobby> ListOfDungeonLobby;
-    [SerializeField] private List<GameObject> ListOfDungeonLobby_GameObject;
+    [SerializeField] public List<GameObject> ListOfDungeonLobby_GameObject;
     public static DungeonManager instance;
 
     private void Awake() 
@@ -58,9 +58,6 @@ public class DungeonManager : MonoBehaviour
     }
     private void CreateMainDungeonChannelButton(DUNGEONS dungeonType)
     {
-        // TODO: sprawdzenie czy taki kanał juz istnieje
-        // TODO: dodanie usuwania kanalow
-
         GameObject dungeonObject = Instantiate(MainSelectDungeonButton_Prefab,Vector3.zero,Quaternion.identity,DungeonsListContainer.transform);
         
         dungeonObject.name = dungeonType.ToString();
@@ -69,7 +66,6 @@ public class DungeonManager : MonoBehaviour
         dungeonObject.GetComponent<Button>().onClick.RemoveAllListeners();
         dungeonObject.GetComponent<Button>().onClick.AddListener(()=>OpenDungeonLobbysWindow(dungeonType));
     }
-
     private void OpenDungeonLobbysWindow(DUNGEONS dungeonType)
     {
         MainWindow.OnClick_Close();
@@ -79,36 +75,36 @@ public class DungeonManager : MonoBehaviour
         SelectionWindow.gameObject.transform.Find("CreateButton").GetComponent<Button>().onClick.AddListener(()=>OnClick_CreateAndJoinNewLobby(dungeonType, Client.instance.myId));
         ClientSend.GetCurrentDungeonLobbysData(dungeonType);
     }
-
-    [Obsolete] private DungeonsLobby CreateTestData(DUNGEONS dungeonType)
-    {
-        // init bez dodatkowych graczy w srodku
-        return new DungeonsLobby(1,"TEST_Player",dungeonType);
-    }
-
-
     public void UpdateLobbyData(int _lobbyId, DungeonsLobby newRoomData)
     {
         DungeonsLobby room = ListOfDungeonLobby.Where(l=>l.LobbyID == _lobbyId).FirstOrDefault();
         
         if(room != null)
         {
-             // JEŻELI TWOJ AKTUALNIE OTWARTY POKOJ NIE JEST AKTUALIZOWANY< NIE RUSZAJ GO  xD
-        
-                string myUsername = GameManager.players[Client.instance.myId].Username;
-
-                if (room.Players.Contains(myUsername) == false)
-                {
-                    print("nie ma potrzeby edyutowac twojego pokoju, nie ma go w updadzie xD");
-                    return;
-                }
-
-            // TODO: doprecyzować jakiego typu update ma zostac przeprowadzony
-            // TODO: CRUD
-            //print("nadpisanie / uaktualnienie danych");
             room = newRoomData;
+            string myUsername = GameManager.players[Client.instance.myId].Username;
+
+            if (room.Players.Contains(myUsername) == false)
+            {
+             // JEŻELI TWOJ AKTUALNIE OTWARTY POKOJ NIE JEST AKTUALIZOWANY< NIE RUSZAJ GO  xD
+                print("nie ma potrzeby edytować zawartosci pokoju, nie ma cie w nim = nie jest otwarty");
+                // zaktualizuje sie tylko liczba graczy 
+                room.lobbySceneObjectRefference.transform.Find("roomMembersCount").GetComponent<TextMeshProUGUI>()
+                    .SetText(room.PlayersCount+" / "+room.MaxPlayersCapacity);
+
+                if(room.IsFull)
+                {
+                    room.lobbySceneObjectRefference.GetComponent<Button>().interactable = false;
+                }
+                else
+                {
+                    room.lobbySceneObjectRefference.GetComponent<Button>().interactable = true;
+                }
+                
+                return;
+            }
+            // okno szczegolow jest otwarte i zostanie
             TextMeshProUGUI textUserListInLobby = WaitingLobbyRoomWindow.gameObject.transform.Find("ContentText").GetComponent<TextMeshProUGUI>();
-            textUserListInLobby.SetText("");
             textUserListInLobby.SetText(
             $"Players ready for adventure:\n\n"+
             $"   * {room.LobbyOwner} [Leader]\n"
@@ -123,15 +119,18 @@ public class DungeonManager : MonoBehaviour
         else
         {   
             print("spawn nowego obiektu listy");
-            // brak takiego wpisu, trzeba go zainstancjonowac
-            ListOfDungeonLobby.Add(newRoomData);
             GameObject roomObject = Instantiate(RoomButton_Prefab,Vector3.zero,Quaternion.identity,RoomsListContainer.transform);
-            ListOfDungeonLobby_GameObject.Add(roomObject);
+            ListOfDungeonLobby_GameObject.Add(roomObject);           
+            ListOfDungeonLobby.Add(newRoomData);
             // edycja danych
             roomObject.name = "ROOM_"+newRoomData.LobbyID;
             roomObject.transform.localPosition = Vector3.zero;
-            roomObject.transform.Find("roomName").GetComponent<TextMeshProUGUI>().SetText("#"+newRoomData.LobbyOwner);
-            roomObject.transform.Find("roomMembersCount").GetComponent<TextMeshProUGUI>().SetText(newRoomData.PlayersCount+" / "+newRoomData.MaxPlayersCapacity);
+
+            roomObject.transform.Find("roomName").GetComponent<TextMeshProUGUI>()
+                .SetText("#"+newRoomData.LobbyOwner);
+            roomObject.transform.Find("roomMembersCount").GetComponent<TextMeshProUGUI>()
+                .SetText(newRoomData.PlayersCount+" / "+newRoomData.MaxPlayersCapacity);
+
             roomObject.GetComponent<Button>().onClick.AddListener(()=>JoinToRoom(newRoomData.LobbyID, Client.instance.myId));
             // TODO: kolorowanie obiektu jezeli pełny - na czerwono inaczej na zielono
             // TODO: włączanie ikonki kłódki gdy pokoj jest zablokowany -> poźniej
@@ -139,6 +138,7 @@ public class DungeonManager : MonoBehaviour
         
     }
     
+
     public void OnClick_CreateAndJoinNewLobby(DUNGEONS dungeonType, int clientId)
     {
         LOCATIONS location;
@@ -180,38 +180,40 @@ public class DungeonManager : MonoBehaviour
 
     private void CancelAndRemoveLobby(DUNGEONS dungeonType, int roomId)
     {
+        print("anulujesz lobby, wszyscy wracacie do głownej listy");
         WaitingLobbyRoomWindow.OnClick_Close();
         SelectionWindow.OnClick_OpenCloseWindow(SelectionWindow.gameObject);
         DiscposeRoom(dungeonType,roomId);
-        print("anulujesz lobby, wszyscy wracacie do głownej listy");
     }
 
     public void DiscposeRoom(DUNGEONS dungeonType, int roomId)
     {
-        try
+        DungeonsLobby lobbyToRemove = ListOfDungeonLobby.Where(room=>room.LobbyID==roomId).FirstOrDefault();
+        int? roomObjectIndex = null;
+        // sprawdzenie czy pokoj istnieje
+        if(lobbyToRemove!=null)
         {
-            DungeonsLobby lobbyToRemove = ListOfDungeonLobby.Where(room=>room.LobbyID==roomId).FirstOrDefault();
+            print("usunieto wpis dungeonalobby z pamięci i wyslanie do serwera info o usuniecie");
             ClientSend.RemoveExistingDungeonLobby(lobbyToRemove);
             ListOfDungeonLobby.Remove(lobbyToRemove);
+        }
 
-            int roomIndex =ListOfDungeonLobby_GameObject
-                .IndexOf(ListOfDungeonLobby_GameObject
-                .Where(room=>room.name == $"ROOM_{roomId}")
-                .FirstOrDefault());
+        roomObjectIndex = ListOfDungeonLobby_GameObject
+            .IndexOf(ListOfDungeonLobby_GameObject
+            .Where(room=>room.name == $"ROOM_{roomId}")
+            .FirstOrDefault());
 
-            Destroy(ListOfDungeonLobby_GameObject[roomIndex]);
-            ListOfDungeonLobby_GameObject.RemoveAt(roomIndex);
-
-            print("pokoj został pomyślnie usunięty"); 
-            }
-        catch (System.Exception ex)
+        print("roomObjectIndex"+roomObjectIndex);
+        if(roomObjectIndex != null)
         {
-            print("usuwanie pokoju nie powiodlo sie, albo został juz wczesniej usuniety ERROR: "+ex.Message);
+            Destroy(ListOfDungeonLobby_GameObject[(int)roomObjectIndex]);
+            ListOfDungeonLobby_GameObject.RemoveAt((int)roomObjectIndex);
+            print("obiekt pokoju z listy został pomyślnie usunięty"); 
         }
     }
 
     private void StartAndEnterDungeon(DUNGEONS dungeonType, int lobbyID)
-    {
+    {   
         WaitingLobbyRoomWindow.OnClick_Close();
 
         LOCATIONS location;
@@ -266,6 +268,13 @@ public class DungeonManager : MonoBehaviour
 
 public class DungeonsLobby
 {
+    public GameObject lobbySceneObjectRefference 
+    {
+        get => DungeonManager.instance.ListOfDungeonLobby_GameObject
+            .Where(room=>room.name == ("ROOM_"+LobbyID))
+            .FirstOrDefault(); 
+    }
+    
     public int LobbyID { get; private set; }
     public string LobbyOwner { get; private set; }
     public DUNGEONS DungeonLocation { get; private set; }
