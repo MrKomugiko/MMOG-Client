@@ -274,7 +274,7 @@ public class MovementScript : MonoBehaviour
         }
         else
         {
-           print("inactive object : "+jumpDirection);
+//           print("inactive object : "+jumpDirection);
             if (jumpDirection == 0){ // walk
                 _transform.position += new Vector3(newX, newY,0);
             }

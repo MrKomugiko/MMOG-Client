@@ -233,5 +233,17 @@ public class ClientSend : MonoBehaviour
                 SendTCPData(_packet);
             }
     }
+
+    internal static void GroupTeleportPlayersInRoom(LOCATIONS location, int lobbyID)
+    {
+            using (Packet _packet = new Packet((int)ClientPackets.GroupTeleport)) 
+            {
+                _packet.Write((int)location);   // int - dungeon number
+                _packet.Write(lobbyID);   // int - lobby id
+                SendTCPData(_packet);
+                
+
+            }
+    }
     #endregion
 }

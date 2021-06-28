@@ -218,7 +218,9 @@ public class DungeonManager : MonoBehaviour
 
         LOCATIONS location;
         Enum.TryParse<LOCATIONS>(dungeonType.ToString(),out location);
-        ClientSend.TeleportMe(location); // lider klikajacy start
+        
+        //ClientSend.TeleportMe(location); // lider klikajacy start
+        ClientSend.GroupTeleportPlayersInRoom(location, lobbyID);
         // TODO: wyslanie do serwera info gameStarted i tam sprawdzi graczy i ich przeteleportuje
         // TODO: teleport other party members
         print("przechodzisz do dungeonu, a wraz z tobą cała zebrana druzyna");
