@@ -1,3 +1,4 @@
+
 using System.Net.NetworkInformation;
 using System.ComponentModel;
 using System.Globalization;
@@ -14,6 +15,8 @@ public class DungeonManager : MonoBehaviour
 {
 
     [SerializeField] GameObject MainSelectDungeonButton_Prefab;
+
+     [SerializeField] public List<GameObject> ListOfDungeonMainPages_GameObject;
     [SerializeField] WindowScript MainWindow;
     [SerializeField] GameObject DungeonsListContainer;
 
@@ -39,25 +42,44 @@ public class DungeonManager : MonoBehaviour
             Destroy(this);
         }
     }
-    private void Start() 
+    public void Load() 
     {
-        ListOfDungeonLobby_GameObject = new List<GameObject>();
-        
-        // Create list of avaiable dungeons
-        string[]listaDungeonow = Enum.GetNames(typeof(DUNGEONS));
-        DUNGEONS dungeon;
-        foreach(string dungeon_string in listaDungeonow)
+        try
         {
-            Enum.TryParse<DUNGEONS>(dungeon_string,out dungeon);
-            CreateMainDungeonChannelButton(dungeon);
+
+            print("my id = "+Client.instance.myId);
+            print("players count : "+GameManager.players.Count());
+            if(GameManager.players[Client.instance.myId].IsLocal)
+            {
+                
+                ListOfDungeonLobby_GameObject = new List<GameObject>();
+                
+                // Create list of avaiable dungeons
+                string[]listaDungeonow = Enum.GetNames(typeof(DUNGEONS));
+                DUNGEONS dungeon;
+                foreach(string dungeon_string in listaDungeonow)
+                {
+                    Enum.TryParse<DUNGEONS>(dungeon_string,out dungeon);
+                    CreateMainDungeonChannelButton(dungeon);
+                }
+                ListOfDungeonLobby = new List<DungeonsLobby>();
+                
+                print("elo ! => init data from server");
+                ClientSend.GetCurrentDungeonLobbysData(dungeon = default); // ALL
+            }
         }
-        ListOfDungeonLobby = new List<DungeonsLobby>();
-        
-        print("elo ! => init data from server");
-        ClientSend.GetCurrentDungeonLobbysData(dungeon = default); // ALL
+        catch(Exception ex) { 
+            foreach(var players in GameManager.players)
+            {
+                Debug.LogError(players.Key);
+            }
+            Debug.LogError("------------------------------------------------------- error, client id ? "+ex.Message);}
     }
     private void CreateMainDungeonChannelButton(DUNGEONS dungeonType)
     {
+        if(ListOfDungeonMainPages_GameObject.Where(o=>o.transform.name == dungeonType.ToString()).Any()) return;
+
+        
         GameObject dungeonObject = Instantiate(MainSelectDungeonButton_Prefab,Vector3.zero,Quaternion.identity,DungeonsListContainer.transform);
         
         dungeonObject.name = dungeonType.ToString();
@@ -65,6 +87,8 @@ public class DungeonManager : MonoBehaviour
         
         dungeonObject.GetComponent<Button>().onClick.RemoveAllListeners();
         dungeonObject.GetComponent<Button>().onClick.AddListener(()=>OpenDungeonLobbysWindow(dungeonType));
+
+        ListOfDungeonMainPages_GameObject.Add(dungeonObject);
     }
     private void OpenDungeonLobbysWindow(DUNGEONS dungeonType)
     {
@@ -77,6 +101,9 @@ public class DungeonManager : MonoBehaviour
     }
     public void UpdateLobbyData(int _lobbyId, DungeonsLobby newRoomData)
     {
+
+        // sprawdzenie czy obiekt juz istnieje na scenie:
+       
         DungeonsLobby room = ListOfDungeonLobby.Where(l=>l.LobbyID == _lobbyId).FirstOrDefault();
         
         if(room != null)

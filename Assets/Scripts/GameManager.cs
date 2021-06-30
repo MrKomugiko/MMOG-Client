@@ -102,6 +102,7 @@ public partial class GameManager : MonoBehaviour
             _player = Instantiate(localPlayerPrefab, _position,_rotation);
             _isLocal = true;
             InventoryScript.instance.SetupInventory();
+            
         }
         else
         {
@@ -119,6 +120,9 @@ public partial class GameManager : MonoBehaviour
         
         players.Add(_id,_playerData);
         SetPlayerLocation_init(players[_id].CurrentLocation,players[_id],_currentfloor);
+
+           
+      DungeonManager.instance.Load();  
     }
     public void OnClick_CloseApplication()
     {

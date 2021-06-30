@@ -98,10 +98,13 @@ public class PlayerManager : MonoBehaviour
 
     private void OnDestroy() 
     {
-        // w przypadku kikcka z serwera obbiekt gracza zostanie usunięty, 
-        //  dlatego najpierw trzeba odczepić od niego kamere        
-        print("detach camera from local player object");
-        GameManager.instance.cam.transform.SetParent(null);
+       if(GameManager.players[Client.instance.myId].isLocal)
+        {
+            // w przypadku kikcka z serwera obbiekt gracza zostanie usunięty, 
+            //  dlatego najpierw trzeba odczepić od niego kamere        
+            print("detach camera from local player object");
+           //TODO: odczepianie sie kamery : GameManager.instance.cam.transform.SetParent(null);
+        }
     }
 
     public void TransformIntoStairs(bool isActive)
