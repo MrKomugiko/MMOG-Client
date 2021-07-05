@@ -109,7 +109,6 @@ public class ClientHandle : MonoBehaviour
         {
             GameManager.players[_id].movementScript.movingAnimationInProgress = false;
             GameManager.players[_id].movementScript.waitingForServerAnswer = false;
-
         }
         else
         {
@@ -117,7 +116,8 @@ public class ClientHandle : MonoBehaviour
             GameManager.players[_id].MoveToPositionInGrid(Vector3Int.CeilToInt(_position));
         }
     }
-    public static void UpdateChat(Packet _packet) {
+    public static void UpdateChat(Packet _packet) 
+    {
         string _msg = _packet.ReadString();
         //print("Odebrano wiadomosc od GM: " + _msg);
 

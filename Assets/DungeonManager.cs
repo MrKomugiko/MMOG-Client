@@ -71,9 +71,9 @@ public class DungeonManager : MonoBehaviour
         catch(Exception ex) { 
             foreach(var players in GameManager.players)
             {
-                Debug.LogError(players.Key);
+                Debug.Log(players.Key);
             }
-            Debug.LogError("------------------------------------------------------- error, client id ? "+ex.Message);}
+            Debug.Log("------------------------------------------------------- error, client id ? "+ex.Message);}
     }
     private void CreateMainDungeonChannelButton(DUNGEONS dungeonType)
     {
@@ -203,14 +203,20 @@ public class DungeonManager : MonoBehaviour
             cancelButton.onClick.RemoveAllListeners();
             cancelButton.onClick.AddListener(()=>CancelAndRemoveLobby(dungeonType, newLobby.LobbyID));
             cancelButton.GetComponentInChildren<TextMeshProUGUI>().SetText("Cancel");
+
+        var backAndCancelButton = WaitingLobbyRoomWindow.gameObject.transform.Find("Close").GetComponent<Button>();
+            backAndCancelButton.onClick.RemoveAllListeners();
+            backAndCancelButton.onClick.AddListener(()=>CancelAndRemoveLobby(dungeonType, newLobby.LobbyID));
     }
 
-    private void CancelAndRemoveLobby(DUNGEONS dungeonType, int roomId)
+    public void CancelAndRemoveLobby(DUNGEONS dungeonType, int roomId)
     {
         print("anulujesz lobby, wszyscy wracacie do głownej listy");
+
         WaitingLobbyRoomWindow.OnClick_Close();
         SelectionWindow.OnClick_OpenCloseWindow(SelectionWindow.gameObject);
         DiscposeRoom(dungeonType,roomId);
+        
     }
 
     public void DiscposeRoom(DUNGEONS dungeonType, int roomId)
@@ -228,7 +234,7 @@ public class DungeonManager : MonoBehaviour
         roomObjectIndex = ListOfDungeonLobby_GameObject
             .IndexOf(ListOfDungeonLobby_GameObject
             .Where(room=>room.name == $"ROOM_{roomId}")
-            .FirstOrDefault());
+            .First());
 
         print("roomObjectIndex"+roomObjectIndex);
         if(roomObjectIndex != null)
