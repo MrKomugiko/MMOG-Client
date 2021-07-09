@@ -18,7 +18,7 @@ public class InventoryScript : MonoBehaviour
     private void Awake() {
 
         Content_SlotsHolder = this.transform.Find("Content").Find("SLOTS").gameObject;
-        print("DEBUG: "+Content_SlotsHolder.name);
+       // print("DEBUG: "+Content_SlotsHolder.name);
         if (instance == null)
         {
             instance = this;
@@ -61,7 +61,7 @@ public class InventoryScript : MonoBehaviour
     }
     public void NewSlotAdded()
     {
-        print("dodano slot");
+    //    print("dodano slot");
         var slot = Instantiate
         (
             InventoryScript.EmptySlotPrefab,

@@ -12,6 +12,7 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] BorderScript borderScript;
     [SerializeField] public MovementScript movementScript;
     [SerializeField] private LOCATIONS currentLocation;
+    [SerializeField] public DungeonsLobby dungeonRoom;
     public SpriteRenderer SRenderer;
 
     InventoryScript myInventory;
@@ -56,18 +57,47 @@ public class PlayerManager : MonoBehaviour
             }
         }
     }
-    public LOCATIONS CurrentLocation { 
+    public LOCATIONS CurrentLocation
+    {
         get => currentLocation;
-        set {
-           // print("przeniesienie gracza:" + Username + " do "+value.ToString());
-             gameObject.transform.parent = GameManager.instance.ListaDostepnychLokalizacji.Where(loc=>loc.name == value.ToString()).First().transform;
-      
+        set
+        {
+
+                // ukrycie innych graczy z zakladki dungeon, osoby nie bedace u nas w teamie
+                var parentLoc = GameManager.instance.ListaDostepnychLokalizacji
+                    .Where(loc => loc.name == value.ToString())
+                    .First();
+
+                gameObject.transform.parent = parentLoc.transform;
+                
+                if (parentLoc.name.Contains("DUNGEON"))
+                {
+                    // miejsce gdzie znajdowac sie beda ukrycki gracze z innych pokoi dungeona
+                    gameObject.transform.parent = parentLoc.transform.Find("PlayersFromOtherRooms").transform;
+                    print("DEBUGGGG ! : " + parentLoc.transform.name);
+
+                    if(GameManager.GetLocalPlayer() != null)
+                    {
+                        if (dungeonRoom.Players.Contains(GameManager.GetLocalPlayer().Username))
+                        {
+                            // print("przeniesienie gracza:" + Username + " do "+value.ToString());
+                            gameObject.transform.parent = parentLoc.transform;
+                        }
+                        else
+                        {
+                            // na starcie kazdy lokalny gracz bedzie w glownym katalogu dungeona
+                            gameObject.transform.parent = parentLoc.transform;
+                        }
+                    }
+                }
+                
             currentLocation = value;
         }
     }
 
     private void Awake() {
         SRenderer = GetComponent<SpriteRenderer>();
+        
     }
     private void Start()
     {
@@ -111,7 +141,7 @@ public class PlayerManager : MonoBehaviour
     {
         ClientSend.SendServerPlayerActionCommand(ClientSend.PlayerActions.TransformToStairs, isActive);  
     }
-
 }
+
 
 

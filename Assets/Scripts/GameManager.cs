@@ -34,37 +34,37 @@ public partial class GameManager : MonoBehaviour
     public static Dictionary<Vector3Int, string> MAPDATA_DUNGEON { get; internal set; }
     public static Dictionary<Vector3Int, string> MAPDATA_DUNGEON_GROUND { get; internal set; }
 
-   [Obsolete] public int CurrentUpdateVersion 
-    { 
-        get => currentUpdateVersion; 
-        set 
-        { 
-           // if(currentUpdateVersion < value)
-          //  {
-                // mapa jest starsza niz aktualnie na serwerze
-              //  print($"Current update version is outdated: [{currentUpdateVersion}]. New update on server is {value} ready to download");
-              //  ClientSend.DownloadLatestMapData();
-                currentUpdateVersion = value; 
-              //  UIManager.instance.UpdateBuildIndicatorOnScreen(currentUpdateVersion, _isDownloadAvaiable: true);
-          //  }
-          //  else
-          //  {
-                // mapa jest aktualna 
-             //   print("Map is up to date");
-                currentUpdateVersion = value;
+//    [Obsolete] public int CurrentUpdateVersion 
+//     { 
+//         get => currentUpdateVersion; 
+//         set 
+//         { 
+//            // if(currentUpdateVersion < value)
+//           //  {
+//                 // mapa jest starsza niz aktualnie na serwerze
+//               //  print($"Current update version is outdated: [{currentUpdateVersion}]. New update on server is {value} ready to download");
+//               //  ClientSend.DownloadLatestMapData();
+//                 currentUpdateVersion = value; 
+//               //  UIManager.instance.UpdateBuildIndicatorOnScreen(currentUpdateVersion, _isDownloadAvaiable: true);
+//           //  }
+//           //  else
+//           //  {
+//                 // mapa jest aktualna 
+//              //   print("Map is up to date");
+//                 currentUpdateVersion = value;
 
-              //  UIManager.instance.UpdateBuildIndicatorOnScreen(currentUpdateVersion,_isDownloadAvaiable: false);
-           // }
-        }
-    }
+//               //  UIManager.instance.UpdateBuildIndicatorOnScreen(currentUpdateVersion,_isDownloadAvaiable: false);
+//            // }
+//         }
+//     }
 
     public static Dictionary<int,PlayerManager> players = new Dictionary<int, PlayerManager>();
 
     public GameObject localPlayerPrefab; // lokalny gracz 
     public GameObject playerPrefab; // inni gracze na serwerze
-    [SerializeField] private int currentUpdateVersion;
-    Vector3Int startingLocationOnGrid = new Vector3Int(0,0,2);
-    Vector3 basePodition = new Vector3(0,0,2);
+    // [SerializeField] private int currentUpdateVersion;
+    // Vector3Int startingLocationOnGrid = new Vector3Int(0,0,2);
+    // Vector3 basePodition = new Vector3(0,0,2);
 
     private void Awake()
     {
@@ -88,13 +88,14 @@ public partial class GameManager : MonoBehaviour
             Destroy(this);
         }
     }
-    public void SpawnPlayer(int _id, string _username, Vector3 _position, Quaternion _rotation, Vector3Int tileCoordPosition, LOCATIONS _currentLocation, int _currentfloor)
+    public void SpawnPlayer(int _id, string _username, Vector3 _position, Quaternion _rotation, Vector3Int tileCoordPosition, LOCATIONS _currentLocation, int _currentfloor, int _dungeonRoomID)
     {
-       if(players.ContainsKey(_id)) 
-       {
-           print("w grze jest juz taki gracz z tym id");
-           return;
-       }
+        if(players.ContainsKey(_id)) 
+        {
+            print("w grze jest juz taki gracz z tym id");
+            return;
+        }
+
         bool _isLocal;
         GameObject _player;
         if(_id == Client.instance.myId) 
@@ -102,6 +103,8 @@ public partial class GameManager : MonoBehaviour
             _player = Instantiate(localPlayerPrefab, _position,_rotation);
             _isLocal = true;
             InventoryScript.instance.SetupInventory();
+
+            GameManager.instance.LogedIn = true;
             
         }
         else
@@ -117,7 +120,19 @@ public partial class GameManager : MonoBehaviour
         _playerData.CurrentPosition_GRID = tileCoordPosition;
         _playerData.CurrentLocation = _currentLocation;
         _playerData.IsLocal = _isLocal;
-        
+        if(_dungeonRoomID > 0)
+        {
+            try
+            {
+            _playerData.dungeonRoom = DungeonManager.GetDungeonLobbyByRoomID(_dungeonRoomID);
+                
+            }
+            catch (System.Exception)
+            {
+                Debug.LogWarning("cos nie tak z szukaniem roomid dla nowego gracza");
+            }
+        }
+
         players.Add(_id,_playerData);
         SetPlayerLocation_init(players[_id].CurrentLocation,players[_id],_currentfloor);
 
@@ -136,7 +151,8 @@ public partial class GameManager : MonoBehaviour
             {new Vector3Int( 7, -2, 14), new LOCATIONS[2]{LOCATIONS.Start_First_Floor,LOCATIONS.Start_Second_Floor}},
             {new Vector3Int( -14, -1, 2), new LOCATIONS[2]{LOCATIONS.DUNGEON_1,LOCATIONS.Start_Second_Floor}}
         };
-   
+    public bool LogedIn = false;
+
     public void EnterNewLocation(Vector3Int locationCoord_Grid, PlayerManager player)
     {
         var enterNewLocation = LocationMaps[locationCoord_Grid];
@@ -207,6 +223,12 @@ public partial class GameManager : MonoBehaviour
         player.CurrentLocation = location;
     }
 
+    public static PlayerManager GetLocalPlayer() {
+        if(GameManager.players.ContainsKey(Client.instance.myId))
+            return GameManager.players[Client.instance.myId];
+        else
+            return null;
+    }
     public enum DUNGEONS{
         DUNGEON_1
     }

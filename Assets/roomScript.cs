@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,17 +20,28 @@ public class roomScript : MonoBehaviour
 
     private void OnEnable() 
     { 
+        print("otworzono okno pokoju");
+    }
+
+    public void OnClick_Back()
+    {
 
     }
 
-   public void OnClick_Back()
-   {
+    public void OnClick_Cancel()
+    {
 
-   }
+    }
 
-   public void OnClick_Cancel()
-   {
-
-   }
+    public void AssignRoomDataToWindow(DungeonsLobby _room)
+    {
+        room = _room;
+        // update players data - assign them dungeonlobby
+        foreach(var player in room.Players)
+        {
+            int PlayerID = GameManager.players.Where(p=>p.Value.Username == player).First().Key;
+            GameManager.players[PlayerID].dungeonRoom = _room;
+        }
+    }
 
 }

@@ -129,7 +129,7 @@ using UnityEngine;
         public List<Item> items;
         public Slot(int index)
         {
-            Debug.Log("dodano element slot");
+           // Debug.Log("dodano element slot");
             this.index = index;
             this.items = new List<Item>();
 

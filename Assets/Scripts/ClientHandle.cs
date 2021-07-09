@@ -70,25 +70,53 @@ public class ClientHandle : MonoBehaviour
         int _currentfloor = _packet.ReadInt();
         Vector3Int _tileMapCoordinates = new Vector3Int((int)_position.x,(int)_position.y,(int)_position.z);
         
-        GameManager.instance.SpawnPlayer(_id,_username,_position,_rotation, _tileMapCoordinates,_currentLocation, _currentfloor);
+        int _dungeonRoomID =_packet.ReadInt();
+
+        GameManager.instance.SpawnPlayer(_id,_username,_position,_rotation, _tileMapCoordinates,_currentLocation, _currentfloor,_dungeonRoomID);
 
         UIManager.instance.PrintCurrentOnlineUsers();
     }
     private static void Teleport(Packet _packet)
     {
-         int _id = _packet.ReadInt();
+        int _id = _packet.ReadInt();
         Vector3 _position = _packet.ReadVector3();
-        print("teleport to: "+_position.ToString());
-
-        if (GameManager.instance.LocationMaps.ContainsKey(Vector3Int.CeilToInt(_position)))
-        {
-            GameManager.instance.EnterNewLocation(Vector3Int.CeilToInt(_position), GameManager.players[_id]);
-        }
         
-       GameManager.players[_id].TeleportToPositionInGrid(new Vector3Int((int)_position.x, (int)_position.y, (int)_position.z));
+        print("teleport to: "+_position.ToString());
+        // inni gracze nie pojawią sie w pokoju lokalnego i jemu przyelglym graczom
+        if(GameManager.players[_id].dungeonRoom != null)
+        {
+            print("gracz jest w dungeonie-lobby");
+            // sprawdzenie i przpeuszczenie tylko graczy w z konkretnego lobby , lokalnego gracza 
+            var room = GameManager.players[_id].dungeonRoom;
+            if(room.Players.Contains(GameManager.players[_id].Username))
+            {
+                // print okej gracz jest w tym samym lobby, moze sie tepnąć
+                print("pomyslnie przeteleportowano czlonka twojej grupy do dungeonu");
+                tp(_id, _position);
+                return;
+            }
+            else
+            {
+                print("teleport blocked - stop spawn other people in your room ;d");
+                return;
+            }
+        }
+
+        tp(_id, _position);
+
+        static void tp(int _id, Vector3 _position)
+        {
+            if (GameManager.instance.LocationMaps.ContainsKey(Vector3Int.CeilToInt(_position)))
+            {
+                GameManager.instance.EnterNewLocation(Vector3Int.CeilToInt(_position), GameManager.players[_id]);
+            }
+            GameManager.players[_id].TeleportToPositionInGrid(new Vector3Int((int)_position.x, (int)_position.y, (int)_position.z));
+        }
     }
     public static void PlayerPosition(Packet _packet)
     {
+        if(GameManager.instance.LogedIn == false) return;
+
         bool teleport = _packet.ReadBool();
         if(teleport)
         {
@@ -193,30 +221,37 @@ public class ClientHandle : MonoBehaviour
             UpdateChecker.CLIENT_UPDATE_VERSIONS = UpdateChecker.GetUpdateNotesFromServerWithWipedOffVersionNumbers(UpdateChecker.SERVER_UPDATE_VERSIONS);
             UpdateChecker.SaveChangesToFile();
         }
-        try
+
+        if(UpdateChecker.CLIENT_UPDATE_VERSIONS._Data._Locations.ElementAtOrDefault((int)location) == null)
         {
-              try
-              {
+            Debug.LogWarning("dodano brakujaca lokacje z pamieci");
+            UpdateChecker.CLIENT_UPDATE_VERSIONS._Data._Locations.Add(UpdateChecker.GetUpdateNotesFromServerWithWipedOffVersionNumbers(UpdateChecker.SERVER_UPDATE_VERSIONS)._Data[location]);
+        }
+        // try
+        // {
+            // try
+            // {
                 UpdateChecker.CLIENT_UPDATE_VERSIONS._Data[location][mapType]._Version = newMapVersion;
                 UpdateChecker.SaveChangesToFile(); 
-                }
-                catch(Exception )
-                {
-                    UpdateChecker.CLIENT_UPDATE_VERSIONS._Data[location][mapType] = UpdateChecker.GetUpdateNotesFromServerWithWipedOffVersionNumbers(UpdateChecker.SERVER_UPDATE_VERSIONS)._Data[location][mapType];
-                    print("dodano wyzerowaną kopie z wersji serwerowej");
-                    UpdateChecker.CLIENT_UPDATE_VERSIONS._Data[location][mapType]._Version = newMapVersion;
-                    print("aktualizacja versji mapy");
-                    UpdateChecker.SaveChangesToFile(); 
-                    // print("Tutaj bedzie trzeba dodać wyzerowaną kopie z pliku serwerowego, \nnastępnie przepuścić checka jeszcze raz do czasu gdy nie bedzie wyzerwanych elementow");
-                    // print("UpdateChecker.CLIENT_UPDATE_VERSIONS._Data[location][mapType]._Version = newMapVersion;"+ex.Message);
-                }
+          //  }
+            // catch(Exception ex )
+            // {
+            //     Debug.LogWarning(ex.Message);
+            //     // dodanie nowej lokalizacji do listy w pamięci
 
-
-        }
-        catch (System.Exception)
-        {
-            print("emmm brak pliku json");
-        }
+            //     UpdateChecker.CLIENT_UPDATE_VERSIONS._Data[location][mapType] = 
+            //         UpdateChecker.GetUpdateNotesFromServerWithWipedOffVersionNumbers(UpdateChecker.SERVER_UPDATE_VERSIONS)._Data[location][mapType];
+            //     print("dodano wyzerowaną kopie z wersji serwerowej");
+            //     UpdateChecker.CLIENT_UPDATE_VERSIONS._Data[location][mapType]._Version = newMapVersion;
+            //     print("aktualizacja versji mapy");
+            //     UpdateChecker.SaveChangesToFile(); 
+               
+            // }
+        // }
+        // catch (System.Exception ex)
+        // {
+        //     Debug.LogWarning(ex.Message);
+        // }
         
     
         LoadMapDataFromFile(location, mapType);
@@ -350,9 +385,17 @@ public class ClientHandle : MonoBehaviour
 
     internal static void KickFromDungeonRoom(Packet _packet)
     {
-        print("get info from server, you have to leave current room / kicked");
-        var dungeon = DungeonManager.GetDungeonLobbyByRoomID(_packet.ReadInt());
-        DungeonManager.instance.LeaveRoom(dungeon.LobbyID, Client.instance.myId);
+        try
+        {
+            print("get info from server, you have to leave current room / kicked");
+            var dungeon = DungeonManager.GetDungeonLobbyByRoomID(_packet.ReadInt());
+            if(dungeon == null) return; 
+            DungeonManager.instance.LeaveRoom(dungeon.LobbyID, Client.instance.myId);
+        }
+        catch (System.Exception ex)
+        {
+            print(ex.Message);
+        }
     }
 
     public static void RetievedUpdatedDungeonList(Packet _packet)
@@ -360,13 +403,12 @@ public class ClientHandle : MonoBehaviour
         print("otrzymano uaktualniona baze dungeon lobby rooms");
         string _action = _packet.ReadString();
         print("action =>"+_action);
-        
-        
+           
         // odpakowywanie obiektu dungeonLobby
         List<DungeonsLobby> updatedDungeonLobbysListFromServer = new List<DungeonsLobby>();
 
         int listCount = _packet.ReadInt();
-      print("olistCount => "+listCount);  
+        print("olistCount => "+listCount);  
 
         for (int i = 0; i < listCount; i++)
         {
@@ -393,6 +435,8 @@ public class ClientHandle : MonoBehaviour
                     break;
                 case "PlayerJoinToRoom":
                     print("gracz dolaczyl do pokoju");
+                    
+                    
                 break;
             }
         }
@@ -400,7 +444,6 @@ public class ClientHandle : MonoBehaviour
         foreach(DungeonsLobby lobbyRoom in updatedDungeonLobbysListFromServer)
         {
             DungeonManager.instance.UpdateLobbyData(lobbyRoom.LobbyID, lobbyRoom);
-            print("---------------------------------------"+lobbyRoom.LobbyID+"-------------------------------------");
         } 
 
     }

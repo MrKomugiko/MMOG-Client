@@ -45,7 +45,8 @@ using UnityEngine;
         JoinLobby,
         InitDataDungeonLobby,
         LeaveRoomBylayer,
-    GroupTeleport
+    GroupTeleport,
+    GroupEnteredDungeon
 }
 public class Packet : IDisposable
 {

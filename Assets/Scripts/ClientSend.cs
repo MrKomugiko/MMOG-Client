@@ -236,14 +236,23 @@ public class ClientSend : MonoBehaviour
 
     internal static void GroupTeleportPlayersInRoom(LOCATIONS location, int lobbyID)
     {
-            using (Packet _packet = new Packet((int)ClientPackets.GroupTeleport)) 
-            {
-                _packet.Write((int)location);   // int - dungeon number
-                _packet.Write(lobbyID);   // int - lobby id
-                SendTCPData(_packet);
-                
+        using (Packet _packet = new Packet((int)ClientPackets.GroupTeleport)) 
+        {
+            _packet.Write((int)location);   // int - dungeon number
+            _packet.Write(lobbyID);   // int - lobby id
+            SendTCPData(_packet);
+        }
+    }
 
-            }
+    internal static void GroupEnteredDungeon(int lobbyID)
+    {
+        // wyslanie info do wszystkich innych graczy, aby ci schowali graczy xD
+        print("wyslanie info do serwera, że grupa rozpoczela gre, i trzeba ich ukryc u innych graczy");
+        using (Packet _packet = new Packet((int)ClientPackets.GroupEnteredDungeon)) 
+        {
+            _packet.Write(lobbyID);   // int - lobby id
+            SendTCPData(_packet);
+        }
     }
     #endregion
 }
