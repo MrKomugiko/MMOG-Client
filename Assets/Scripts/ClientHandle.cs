@@ -416,8 +416,11 @@ public class ClientHandle : MonoBehaviour
                lobbyID: _packet.ReadInt(),
                lobbyOwner: _packet.ReadString(),
                dungeonLocation: (LOCATIONS)_packet.ReadInt(),
-               maxPlayersCapacity: _packet.ReadInt()
+               maxPlayersCapacity: _packet.ReadInt(),
+               isStarted: _packet.ReadBool()
+            
                 );
+               Debug.LogWarning(lobby.IsStarted);
             List<String> playersList = new List<string>();
             int playersCount = _packet.ReadInt();
             for (int j = 0; j < playersCount; j++)
@@ -425,7 +428,6 @@ public class ClientHandle : MonoBehaviour
                 playersList.Add(_packet.ReadString());
             }
             lobby.Players = playersList;
-            updatedDungeonLobbysListFromServer.Add(lobby);
         
             switch(_action)
             {
@@ -433,12 +435,18 @@ public class ClientHandle : MonoBehaviour
                     print("dodatkowa akcja do wykonania: "+_action);
                     print("np zablokowanie opcji startu, nie wiem :D?");
                     break;
+                
                 case "PlayerJoinToRoom":
                     print("gracz dolaczyl do pokoju");
-                    
-                    
+                break;
+                
+                case "GameStarted":
+                    print($"Room [{lobby.LobbyID}] wystartował grę. Następuje zablokowanie dostępu do tego pokoju.");   
+                    lobby.IsStarted = true;
                 break;
             }
+
+            updatedDungeonLobbysListFromServer.Add(lobby);
         }
 
         foreach(DungeonsLobby lobbyRoom in updatedDungeonLobbysListFromServer)

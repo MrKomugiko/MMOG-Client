@@ -122,17 +122,31 @@ public class DungeonManager : MonoBehaviour
              // JEŻELI TWOJ AKTUALNIE OTWARTY POKOJ NIE JEST AKTUALIZOWANY< NIE RUSZAJ GO  xD
               /////  print("nie ma potrzeby edytować zawartosci pokoju, nie ma cie w nim = nie jest otwarty");
                 // zaktualizuje sie tylko liczba graczy 
-                room.lobbySceneObjectRefference.transform.Find("roomMembersCount").GetComponent<TextMeshProUGUI>()
-                    .SetText(room.PlayersCount+" / "+room.MaxPlayersCapacity);
+                var title = room.lobbySceneObjectRefference.transform
+                        .Find("roomMembersCount")
+                        .GetComponent<TextMeshProUGUI>();
+
+                title.SetText(room.PlayersCount+" / "+room.MaxPlayersCapacity);
 
                 if(room.IsFull)
                 {
+                
                     room.lobbySceneObjectRefference.GetComponent<Button>().interactable = false;
+
+                    title.SetText($"<color=yellow>{title.text} [FULL]</color>");
                 }
                 else
                 {
                     room.lobbySceneObjectRefference.GetComponent<Button>().interactable = true;
                 }
+
+                if(room.IsStarted)
+                {
+                    room.lobbySceneObjectRefference.GetComponent<Button>().interactable = false;
+
+                    title.SetText($"<color=red>{title.text} [IN GAME]</color>");
+                }
+         
                 
             ///// //   return;
           /////// }
@@ -339,6 +353,7 @@ public class DungeonsLobby
     [SerializeField] private DUNGEONS dungeonLocation;
     [SerializeField] private List<string> players = new List<string>();
     [SerializeField] private int maxPlayersCapacity;
+    [SerializeField] private bool isStarted;
 
     public GameObject lobbySceneObjectRefference
     {
@@ -354,12 +369,15 @@ public class DungeonsLobby
     public int PlayersCount { get => Players.Count; }
     public int MaxPlayersCapacity { get => maxPlayersCapacity; private set => maxPlayersCapacity = value; }
     public bool IsFull { get => PlayersCount >= MaxPlayersCapacity ? true : false; }
-    public DungeonsLobby(int lobbyID, string lobbyOwner, DUNGEONS dungeonLocation, int maxPlayersCapacity = 2, List<string> players = null)
+    public bool IsStarted { get=>isStarted;  set => isStarted = value; }
+
+    public DungeonsLobby(int lobbyID, string lobbyOwner, DUNGEONS dungeonLocation, int maxPlayersCapacity = 2, List<string> players = null, bool isStarted = false)
     {
         LobbyID = lobbyID;
         LobbyOwner = lobbyOwner;
         DungeonLocation = dungeonLocation;
         MaxPlayersCapacity = maxPlayersCapacity;
+        IsStarted = isStarted;
 
         if (players == null)
             {
@@ -370,7 +388,7 @@ public class DungeonsLobby
             Players = players;
         }
     }
-    public DungeonsLobby(int lobbyID, string lobbyOwner, LOCATIONS dungeonLocation, int maxPlayersCapacity = 2, List<string> players = null)
+    public DungeonsLobby(int lobbyID, string lobbyOwner, LOCATIONS dungeonLocation, int maxPlayersCapacity = 2, List<string> players = null, bool isStarted = false)
     {
         LobbyID = lobbyID;
         LobbyOwner = lobbyOwner;
@@ -378,6 +396,7 @@ public class DungeonsLobby
         Enum.TryParse<DUNGEONS>(dungeonLocation.ToString(), out dungeonloc);
         DungeonLocation = dungeonloc;
         MaxPlayersCapacity = maxPlayersCapacity;
+        IsStarted = isStarted;
 
         if (players == null)
             {

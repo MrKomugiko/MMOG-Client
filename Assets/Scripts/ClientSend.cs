@@ -247,7 +247,7 @@ public class ClientSend : MonoBehaviour
     internal static void GroupEnteredDungeon(int lobbyID)
     {
         // wyslanie info do wszystkich innych graczy, aby ci schowali graczy xD
-        print("wyslanie info do serwera, że grupa rozpoczela gre, i trzeba ich ukryc u innych graczy");
+        print("wyslanie info do serwera, że grupa rozpoczela gre, i trzeba Grupe zablokowac");
         using (Packet _packet = new Packet((int)ClientPackets.GroupEnteredDungeon)) 
         {
             _packet.Write(lobbyID);   // int - lobby id
