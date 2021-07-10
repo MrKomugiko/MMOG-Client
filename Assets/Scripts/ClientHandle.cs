@@ -394,10 +394,9 @@ public class ClientHandle : MonoBehaviour
         }
         catch (System.Exception ex)
         {
-            print(ex.Message);
+            Debug.LogError(ex.Message);
         }
     }
-
     public static void RetievedUpdatedDungeonList(Packet _packet)
     {
         print("otrzymano uaktualniona baze dungeon lobby rooms");
