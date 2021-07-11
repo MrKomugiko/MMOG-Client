@@ -181,7 +181,7 @@ public class DungeonManager : MonoBehaviour
         print("utworzono lobby o id = "+newLobby.LobbyID);
 
         player_leader.dungeonRoom = newLobby;
-        ClientSend.CreateNewDungeonLobby(location, newLobby.LobbyID); // TODO: dokonczyc proses tworzenia lobby 
+        ClientSend.CreateNewDungeonLobby(location, newLobby.LobbyID); 
 
         UpdateLobbyData(newLobby.LobbyID, newLobby);
 
@@ -201,7 +201,6 @@ public class DungeonManager : MonoBehaviour
             enteButton.gameObject.SetActive(true);
             enteButton.onClick.AddListener(()=>OnClick_StartAndEnterDungeon(dungeonType, newLobby.LobbyID));
 
-        // button start -> TODO: zablokownie lobby do czasu zakończenia gry -> w razie ewentualnego dc mozna bedzie ponownie dołączyc o ile znajdujemy sie na liscie graczy ktoryz rozpoczeli gre ? 
         var cancelButton = WaitingLobbyRoomWindow.gameObject.transform.Find("CancelDungeonButton").GetComponent<Button>();
             cancelButton.onClick.RemoveAllListeners();
             cancelButton.onClick.AddListener(()=>OnClick_CancelAndRemoveLobby(dungeonType, newLobby.LobbyID));
@@ -297,7 +296,7 @@ public class DungeonManager : MonoBehaviour
         {
             return DungeonManager.ListOfDungeonLobby.Where(room=>room.LobbyID == _roomID).FirstOrDefault();
         }
-        // TODO:
+        
         Debug.LogWarning($"Brak DungeonRoom'u o wybrnaym ID: {_roomID}. Zwrócono wartosc null");
         return null;
     }

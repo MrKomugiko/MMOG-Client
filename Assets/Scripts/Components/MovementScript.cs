@@ -228,11 +228,9 @@ public class MovementScript : MonoBehaviour
     }
     public void Teleport(Vector3Int vector3Int)
     {
-        // TODO: Teleport na inne piętra niemożliwy, do zrobienia przeliczanie Z względem wysokosci
         Vector3 worldPosition = GameManager.instance._tileMap.CellToWorld(Vector3Int.CeilToInt(vector3Int));
         lastPosition_Grid = vector3Int;
         _transform.position =  new Vector3(worldPosition.x,worldPosition.y,_transform.position.z );
-
     }
     public void ExecuteMovingAnimation(Vector3Int newPosition_Grid)
     {

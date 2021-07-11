@@ -27,42 +27,19 @@ public class ClientHandle : MonoBehaviour
         
         ClientSend.DownloadLatestUpdateVersionNumber();
     }
-
-     public static void LoginRespondRecieved(Packet _packet)
-    {
-            //TODO:
-            // bool isAccesGranted = _packet.ReadBool();
-            // if(isAccesGranted)
-            //{
-                // initiate load process and load all player data from, server
-            //}
-            //else
-            //{
-                // back to start menu
-            //}
-    }
     
-    public static void UDPTest(Packet _packet)
-    {
-        string _msg = _packet.ReadString();
-
-        Debug.Log($"Received packet via UDP. Contains message: {_msg}");
-        ClientSend.UDPTestReceived();
-    }
+    
     public static void SpawnPlayer(Packet _packet)
     {
-
         print("spawn");
         int _id = _packet.ReadInt();
         string _username = _packet.ReadString();
- 
-        // TODO: wykonac po akceptacji logowania ze strony serwera
+
         if(Client.instance.myId == _id)
         {
             UIManager.instance.LoadGameScene();
             ClientSend.DownloadLatestUpdateVersionNumber();
         }
-            //----------------------------------------
  
         Vector3 _position = _packet.ReadVector3();
         Quaternion _rotation = _packet.ReadQuaternion();
@@ -82,16 +59,12 @@ public class ClientHandle : MonoBehaviour
         Vector3 _position = _packet.ReadVector3();
         
         print("teleport to: "+_position.ToString());
-        // inni gracze nie pojawią sie w pokoju lokalnego i jemu przyelglym graczom
+
         if(GameManager.players[_id].dungeonRoom != null)
         {
-            print("gracz jest w dungeonie-lobby");
-            // sprawdzenie i przpeuszczenie tylko graczy w z konkretnego lobby , lokalnego gracza 
             var room = GameManager.players[_id].dungeonRoom;
             if(room.Players.Contains(GameManager.players[_id].Username))
             {
-                // print okej gracz jest w tym samym lobby, moze sie tepnąć
-                print("pomyslnie przeteleportowano czlonka twojej grupy do dungeonu");
                 tp(_id, _position);
                 return;
             }
@@ -144,6 +117,8 @@ public class ClientHandle : MonoBehaviour
             GameManager.players[_id].MoveToPositionInGrid(Vector3Int.CeilToInt(_position));
         }
     }
+    
+    
     public static void UpdateChat(Packet _packet) 
     {
         string _msg = _packet.ReadString();
@@ -162,6 +137,8 @@ public class ClientHandle : MonoBehaviour
         string chattext = UIManager.czatTMP.text;
         UIManager.czatTMP.SetText(chattext+$"\n<color=white><b>[{_time}]</b>:<b>[{_username}]</b>:{_message}</color>");
     }
+
+
     public static void RemoveOfflinePlayer(Packet _packet) {
         int _id = _packet.ReadInt();
 
@@ -183,198 +160,15 @@ public class ClientHandle : MonoBehaviour
 
             UIManager.instance.PrintCurrentOnlineUsers();
     }
-
     public static void PingBackToServer(Packet _packet) 
     {
         // Heartbit d;
         ClientSend.PingReceived();
         UIManager.instance.PrintCurrentOnlineUsers();
     }
-    public static void ReceivedUpdateNumber(Packet _packet)
-    {
-        // porownaj wersje mapy z serwera a aktualnie zapisanej , w przypadku różnicy, pobierz z serwera nową wersje
-        // PAcket zawiera json patchnotes z servera
 
-        UpdateChecker.CacheJsonDataFromServer(_packet.ReadString());
-        UpdateChecker.FindOutdatedMAPDATAFilesVersion2();
-        /////////////////////////////////////////////////////////////////////////////////////////GameManager.instance.CurrentUpdateVersion = _packet.ReadInt();
-    }
-    public static void NewMapDataFromServerReceived(Packet _packet)
-    {
-        int newMapVersion = _packet.ReadInt();
-        LOCATIONS location = (LOCATIONS)_packet.ReadInt();
-        MAPTYPE mapType = (MAPTYPE)_packet.ReadInt();
-        int mapSize = _packet.ReadInt();
-        Dictionary<Vector3,string> brandNewMap = new Dictionary<Vector3, string>();
-        for(int i =0;i<mapSize;i++)
-        {
-            brandNewMap.Add(_packet.ReadVector3(),_packet.ReadString());
-        }
-
-        print($"Otrzymales uaktualnioną [{location.ToString()}][{mapType.ToString()}] wielosc: [{brandNewMap.Count}]");
-
-        SaveMapDataToFile(location, mapType, brandNewMap);
-
-        if(UpdateChecker.CLIENT_UPDATE_VERSIONS == null) 
-        {
-            print("no pathnote file, assign exact file from server, but remove updateverions number");
-            UpdateChecker.CLIENT_UPDATE_VERSIONS = UpdateChecker.GetUpdateNotesFromServerWithWipedOffVersionNumbers(UpdateChecker.SERVER_UPDATE_VERSIONS);
-            UpdateChecker.SaveChangesToFile();
-        }
-
-        if(UpdateChecker.CLIENT_UPDATE_VERSIONS._Data._Locations.ElementAtOrDefault((int)location) == null)
-        {
-            Debug.LogWarning("dodano brakujaca lokacje z pamieci");
-            UpdateChecker.CLIENT_UPDATE_VERSIONS._Data._Locations.Add(UpdateChecker.GetUpdateNotesFromServerWithWipedOffVersionNumbers(UpdateChecker.SERVER_UPDATE_VERSIONS)._Data[location]);
-        }
-        // try
-        // {
-            // try
-            // {
-                UpdateChecker.CLIENT_UPDATE_VERSIONS._Data[location][mapType]._Version = newMapVersion;
-                UpdateChecker.SaveChangesToFile(); 
-          //  }
-            // catch(Exception ex )
-            // {
-            //     Debug.LogWarning(ex.Message);
-            //     // dodanie nowej lokalizacji do listy w pamięci
-
-            //     UpdateChecker.CLIENT_UPDATE_VERSIONS._Data[location][mapType] = 
-            //         UpdateChecker.GetUpdateNotesFromServerWithWipedOffVersionNumbers(UpdateChecker.SERVER_UPDATE_VERSIONS)._Data[location][mapType];
-            //     print("dodano wyzerowaną kopie z wersji serwerowej");
-            //     UpdateChecker.CLIENT_UPDATE_VERSIONS._Data[location][mapType]._Version = newMapVersion;
-            //     print("aktualizacja versji mapy");
-            //     UpdateChecker.SaveChangesToFile(); 
-               
-            // }
-        // }
-        // catch (System.Exception ex)
-        // {
-        //     Debug.LogWarning(ex.Message);
-        // }
-        
-    
-        LoadMapDataFromFile(location, mapType);
-    }
-
-    private static (Dictionary<Vector3Int,string> mapdata,Tilemap tilemap) GetReferencesByMaptype(LOCATIONS _location, MAPTYPE _mapType) 
-    {
-        // TODO: do ogarnięcia kiedyindziej, dynamiczne tworzenie i generowanie sie mapy na podstawie pozycji gracza
-        // aktualnie,, są tylko 2 piętra i jest szasa dopisac to z ręki , ale nie na dluzsza mete
-        int key = GetKeyFromMapLocationAndType(_location,_mapType);
-
-        Dictionary<Vector3Int,string> mapdata = new Dictionary<Vector3Int, string>();
-        Tilemap tilemap = new Tilemap();
-
-       // print(key);
-
-        switch(key)
-        {
-            case 1:
-            
-                mapdata = GameManager.MAPDATA_Ground;
-                tilemap = GameManager.instance._tileMap_GROUND;
-            break;
-
-            case 2:
-                mapdata = GameManager.MAPDATA;
-                tilemap = GameManager.instance._tileMap;
-            break;
-            
-            case 11:
-            
-                mapdata = GameManager.MAPDATA2ndFloor_Ground;
-                tilemap = GameManager.instance._tileMap3ndFloor_GROUND;
-            break;
-
-            case 12:
-                mapdata = GameManager.MAPDATA2ndFloor;
-                tilemap = GameManager.instance._tileMap2ndFloor;
-            break;
-
-            case 21:
-                GameManager.MAPDATA_DUNGEON_GROUND = new Dictionary<Vector3Int, string>();
-                mapdata = GameManager.MAPDATA_DUNGEON_GROUND;
-                tilemap = GameManager.instance.ListaDostepnychLokalizacji.Where(loc=>loc.name == "DUNGEON_1").First().transform.Find("Ground_MAP").GetComponent<Tilemap>();
-                GameManager.instance._tilemapDUNGEON_GROUND = tilemap;
-
-            break;
-
-            case 22:
-                GameManager.MAPDATA_DUNGEON = new Dictionary<Vector3Int, string>();
-                mapdata = GameManager.MAPDATA_DUNGEON;
-                tilemap = GameManager.instance.ListaDostepnychLokalizacji.Where(loc=>loc.name == "DUNGEON_1").First().transform.Find("Obstacle_MAP").GetComponent<Tilemap>();
-                GameManager.instance._tilemapDUNGEON = tilemap;
-            break;
-        }
-        return (mapdata,tilemap);
-    }
-    public static void LoadMapDataFromFile(LOCATIONS _location, MAPTYPE _mapType)
-    {
-        
-
-      // GameManager.instance.ANDROIDLOGGER.text += $"LoadMapDataFromFile {_location}{_mapType}\n";
-         //   print("ładowanie mapy");
-//            print("Get reference"+_location.ToString()+"  , "+_mapType.ToString());
-            var references = GetReferencesByMaptype(_location, _mapType);
-            Tilemap REFERENCE_TILEMAP = references.tilemap;
-            Dictionary<Vector3Int,string> REFERENCE_MAPDATA = references.mapdata;
-
-          //  print($"Ladowanie danych mapy [{_mapType.ToString()}] z pliku do pamięci");
-            int modifiedCounter = 0, wrongDataRecords = 0, deletedCounter = 0, newAddedCounter = 0;
-            Dictionary<Vector3Int, string> TEMP_MAPDATA_FROM_FILE = ReadMapDataFromFile(_location, _mapType);
-
-            references.tilemap.ClearAllTiles();
-             // ---------- MODYFIKACJA ISTNIEJĄCYCH DANYCH SERVERA
-            // --------- JEZELI NIE MA ZAPISANYCH DANYCH NA SERWERZE Z AUTOMATU WSZYSTKO PRZYPISUJEMY JAK Z PLIKU
-            if (REFERENCE_MAPDATA.Count == 0)
-            {
-                REFERENCE_MAPDATA = TEMP_MAPDATA_FROM_FILE;
-            }
-            if (REFERENCE_MAPDATA.Count > 0)
-            {
-                if (TEMP_MAPDATA_FROM_FILE.Count == 0) print("Plik jest pusty -> Brak zapisanych danych mapy");
-
-                // porownanie i dodanie/zamiana danych z istniejącym zapisem w pamiec
-                foreach (var kvp in TEMP_MAPDATA_FROM_FILE)
-                {
-                    if (REFERENCE_MAPDATA.ContainsKey(kvp.Key))
-                    {
-                        if (REFERENCE_MAPDATA[kvp.Key] != kvp.Value)
-                        {
-                            REFERENCE_MAPDATA[kvp.Key] = kvp.Value;
-                            modifiedCounter++;
-                        }
-                    }
-                    else
-                    {
-                        REFERENCE_MAPDATA.Add(kvp.Key, kvp.Value);
-                        newAddedCounter++;
-                    }
-                }
-               // usuniecie nieaktualnych pól
-               
-                foreach (var pole in REFERENCE_MAPDATA.Where(pole => TEMP_MAPDATA_FROM_FILE.ContainsKey(pole.Key) == false).Select(pole => pole.Key).ToList()) 
-                {
-                    REFERENCE_MAPDATA.Remove(pole);
-                    deletedCounter++;
-                }
-            }
-
-        // ----------------------------------PODSUMOWANIE ----------------------------------
-        GameManager.instance.ANDROIDLOGGER.text += $"\nOdczytano: {TEMP_MAPDATA_FROM_FILE.Count}\n";
-            print(
-                $"Odczytano: .................. {TEMP_MAPDATA_FROM_FILE.Count}\n" +
-                $"Dodano: ..................... {newAddedCounter}\n" +
-                $"Zmodyfikowano: .............. {modifiedCounter}\n" +
-                $"Usunięto: ................... {deletedCounter}\n" +
-                $"Uszkodzonych danych: ........ {wrongDataRecords}");
-
-            PopulateTilemapWithCorrectTiles(_data: REFERENCE_MAPDATA, _tilemap: REFERENCE_TILEMAP);
-
-    }
-
-    internal static void RemoveNonExistingRoomFromScene(Packet _packet)
+  
+    public static void RemoveNonExistingRoomFromScene(Packet _packet)
     {
         Console.WriteLine("usuniecie obiektu pokoju ze sceny i pamieci");
         DUNGEONS dungeon = (DUNGEONS)_packet.ReadInt();
@@ -382,8 +176,7 @@ public class ClientHandle : MonoBehaviour
 
         DungeonManager.instance.DiscposeRoom(dungeon,roomID);
     }
-
-    internal static void KickFromDungeonRoom(Packet _packet)
+    public static void KickFromDungeonRoom(Packet _packet)
     {
         try
         {
@@ -452,8 +245,8 @@ public class ClientHandle : MonoBehaviour
         {
             DungeonManager.instance.UpdateLobbyData(lobbyRoom.LobbyID, lobbyRoom);
         } 
-
     }
+
 
     internal static void RemoveItemFromMap(Packet _packet)
     {
@@ -467,7 +260,6 @@ public class ClientHandle : MonoBehaviour
         refference.mapdata[position_grid] = "";
         refference.tilemap.SetTile(position_grid,null);
     }
-
     internal static void CollectAndPickUPItem(Packet _packet)
     {
         int whiPickItem = _packet.ReadInt(); // INT server current player ID
@@ -489,14 +281,14 @@ public class ClientHandle : MonoBehaviour
         
     }
 
-    internal static void RetievedLoginResponse(Packet _packet)
+
+    public static void RetievedLoginResponse(Packet _packet)
     {
         string meessageFromServer = _packet.ReadString();
         print(meessageFromServer);
         UIManager.Login_InputUsername.interactable = true; // mozliwosc ponownego wproawdzenia danych
         UIManager.instance.RegistrationWindow.GetComponent<WindowScript>().ShowServerMessage(meessageFromServer);
     }
-
     public static void RetievedRegistrationResponse(Packet _packet)
     {
         string response = _packet.ReadString();
@@ -505,20 +297,157 @@ public class ClientHandle : MonoBehaviour
         UIManager.instance.LoadingAnimation.ReceivedMessageFromServer = true;
     }
 
+    
+    public static void ReceivedUpdateNumber(Packet _packet)
+    {
+        UpdateChecker.CacheJsonDataFromServer(_packet.ReadString());
+        UpdateChecker.FindOutdatedMAPDATAFilesVersion2();
+    }
+    public static void NewMapDataFromServerReceived(Packet _packet)
+    {
+        int newMapVersion = _packet.ReadInt();
+        LOCATIONS location = (LOCATIONS)_packet.ReadInt();
+        MAPTYPE mapType = (MAPTYPE)_packet.ReadInt();
+        int mapSize = _packet.ReadInt();
+        Dictionary<Vector3,string> brandNewMap = new Dictionary<Vector3, string>();
+        for(int i =0;i<mapSize;i++)
+        {
+            brandNewMap.Add(_packet.ReadVector3(),_packet.ReadString());
+        }
+
+        print($"Otrzymales uaktualnioną [{location.ToString()}][{mapType.ToString()}] wielosc: [{brandNewMap.Count}]");
+
+        SaveMapDataToFile(location, mapType, brandNewMap);
+
+        if(UpdateChecker.CLIENT_UPDATE_VERSIONS == null) 
+        {
+            print("no pathnote file, assign exact file from server, but remove updateverions number");
+            UpdateChecker.CLIENT_UPDATE_VERSIONS = UpdateChecker.GetUpdateNotesFromServerWithWipedOffVersionNumbers(UpdateChecker.SERVER_UPDATE_VERSIONS);
+            UpdateChecker.SaveChangesToFile();
+        }
+
+        if(UpdateChecker.CLIENT_UPDATE_VERSIONS._Data._Locations.ElementAtOrDefault((int)location) == null)
+        {
+            Debug.LogWarning("dodano brakujaca lokacje z pamieci");
+            UpdateChecker.CLIENT_UPDATE_VERSIONS._Data._Locations.Add(UpdateChecker.GetUpdateNotesFromServerWithWipedOffVersionNumbers(UpdateChecker.SERVER_UPDATE_VERSIONS)._Data[location]);
+        }
+
+        UpdateChecker.CLIENT_UPDATE_VERSIONS._Data[location][mapType]._Version = newMapVersion;
+        UpdateChecker.SaveChangesToFile(); 
+    
+        LoadMapDataFromFile(location, mapType);
+    }
+    private static (Dictionary<Vector3Int,string> mapdata,Tilemap tilemap) GetReferencesByMaptype(LOCATIONS _location, MAPTYPE _mapType) 
+    {
+        // TODO: do ogarnięcia kiedyindziej, dynamiczne tworzenie i generowanie sie mapy na podstawie pozycji gracza
+        // aktualnie,, są tylko 2 piętra i jest szasa dopisac to z ręki , ale nie na dluzsza mete
+        int key = GetKeyFromMapLocationAndType(_location,_mapType);
+
+        Dictionary<Vector3Int,string> mapdata = new Dictionary<Vector3Int, string>();
+        Tilemap tilemap = new Tilemap();
+
+        switch(key)
+        {
+            case 1:
+            
+                mapdata = GameManager.MAPDATA_Ground;
+                tilemap = GameManager.instance._tileMap_GROUND;
+            break;
+
+            case 2:
+                mapdata = GameManager.MAPDATA;
+                tilemap = GameManager.instance._tileMap;
+            break;
+            
+            case 11:
+            
+                mapdata = GameManager.MAPDATA2ndFloor_Ground;
+                tilemap = GameManager.instance._tileMap3ndFloor_GROUND;
+            break;
+
+            case 12:
+                mapdata = GameManager.MAPDATA2ndFloor;
+                tilemap = GameManager.instance._tileMap2ndFloor;
+            break;
+
+            case 21:
+                GameManager.MAPDATA_DUNGEON_GROUND = new Dictionary<Vector3Int, string>();
+                mapdata = GameManager.MAPDATA_DUNGEON_GROUND;
+                tilemap = GameManager.instance.ListaDostepnychLokalizacji.Where(loc=>loc.name == "DUNGEON_1").First().transform.Find("Ground_MAP").GetComponent<Tilemap>();
+                GameManager.instance._tilemapDUNGEON_GROUND = tilemap;
+
+            break;
+
+            case 22:
+                GameManager.MAPDATA_DUNGEON = new Dictionary<Vector3Int, string>();
+                mapdata = GameManager.MAPDATA_DUNGEON;
+                tilemap = GameManager.instance.ListaDostepnychLokalizacji.Where(loc=>loc.name == "DUNGEON_1").First().transform.Find("Obstacle_MAP").GetComponent<Tilemap>();
+                GameManager.instance._tilemapDUNGEON = tilemap;
+            break;
+        }
+        return (mapdata,tilemap);
+    } 
+    public static void LoadMapDataFromFile(LOCATIONS _location, MAPTYPE _mapType)
+    {
+            var references = GetReferencesByMaptype(_location, _mapType);
+            Tilemap REFERENCE_TILEMAP = references.tilemap;
+            Dictionary<Vector3Int,string> REFERENCE_MAPDATA = references.mapdata;
+
+            int modifiedCounter = 0, wrongDataRecords = 0, deletedCounter = 0, newAddedCounter = 0;
+            Dictionary<Vector3Int, string> TEMP_MAPDATA_FROM_FILE = ReadMapDataFromFile(_location, _mapType);
+
+            references.tilemap.ClearAllTiles();
+             // ---------- MODYFIKACJA ISTNIEJĄCYCH DANYCH SERVERA
+            // --------- JEZELI NIE MA ZAPISANYCH DANYCH NA SERWERZE Z AUTOMATU WSZYSTKO PRZYPISUJEMY JAK Z PLIKU
+            if (REFERENCE_MAPDATA.Count == 0)
+            {
+                REFERENCE_MAPDATA = TEMP_MAPDATA_FROM_FILE;
+            }
+            if (REFERENCE_MAPDATA.Count > 0)
+            {
+                if (TEMP_MAPDATA_FROM_FILE.Count == 0) print("Plik jest pusty -> Brak zapisanych danych mapy");
+
+                // porownanie i dodanie/zamiana danych z istniejącym zapisem w pamiec
+                foreach (var kvp in TEMP_MAPDATA_FROM_FILE)
+                {
+                    if (REFERENCE_MAPDATA.ContainsKey(kvp.Key))
+                    {
+                        if (REFERENCE_MAPDATA[kvp.Key] != kvp.Value)
+                        {
+                            REFERENCE_MAPDATA[kvp.Key] = kvp.Value;
+                            modifiedCounter++;
+                        }
+                    }
+                    else
+                    {
+                        REFERENCE_MAPDATA.Add(kvp.Key, kvp.Value);
+                        newAddedCounter++;
+                    }
+                }
+               // usuniecie nieaktualnych pól
+               
+                foreach (var pole in REFERENCE_MAPDATA.Where(pole => TEMP_MAPDATA_FROM_FILE.ContainsKey(pole.Key) == false).Select(pole => pole.Key).ToList()) 
+                {
+                    REFERENCE_MAPDATA.Remove(pole);
+                    deletedCounter++;
+                }
+            }
+
+        // ----------------------------------PODSUMOWANIE ----------------------------------
+        GameManager.instance.ANDROIDLOGGER.text += $"\nOdczytano: {TEMP_MAPDATA_FROM_FILE.Count}\n";
+            print(
+                $"Odczytano: .................. {TEMP_MAPDATA_FROM_FILE.Count}\n" +
+                $"Dodano: ..................... {newAddedCounter}\n" +
+                $"Zmodyfikowano: .............. {modifiedCounter}\n" +
+                $"Usunięto: ................... {deletedCounter}\n" +
+                $"Uszkodzonych danych: ........ {wrongDataRecords}");
+
+            PopulateTilemapWithCorrectTiles(_data: REFERENCE_MAPDATA, _tilemap: REFERENCE_TILEMAP);
+    }
     private static void SaveMapDataToFile(LOCATIONS location, MAPTYPE mapType, Dictionary<Vector3, string> mapData)
     {
         
         string path = Constants.GetFilePath(DATATYPE.Locations,location,mapType);
-        //   print(path);
-        // print($"Zapisywanie danych mapy[{location.ToString()}][{mapType.ToString()}] do pliku");
-        //  if (!File.Exists(path)) 
-        //     {
-
-        //         Console.WriteLine(path);
-        //         return;
-        //     }
-       // Directory.CreateDirectory(path);
-
 
        Constants.CreateFolder(DATATYPE.Locations,location);
 
@@ -600,14 +529,7 @@ public class ClientHandle : MonoBehaviour
         // determine what map type server need from us
         MAPTYPE mapType =  (MAPTYPE)_packet.ReadInt();
         LOCATIONS mapLocation = (LOCATIONS)_packet.ReadInt();
-        print("server chce mape typu: "+mapType.ToString()+" dla lokalizacji: "+ mapLocation.ToString());
         ClientSend.SendMapDataToServer(mapType,mapLocation);
-
     }
-
-
-     
-        
-
-        public static int GetKeyFromMapLocationAndType(LOCATIONS location, MAPTYPE mapType) => (int)location * 10 + (int)mapType + 1;
+    public static int GetKeyFromMapLocationAndType(LOCATIONS location, MAPTYPE mapType) => (int)location * 10 + (int)mapType + 1;
 }

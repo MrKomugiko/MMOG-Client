@@ -100,7 +100,7 @@ public class InventoryScript : MonoBehaviour
         var counter = ListSlotObjects[slotIndex].transform.Find("ItemCounter").GetComponent<TextMeshProUGUI>();
         counter.text = isStackable?"1":"";
     }
-    // TODO: zamienic na dict'a danych itemkow wszytsko statystyki, opis itp, bedzie trzymanie u klienta, a serwer bedzie wydawac pozwolenie na drop izalozenie ?
+  
     [SerializeField] public List<ITEM_UI_DATA> ListOfItemDATA; 
   
     

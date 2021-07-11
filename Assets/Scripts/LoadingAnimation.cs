@@ -7,7 +7,7 @@ public class LoadingAnimation : MonoBehaviour
 {
    [SerializeField] int spingAnglePerFrame;
    [SerializeField] Transform _transform;
-   Vector3 spinVector;
+    Vector3 spinVector;
     public bool ReceivedMessageFromServer = false;
 
     private void OnEnable() 

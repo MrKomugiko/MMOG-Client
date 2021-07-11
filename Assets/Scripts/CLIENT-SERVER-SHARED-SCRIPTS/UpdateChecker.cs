@@ -22,72 +22,6 @@ public class UpdateChecker : MonoBehaviour
         //SERVER_UPDATE_VERSIONS = ReadDataFromFile(@"DATA\UpdateNotes_TEST_SERVER.json");
     }
 
-  // [ContextMenu("init")]
-    // public void IniciateData_TEST() {
-    //     // if (isReady) return;
-    //     // isReady = true;
-
-    //     CLIENT_UPDATE_VERSIONS = new UPDATE_NOTES();
-    //     CLIENT_UPDATE_VERSIONS._Data =
-    //         new DATA() {
-    //             _Locations = new List<Locations>()
-    //             {
-    //                     new Locations() {
-    //                         _Id = 0,
-    //                         _Name = "Start_First_Floor",
-    //                         _Coordinates = new Vector3_json(7, -2, 14),
-    //                         _Type = new List<Maptypes>()
-    //                     {
-    //                             new Maptypes() {
-    //                                 _Type = "Ground_MAP",
-    //                                 _Version = 1001
-    //                             },
-    //                             new Maptypes() {
-    //                                 _Type = "Obstacle_MAP",
-    //                                 _Version = 1001
-    //                             }
-    //                         }
-    //                     },
-    //                     new Locations() {
-    //                         _Id = 1,
-    //                         _Name = "Start_Second_Floor",
-    //                         _Coordinates = new Vector3_json(7, -2, 14),
-
-    //                         _Type = new List<Maptypes>()
-    //                     {
-    //                             new Maptypes() {
-    //                                 _Type = "Ground_MAP",
-    //                                 _Version = 1001
-    //                             },
-    //                             new Maptypes() {
-    //                                 _Type = "Obstacle_MAP",
-    //                                 _Version = 1001
-    //                             }
-    //                         }
-    //                     }
-    //             },
-    //             _Items = new List<Items>() {
-    //                     new Items(
-    //                         id: (int)ITEMS.Armor,
-    //                         name: ITEMS.Armor.ToString(),
-    //                         type: "Wearable"
-    //                     ),
-    //                     new Items(
-    //                         id: (int)ITEMS.Stone,
-    //                         name: ITEMS.Stone.ToString(),
-    //                         type: "Trash"
-    //                     ),
-    //                     new Items(
-    //                         id : (int)ITEMS.Health_Potion,
-    //                         name : ITEMS.Health_Potion.ToString(),
-    //                         type :"Consumable"
-    //                     )
-    //             }
-    //         };
-    //     string clientString = JsonUtility.ToJson(CLIENT_UPDATE_VERSIONS,true);
-    //         print(clientString);
-    // }
-    
     public static void SaveChangesToFile(){
        string jsonText = (JsonUtility.ToJson(CLIENT_UPDATE_VERSIONS));
 
@@ -111,7 +45,6 @@ public class UpdateChecker : MonoBehaviour
     public static void CacheJsonDataFromServer(string dataFromServer) {
 
         SERVER_UPDATE_VERSIONS = JsonUtility.FromJson<UPDATE_NOTES>(dataFromServer);
-
     }
 
     public static int GetVersionOf(UPDATE_NOTES source, LOCATIONS _location, MAPTYPE _maptype, DATATYPE _datatype = DATATYPE.Locations)
@@ -122,8 +55,7 @@ public class UpdateChecker : MonoBehaviour
         }
         catch (System.Exception)
         {
-           // Debug.LogWarning("zwrocono wartość 0000 ponieważ "+ex.Message);
-            return 0000;
+           return 0000;
         }  
     }
     public static int GetVersionOf(UPDATE_NOTES source, ITEMS _item, DATATYPE _datatype = DATATYPE.Items) => source._Data[_item]._Version;

@@ -13,7 +13,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject updateAndMapVersion;
     public static UIManager instance;
     public static TextMeshProUGUI czatTMP;
-    
+
     public GameObject startMenu;
     public GameObject buttonsPanel;
 
@@ -28,11 +28,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] public LoadingAnimation LoadingAnimation;
     [SerializeField] public GameObject RegistrationWindow;
 
-
+   [SerializeField] public FixedJoystick joystick;
     private void Awake()
     {
         czatTMP = czat;
-        
+
         Login_InputUsername = startMenu.transform.Find("Login_InputUsername").GetComponent<InputField>();
         Login_InputPassword = startMenu.transform.Find("Login_InputPassword").GetComponent<InputField>();
         Register_InputPassword = RegistrationWindow.transform.Find("Register_InputPassword").GetComponent<InputField>();
@@ -47,19 +47,16 @@ public class UIManager : MonoBehaviour
             Destroy(this);
         }
     }
-
-
     public void ClearMessage(float time, TextMeshProUGUI responsMessage)
     {
-        StartCoroutine(ClearMessageAfterTime(time,responsMessage));
+        StartCoroutine(ClearMessageAfterTime(time, responsMessage));
     }
-
     public void EnterAsGuest()
     {
-        if(Client.isConnected)
+        if (Client.isConnected)
         {
             print("Gracz chce wejsc do gry jako gość");
-         //   ThreadManager.ExecuteOnMainThread(()=>UIManager.instance.LoadGameScene());
+            //   ThreadManager.ExecuteOnMainThread(()=>UIManager.instance.LoadGameScene());
             ClientSend.WelcomeReceived();
         }
         else
@@ -67,10 +64,10 @@ public class UIManager : MonoBehaviour
             ShowReconnectWindow();
         }
     }
-    
     public void LogInToServer()
     {
-        if(Client.isConnected){
+        if (Client.isConnected)
+        {
             Login_InputUsername.interactable = false;
             // Client.instance.ConnectToServer();
             print("sprawdzanie danych do logowania poczekaj");
@@ -80,24 +77,24 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            
-     ShowReconnectWindow();
+
+            ShowReconnectWindow();
         }
     }
-
-      public void RegisterNewAccount()
+    public void RegisterNewAccount()
     {
-        if(Client.isConnected){
-        LoadingWindow.SetActive(true);
+        if (Client.isConnected)
+        {
+            LoadingWindow.SetActive(true);
 
-        print("Gracz chce stworzyc nowe konto");
-        ClientSend.SendLoginCreditionals(UIManager.Register_InputUsername.text, UIManager.Register_InputPassword.text,"REGISTER");
-      }
-    else
-    {
-        RegistrationWindow.SetActive(false);
-        ShowReconnectWindow();
-    }
+            print("Gracz chce stworzyc nowe konto");
+            ClientSend.SendLoginCreditionals(UIManager.Register_InputUsername.text, UIManager.Register_InputPassword.text, "REGISTER");
+        }
+        else
+        {
+            RegistrationWindow.SetActive(false);
+            ShowReconnectWindow();
+        }
     }
     public GameObject reconnectWindow;
     public void ShowReconnectWindow()
@@ -107,12 +104,12 @@ public class UIManager : MonoBehaviour
     }
     public void OnClick_Reconnect()
     {
-         UIManager.instance.reconnectWindow.GetComponent<WindowScript>().OnClick_ConnectToServer();
+        UIManager.instance.reconnectWindow.GetComponent<WindowScript>().OnClick_ConnectToServer();
     }
     public void LoadGameScene()
     {
         print("Aktywowanie sceny gry / Enter Game");
-      
+
         startMenu.SetActive(false);
         buttonsPanel.SetActive(true);
         czatPanel.SetActive(true);
@@ -125,26 +122,26 @@ public class UIManager : MonoBehaviour
         {
             try
             {
-               // print("usunięcie obiektów graczy");
-                if(player.IsLocal)
+                // print("usunięcie obiektów graczy");
+                if (player.IsLocal)
                 {
                     GameManager.instance.cam.transform.parent = GameManager.instance.gameObject.transform;
                     GameManager.instance.cam.transform.localPosition = Vector3.zero;
                 }
                 Destroy(player.gameObject);
             }
-            catch {
+            catch
+            {
                 Console.WriteLine("back to start menu error");
-             }
+            }
         }
-      //  print("usuniecie graczy z pamieci");
+        //  print("usuniecie graczy z pamieci");
         GameManager.players.Clear();
 
         grid.SetActive(false);
         buttonsPanel.SetActive(false);
         czatPanel.SetActive(false);
     }
-
     public void UpdateBuildIndicatorOnScreen(int _currentBuildVersion = 0000, bool _isDownloadAvaiable = false)
     {
         // change text
@@ -153,23 +150,17 @@ public class UIManager : MonoBehaviour
         //activate or no button
         updateAndMapVersion.GetComponent<Button>().interactable = _isDownloadAvaiable;
     }
-
     [SerializeField] TextMeshProUGUI PlayersOnlineText;
-    [SerializeField] public FixedJoystick joystick;
-
-    public void PrintCurrentOnlineUsers()
+     public void PrintCurrentOnlineUsers()
+    {
+        PlayersOnlineText.SetText("");
+        foreach (var player in GameManager.players.Values)
         {
-            PlayersOnlineText.SetText("");
-            foreach(var player in GameManager.players.Values)
-            {
-                PlayersOnlineText.SetText(PlayersOnlineText.text + $"\n- [{player.Id}] [{player.Username}]");
-            }
+            PlayersOnlineText.SetText(PlayersOnlineText.text + $"\n- [{player.Id}] [{player.Username}]");
         }
-
-
+    }
     private IEnumerator ClearMessageAfterTime(float time, TextMeshProUGUI textTMP)
     {
-        print("za "+time+" sekund zniknie wiadomosc");
         yield return new WaitForSeconds(time);
         textTMP.SetText("");
     }

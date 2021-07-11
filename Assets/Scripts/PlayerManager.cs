@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
+    [SerializeField] private bool isLocal;
     [SerializeField] private int _id;
     [SerializeField] private string _username;
     [SerializeField] private Vector3Int currentPosition_GRID;
-    private bool isLocal;
-    NPCDetector nPCDetector;
     [SerializeField] BorderScript borderScript;
-    [SerializeField] public MovementScript movementScript;
     [SerializeField] private LOCATIONS currentLocation;
-    [SerializeField] public DungeonsLobby dungeonRoom;
+    NPCDetector nPCDetector;
+    public MovementScript movementScript;
+    public DungeonsLobby dungeonRoom;
     public SpriteRenderer SRenderer;
 
     InventoryScript myInventory;
@@ -53,7 +53,6 @@ public class PlayerManager : MonoBehaviour
                 GameManager.instance.cam.transform.localPosition = Vector3.zero;
                 nPCDetector = GetComponentInChildren<NPCDetector>();
                 myInventory = UIManager.instance.PlayerInventroy;
-                print(myInventory.name);
             }
         }
     }
@@ -62,34 +61,31 @@ public class PlayerManager : MonoBehaviour
         get => currentLocation;
         set
         {
+            var parentLoc = GameManager.instance.ListaDostepnychLokalizacji
+                .Where(loc => loc.name == value.ToString())
+                .First();
 
-                // ukrycie innych graczy z zakladki dungeon, osoby nie bedace u nas w teamie
-                var parentLoc = GameManager.instance.ListaDostepnychLokalizacji
-                    .Where(loc => loc.name == value.ToString())
-                    .First();
+            gameObject.transform.parent = parentLoc.transform;
+            
+            if (parentLoc.name.Contains("DUNGEON"))
+            {
+                // miejsce gdzie znajdowac sie beda ukrycki gracze z innych pokoi dungeona
+                gameObject.transform.parent = parentLoc.transform.Find("PlayersFromOtherRooms").transform;
 
-                gameObject.transform.parent = parentLoc.transform;
-                
-                if (parentLoc.name.Contains("DUNGEON"))
+                if(GameManager.GetLocalPlayer() != null)
                 {
-                    // miejsce gdzie znajdowac sie beda ukrycki gracze z innych pokoi dungeona
-                    gameObject.transform.parent = parentLoc.transform.Find("PlayersFromOtherRooms").transform;
-                    print("DEBUGGGG ! : " + parentLoc.transform.name);
-
-                    if(GameManager.GetLocalPlayer() != null)
+                    if (dungeonRoom.Players.Contains(GameManager.GetLocalPlayer().Username))
                     {
-                        if (dungeonRoom.Players.Contains(GameManager.GetLocalPlayer().Username))
-                        {
-                            // print("przeniesienie gracza:" + Username + " do "+value.ToString());
-                            gameObject.transform.parent = parentLoc.transform;
-                        }
-                        else
-                        {
-                            // na starcie kazdy lokalny gracz bedzie w glownym katalogu dungeona
-                            gameObject.transform.parent = parentLoc.transform;
-                        }
+                        // print("przeniesienie gracza:" + Username + " do "+value.ToString());
+                        gameObject.transform.parent = parentLoc.transform;
+                    }
+                    else
+                    {
+                        // na starcie kazdy lokalny gracz bedzie w glownym katalogu dungeona
+                        gameObject.transform.parent = parentLoc.transform;
                     }
                 }
+            }
                 
             currentLocation = value;
         }
@@ -128,13 +124,13 @@ public class PlayerManager : MonoBehaviour
 
     private void OnDestroy() 
     {
-       if(GameManager.players[Client.instance.myId].isLocal)
-        {
-            // w przypadku kikcka z serwera obbiekt gracza zostanie usunięty, 
-            //  dlatego najpierw trzeba odczepić od niego kamere        
-            print("detach camera from local player object");
-           //TODO: odczepianie sie kamery : GameManager.instance.cam.transform.SetParent(null);
-        }
+    //    if(GameManager.players[Client.instance.myId].isLocal)
+    //     {
+    //         // w przypadku kikcka z serwera obbiekt gracza zostanie usunięty, 
+    //         //  dlatego najpierw trzeba odczepić od niego kamere        
+    //         print("detach camera from local player object");
+    //        //TODO: odczepianie sie kamery : GameManager.instance.cam.transform.SetParent(null);
+    //     }
     }
 
     public void TransformIntoStairs(bool isActive)

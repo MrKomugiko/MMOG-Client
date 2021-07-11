@@ -9,7 +9,6 @@ public class ChatController : MonoBehaviour
     [SerializeField] private TMP_InputField message_InputField;
     [SerializeField] private Button send_Button;
 
-
     private void Awake()
     {
         if (instance == null)
@@ -29,9 +28,6 @@ public class ChatController : MonoBehaviour
         int _playerId = Client.instance.myId;
         string _username = GameManager.players[_playerId].Username;
         string _time=DateTime.Now.ToShortTimeString();
-
-        // print($"Wiadomosc na czacie powinna wyglądać następująco"+
-            //   $"[{_time}]:[{_username}]:{_message}");
 
         message_InputField.text = "";
 
