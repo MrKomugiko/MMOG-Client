@@ -232,6 +232,7 @@ public class DungeonManager : MonoBehaviour
             ListOfDungeonLobby.Remove(lobbyToRemove);
         }
 
+
         roomObjectIndex = ListOfDungeonLobby_GameObject
             .IndexOf(ListOfDungeonLobby_GameObject
             .Where(room=>room.name == $"ROOM_{roomId}")
@@ -239,8 +240,15 @@ public class DungeonManager : MonoBehaviour
 
         if(roomObjectIndex != null)
         {
-            Destroy(ListOfDungeonLobby_GameObject[(int)roomObjectIndex]);
-            ListOfDungeonLobby_GameObject.RemoveAt((int)roomObjectIndex);
+            try
+            {
+                Destroy(ListOfDungeonLobby_GameObject[(int)roomObjectIndex]);
+                ListOfDungeonLobby_GameObject.RemoveAt((int)roomObjectIndex);
+            }
+            catch (System.Exception)
+            {
+               // Debug.LogError("Error ?");
+            }
         }
     }
     private void OnClick_StartAndEnterDungeon(DUNGEONS dungeonType, int lobbyID)
@@ -250,9 +258,17 @@ public class DungeonManager : MonoBehaviour
         LOCATIONS location;
         Enum.TryParse<LOCATIONS>(dungeonType.ToString(),out location);
         
+        
         ClientSend.GroupTeleportPlayersInRoom(location, lobbyID);
         ClientSend.GroupEnteredDungeon(lobbyID);
     }
+   
+    public void BackToTown(int LobbyId)
+    {
+        print("back to town executing");
+        ClientSend.GroupLeaveTeleport(LobbyId);
+    }
+
     private void OnClick_JoinToRoom(int roomId, int clientId)
     {
         PlayerManager playerWhoWantJoin = GameManager.players[clientId];

@@ -61,16 +61,24 @@ public class PlayerManager : MonoBehaviour
         get => currentLocation;
         set
         {
+            print("DEBUG:::::::::"+value);
+
             var parentLoc = GameManager.instance.ListaDostepnychLokalizacji
                 .Where(loc => loc.name == value.ToString())
                 .First();
+
+            print("DEBUG:::::::::"+parentLoc.name);
 
             gameObject.transform.parent = parentLoc.transform;
             
             if (parentLoc.name.Contains("DUNGEON"))
             {
+                
+            print("DEBUG::::::::: zawiera nazwe dungeon");
                 // miejsce gdzie znajdowac sie beda ukrycki gracze z innych pokoi dungeona
                 gameObject.transform.parent = parentLoc.transform.Find("PlayersFromOtherRooms").transform;
+
+                print("DEBUG::::::::: nowy parent=>"+ gameObject.transform.parent.name);
 
                 if(GameManager.GetLocalPlayer() != null)
                 {
@@ -78,11 +86,13 @@ public class PlayerManager : MonoBehaviour
                     {
                         // print("przeniesienie gracza:" + Username + " do "+value.ToString());
                         gameObject.transform.parent = parentLoc.transform;
+                         print("jezeli ten dungeon zawiera twoj id =>"+ gameObject.transform.parent.name);
                     }
                     else
                     {
                         // na starcie kazdy lokalny gracz bedzie w glownym katalogu dungeona
-                        gameObject.transform.parent = parentLoc.transform;
+                        gameObject.transform.parent = gameObject.transform.parent; // bez zmian zostaje w zakladke others
+                         print("DEBUG::::::::: nowy parent dla innych graczy nie bedacych w twoim teamie=>"+ gameObject.transform.parent.name);
                     }
                 }
             }

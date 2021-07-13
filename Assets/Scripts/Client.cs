@@ -1,9 +1,10 @@
-﻿using System.Net.Security;
+﻿using UnityEngine;
+using System.Net.Security;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Net;
 using System.Net.Sockets;
 using System;
+
 
 public class Client : MonoBehaviour
 {
@@ -175,6 +176,7 @@ public class Client : MonoBehaviour
                     using (Packet _packet = new Packet(_packetBytes))
                     {
                         int _packetId = _packet.ReadInt();
+                        Debug.LogWarning("_packetId ===>"+_packetId);
                         packetHandlers[_packetId](_packet);
                     }
                 });
@@ -336,13 +338,9 @@ public class Client : MonoBehaviour
             { (int)ServerPackets.removeItemFromMap, ClientHandle.RemoveItemFromMap },     
             { (int)ServerPackets.kickFromDungeonRoom, ClientHandle.KickFromDungeonRoom },
             { (int)ServerPackets.CurrentDungeonRoomsStatus, ClientHandle.RetievedUpdatedDungeonList },
-            { (int)ServerPackets.removeLobbyRoom, ClientHandle.RemoveNonExistingRoomFromScene }   
+            { (int)ServerPackets.removeLobbyRoom, ClientHandle.RemoveNonExistingRoomFromScene },
+            { (int)ServerPackets.RunCounter, ClientHandle.FinishDungeonAndLeaveRoom }   
 
-            
-               
-            
-               
-            
             // TODO:     // otrzymanie info o szczegółach zebranego przedmiotu
             // TODO:     // otrzymanie szczegółów dotycznących napotkanego NPC'a 
             // TODO:     // otrzymanie info o aktualnych ofertach w sklepie (jeze,lli ktos cos sprzeda to bedzie mozna to odkupic od npc ?)

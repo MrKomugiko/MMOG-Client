@@ -233,5 +233,16 @@ public class ClientSend : MonoBehaviour
             SendTCPData(_packet);
         }
     }
+
+    internal static void GroupLeaveTeleport(int lobbyID)
+    {
+         // wyslanie info do wszystkich innych graczy, aby ci schowali graczy xD
+        print("wyslanie info do serwera, że grupa rozpoczela gre, i trzeba Grupe zablokowac");
+        using (Packet _packet = new Packet((int)ClientPackets.GroupLeaveTeleport))
+        {
+            _packet.Write(lobbyID);   // int - lobby id
+            SendTCPData(_packet);
+        }
+    }
     #endregion
 }

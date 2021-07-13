@@ -39,6 +39,8 @@ public partial class GameManager : MonoBehaviour
     public GameObject localPlayerPrefab; 
     public GameObject playerPrefab; 
 
+    public CounterScript Counter;
+
     private void Awake()
     {
         MAPDATA = new Dictionary<Vector3Int, string>();
@@ -122,7 +124,8 @@ public partial class GameManager : MonoBehaviour
         new Dictionary<Vector3Int, LOCATIONS[]>
         {
             {new Vector3Int( 7, -2, 14), new LOCATIONS[2]{LOCATIONS.Start_First_Floor,LOCATIONS.Start_Second_Floor}},
-            {new Vector3Int( -14, -1, 2), new LOCATIONS[2]{LOCATIONS.DUNGEON_1,LOCATIONS.Start_Second_Floor}}
+            {new Vector3Int( -14, -1, 2), new LOCATIONS[2]{LOCATIONS.DUNGEON_1,LOCATIONS.DUNGEON_1}}, // tylko wejscie
+            {new Vector3Int( 2,-11,2), new LOCATIONS[2]{LOCATIONS.Start_First_Floor,LOCATIONS.Start_First_Floor}}, // tylko wyjscie z dungeona
         };
     public bool LogedIn = false;
 
@@ -159,9 +162,12 @@ public partial class GameManager : MonoBehaviour
                 break;
         }
 
-        Debug.Log("You entered " + new_location.ToString());
-        player.CurrentLocation = new_location;
-        ClientSend.SendServerPlayerNewLocalisation(new_location);
+        if(player.CurrentLocation != new_location)
+        {
+            Debug.Log("You entered " + new_location.ToString());
+            player.CurrentLocation = new_location;
+            ClientSend.SendServerPlayerNewLocalisation(new_location);
+        }
     }
 
     public void SetPlayerLocation_init(LOCATIONS location, PlayerManager player, int _currentfloor)

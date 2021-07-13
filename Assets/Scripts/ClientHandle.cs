@@ -289,6 +289,7 @@ public class ClientHandle : MonoBehaviour
         UIManager.Login_InputUsername.interactable = true; // mozliwosc ponownego wproawdzenia danych
         UIManager.instance.RegistrationWindow.GetComponent<WindowScript>().ShowServerMessage(meessageFromServer);
     }
+
     public static void RetievedRegistrationResponse(Packet _packet)
     {
         string response = _packet.ReadString();
@@ -337,6 +338,17 @@ public class ClientHandle : MonoBehaviour
     
         LoadMapDataFromFile(location, mapType);
     }
+
+   public static void FinishDungeonAndLeaveRoom(Packet _packet)
+    {
+        // run timer +
+        print("odebrano pakiet stoperka ;d");
+        int roomId = _packet.ReadInt();
+        // int LobbyId = GameManager.GetLocalPlayer().dungeonRoom.LobbyID;
+        print("FinishDungeonAndLeave setting counter");
+        GameManager.instance.Counter.SetCounterForLeavingDungeon(DungeonManager.instance.BackToTown, "leaviong dungeon...", 5, roomId);
+    }
+
     private static (Dictionary<Vector3Int,string> mapdata,Tilemap tilemap) GetReferencesByMaptype(LOCATIONS _location, MAPTYPE _mapType) 
     {
         // TODO: do ogarnięcia kiedyindziej, dynamiczne tworzenie i generowanie sie mapy na podstawie pozycji gracza
