@@ -25,7 +25,8 @@ using UnityEngine;
         kickFromDungeonRoom,
         CurrentDungeonRoomsStatus,
         removeLobbyRoom,
-        RunCounter = 50
+        RunCounter,
+        CancelCounter
 }
 
     /// <summary>Sent from client to server.</summary>
@@ -50,7 +51,8 @@ using UnityEngine;
         LeaveRoomBylayer,
         GroupTeleport,
         GroupEnteredDungeon,
-        GroupLeaveTeleport
+        GroupLeaveTeleport,
+        CancelCounter_leavingRoom
 }
 public class Packet : IDisposable
 {

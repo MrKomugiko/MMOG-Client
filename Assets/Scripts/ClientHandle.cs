@@ -346,7 +346,8 @@ public class ClientHandle : MonoBehaviour
         int roomId = _packet.ReadInt();
         // int LobbyId = GameManager.GetLocalPlayer().dungeonRoom.LobbyID;
         print("FinishDungeonAndLeave setting counter");
-        GameManager.instance.Counter.SetCounterForLeavingDungeon(DungeonManager.instance.BackToTown, "leaviong dungeon...", 5, roomId);
+        Action<int> action = new Action<int>(DungeonManager.instance.BackToTown);
+        GameManager.instance.Counter.SetCounter(action, roomId, "leaviong dungeon...", 5);
     }
 
     private static (Dictionary<Vector3Int,string> mapdata,Tilemap tilemap) GetReferencesByMaptype(LOCATIONS _location, MAPTYPE _mapType) 

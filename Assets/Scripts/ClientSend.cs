@@ -72,6 +72,18 @@ public class ClientSend : MonoBehaviour
             SendTCPData(_packet);
         }
     }
+
+    internal static void SendCancellationCounting(int roomId)
+    {
+         using (Packet _packet = new Packet((int)ClientPackets.CancelCounter_leavingRoom))
+        {
+            _packet.Write(roomId);  // zmienic to na proźbe o wszystkie dostepne dungeony, a nie pojedycnzo
+
+            SendTCPData(_packet);
+        }
+        
+    }
+
     internal static void GetCurrentDungeonLobbysData(DUNGEONS dungeonType)
     {
         using (Packet _packet = new Packet((int)ClientPackets.InitDataDungeonLobby))
