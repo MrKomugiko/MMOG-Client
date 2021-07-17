@@ -397,6 +397,21 @@ public class ClientHandle : MonoBehaviour
                 tilemap = GameManager.instance.ListaDostepnychLokalizacji.Where(loc=>loc.name == "DUNGEON_1").First().transform.Find("Obstacle_MAP").GetComponent<Tilemap>();
                 GameManager.instance._tilemapDUNGEON = tilemap;
             break;
+
+             case 31:
+                GameManager.MAPDATA_DUNGEON_2_GROUND = new Dictionary<Vector3Int, string>();
+                mapdata = GameManager.MAPDATA_DUNGEON_2_GROUND;
+                tilemap = GameManager.instance.ListaDostepnychLokalizacji.Where(loc=>loc.name == "DUNGEON_2").First().transform.Find("Ground_MAP").GetComponent<Tilemap>();
+                GameManager.instance._tilemapDUNGEON_2_GROUND = tilemap;
+
+            break;
+
+            case 32:
+                GameManager.MAPDATA_DUNGEON_2 = new Dictionary<Vector3Int, string>();
+                mapdata = GameManager.MAPDATA_DUNGEON_2;
+                tilemap = GameManager.instance.ListaDostepnychLokalizacji.Where(loc=>loc.name == "DUNGEON_2").First().transform.Find("Obstacle_MAP").GetComponent<Tilemap>();
+                GameManager.instance._tilemapDUNGEON_2 = tilemap;
+            break;
         }
         return (mapdata,tilemap);
     } 
@@ -542,6 +557,7 @@ public class ClientHandle : MonoBehaviour
         // determine what map type server need from us
         MAPTYPE mapType =  (MAPTYPE)_packet.ReadInt();
         LOCATIONS mapLocation = (LOCATIONS)_packet.ReadInt();
+        print($"send map to server: [{mapLocation.ToString()}][{mapType.ToString()}]");
         ClientSend.SendMapDataToServer(mapType,mapLocation);
     }
     public static int GetKeyFromMapLocationAndType(LOCATIONS location, MAPTYPE mapType) => (int)location * 10 + (int)mapType + 1;

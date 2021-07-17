@@ -14,7 +14,6 @@ public class CounterScript : MonoBehaviour
     [SerializeField]  List<Image> counterCircles = new List<Image>();
     [SerializeField] int _timeDelay;
     public delegate void MethodToExecute(int roomIdToLeaveFrom);
-    MethodToExecute MTExe;
     private Coroutine routineInProgress = null;
 
     public void SetCounter(Action<int> _action, int _actionParam, string shortDescription, int timeCountdown)
@@ -86,9 +85,6 @@ public class CounterScript : MonoBehaviour
         
         // wyczyszczenie opisu
         description.SetText("");
-
-        // wyczyszczenie delegaty
-        MTExe = null;
 
         // wyzerowanie czasu
         _timeDelay = 0;

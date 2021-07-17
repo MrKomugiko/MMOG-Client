@@ -65,7 +65,7 @@ public class PlayerManager : MonoBehaviour
 
             var parentLoc = GameManager.instance.ListaDostepnychLokalizacji
                 .Where(loc => loc.name == value.ToString())
-                .First();
+                .FirstOrDefault();
 
             print("DEBUG:::::::::"+parentLoc.name);
 
@@ -82,18 +82,26 @@ public class PlayerManager : MonoBehaviour
 
                 if(GameManager.GetLocalPlayer() != null)
                 {
-                    if (dungeonRoom.Players.Contains(GameManager.GetLocalPlayer().Username))
+                    if(dungeonRoom != null)
                     {
-                        // print("przeniesienie gracza:" + Username + " do "+value.ToString());
-                        gameObject.transform.parent = parentLoc.transform;
-                         print("jezeli ten dungeon zawiera twoj id =>"+ gameObject.transform.parent.name);
+                        if (dungeonRoom.Players.Contains(GameManager.GetLocalPlayer().Username))
+                        {
+                            // print("przeniesienie gracza:" + Username + " do "+value.ToString());
+                            gameObject.transform.parent = parentLoc.transform;
+                            print("jezeli ten dungeon zawiera twoj id =>"+ gameObject.transform.parent.name);
+                        }
+                        else
+                        {
+                            // na starcie kazdy lokalny gracz bedzie w glownym katalogu dungeona
+                            gameObject.transform.parent = gameObject.transform.parent; // bez zmian zostaje w zakladke others
+                            print("DEBUG::::::::: nowy parent dla innych graczy nie bedacych w twoim teamie=>"+ gameObject.transform.parent.name);
+                        }
                     }
                     else
                     {
-                        // na starcie kazdy lokalny gracz bedzie w glownym katalogu dungeona
-                        gameObject.transform.parent = gameObject.transform.parent; // bez zmian zostaje w zakladke others
-                         print("DEBUG::::::::: nowy parent dla innych graczy nie bedacych w twoim teamie=>"+ gameObject.transform.parent.name);
+                        gameObject.transform.parent = parentLoc.transform;
                     }
+                   
                 }
             }
                 

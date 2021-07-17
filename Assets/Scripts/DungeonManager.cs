@@ -44,29 +44,19 @@ public class DungeonManager : MonoBehaviour
     }
     public void Load() 
     {
-       // try
-       // {
-            if(GameManager.GetLocalPlayer() != null)
+        if(GameManager.GetLocalPlayer() != null)
+        {
+            // Create list of avaiable dungeons
+            string[]listaDungeonow = Enum.GetNames(typeof(DUNGEONS));
+            DUNGEONS dungeon;
+            foreach(string dungeon_string in listaDungeonow)
             {
-                // Create list of avaiable dungeons
-                string[]listaDungeonow = Enum.GetNames(typeof(DUNGEONS));
-                DUNGEONS dungeon;
-                foreach(string dungeon_string in listaDungeonow)
-                {
-                    Enum.TryParse<DUNGEONS>(dungeon_string,out dungeon);
-                    CreateMainDungeonChannelButton(dungeon);
-                }
-                
-                
-                ClientSend.GetCurrentDungeonLobbysData(dungeon = default); 
-            }
-        // }
-        // catch(Exception ex) { 
-        //     foreach(var players in GameManager.players)
-        //     {
-        //         Debug.Log(players.Key);
-        //     }
-        //     Debug.LogWarning("------------------------------------------------------- error, client id ? "+ex.Message);}
+                Enum.TryParse<DUNGEONS>(dungeon_string,out dungeon);
+                CreateMainDungeonChannelButton(dungeon);
+            }       
+            
+            ClientSend.GetCurrentDungeonLobbysData(dungeon = default); 
+        }
     }
     private void CreateMainDungeonChannelButton(DUNGEONS dungeonType)
     {

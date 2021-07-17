@@ -27,7 +27,7 @@ public class UpdateChecker : MonoBehaviour
 
         using (FileStream fs = new FileStream(Constants.PATH_NOTES_CLIENT, FileMode.Create)) {
             using (TextWriter tw = new StreamWriter(fs)) {
-                tw.WriteAsync(jsonText);
+                tw.Write(jsonText);
             }
         }
     }
