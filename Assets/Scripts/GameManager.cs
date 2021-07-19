@@ -84,8 +84,12 @@ public partial class GameManager : MonoBehaviour
         var _playerData = PreparePlayerData(_id, _username, tileCoordPosition, _currentLocation, _currentfloor, _dungeonRoomID, _isLocal, _player);
 
         players.Add(_id, _playerData);
-        SetPlayerLocation_init(_playerData, _currentfloor);
         
+        SetPlayerLocation_init(_playerData, _currentfloor);
+
+        // update nicku
+        _playerData.nickDisplayed.SetText(_playerData.Username);
+
         DungeonManager.instance.Load();
     }
 
@@ -143,6 +147,11 @@ public partial class GameManager : MonoBehaviour
             {new Vector3Int( -14, -1, 2), new LOCATIONS[2]{LOCATIONS.DUNGEON_1,LOCATIONS.DUNGEON_1}}, // tylko wejscie
             {new Vector3Int( 2,-11,2), new LOCATIONS[2]{LOCATIONS.Start_First_Floor,LOCATIONS.Start_First_Floor}}, // tylko wejscie
             {new Vector3Int( -12, 0, 2), new LOCATIONS[2]{LOCATIONS.DUNGEON_2,LOCATIONS.DUNGEON_2}}, // tylko wejscie
+            //18/-2/10
+           
+
+
+//18/-4/10
         };
     public bool LogedIn = false;
     public void EnterNewLocation(Vector3Int locationCoord_Grid, PlayerManager player)
@@ -194,7 +203,7 @@ public partial class GameManager : MonoBehaviour
         {
             SetLocationScene(player.CurrentLocation);
         }
-        player.CurrentLocation = location;
+        player.CurrentLocation = player.CurrentLocation;
     }
     public static PlayerManager GetLocalPlayer()
     {

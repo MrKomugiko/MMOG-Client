@@ -11,18 +11,9 @@ public class roomScript : MonoBehaviour
     [SerializeField] public Button cancelButton;
     [SerializeField] public Button ernterButton;
 
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        room = null;
+    private void OnEnable() {
+       
     }
-
-    private void OnEnable() 
-    { 
-        print("otworzono okno pokoju");
-    }
-
     public void OnClick_Back()
     {
 
@@ -35,6 +26,7 @@ public class roomScript : MonoBehaviour
 
     public void AssignRoomDataToWindow(DungeonsLobby _room)
     {
+        room = null;
         room = _room;
         // update players data - assign them dungeonlobby
         foreach(var player in room.Players)
@@ -42,6 +34,14 @@ public class roomScript : MonoBehaviour
             int PlayerID = GameManager.players.Where(p=>p.Value.Username == player).First().Key;
             GameManager.players[PlayerID].dungeonRoom = _room;
         }
+
+         if(room != null)
+            {
+                if(room.DungeonLocation == DungeonManager.CurrentScrollingDungeonCategory)  
+                    this.gameObject.SetActive(true);
+                else
+                    this.gameObject.SetActive(false);
+            }
     }
 
 }

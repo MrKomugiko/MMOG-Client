@@ -118,12 +118,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e1c67aa169ed1b4b8466d26df9f69ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isLocal: 0
   _id: 0
   _username: 
   currentPosition_GRID: {x: 0, y: 0, z: 2}
   borderScript: {fileID: 0}
-  movementScript: {fileID: 164629180767317849}
   currentLocation: 0
+  nickDisplayed: {fileID: 3547815532697275345}
+  movementScript: {fileID: 164629180767317849}
+  dungeonRoom:
+    lobbyID: 0
+    lobbyOwner: 
+    dungeonLocation: 0
+    players: []
+    maxPlayersCapacity: 0
+    isStarted: 0
   SRenderer: {fileID: 0}
 --- !u!1 &3633597064996052280
 GameObject:

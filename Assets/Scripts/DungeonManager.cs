@@ -29,6 +29,8 @@ public class DungeonManager : MonoBehaviour
     public List<GameObject> ListOfDungeonMainPages_GameObject;
     public static DungeonManager instance;
 
+    public static DUNGEONS CurrentScrollingDungeonCategory = 0;
+
     private void Awake() 
     {
         if (instance == null)
@@ -79,6 +81,7 @@ public class DungeonManager : MonoBehaviour
         SelectionWindow.gameObject.transform.Find("CreateButton").GetComponent<Button>().onClick.RemoveAllListeners();
         SelectionWindow.gameObject.transform.Find("CreateButton").GetComponent<Button>().onClick.AddListener(()=>OnClick_CreateAndJoinNewLobby(dungeonType, Client.instance.myId));
         ClientSend.GetCurrentDungeonLobbysData(dungeonType);
+        SelectionWindow.gameObject.transform.Find("ContentText").GetComponent<TextMeshProUGUI>().SetText(CurrentScrollingDungeonCategory.ToString());
     }
     public void UpdateLobbyData(int _lobbyId, DungeonsLobby newRoomData)
     {

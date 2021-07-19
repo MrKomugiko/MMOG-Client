@@ -86,6 +86,7 @@ public class ClientSend : MonoBehaviour
 
     internal static void GetCurrentDungeonLobbysData(DUNGEONS dungeonType)
     {
+        DungeonManager.CurrentScrollingDungeonCategory = dungeonType;
         using (Packet _packet = new Packet((int)ClientPackets.InitDataDungeonLobby))
         {
             _packet.Write((int)dungeonType);  // zmienic to na proźbe o wszystkie dostepne dungeony, a nie pojedycnzo

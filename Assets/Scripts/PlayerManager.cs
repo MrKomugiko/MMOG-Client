@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
@@ -10,6 +11,8 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private Vector3Int currentPosition_GRID;
     [SerializeField] BorderScript borderScript;
     [SerializeField] private LOCATIONS currentLocation;
+    [SerializeField] public TextMeshProUGUI nickDisplayed;
+
     NPCDetector nPCDetector;
     public MovementScript movementScript;
     public DungeonsLobby dungeonRoom;
