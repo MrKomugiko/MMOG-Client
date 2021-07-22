@@ -45,7 +45,7 @@ public class MovementScript : MonoBehaviour
     {
         lastPosition_Grid = PManager.CurrentPosition_GRID;
         _transform = GetComponent<Transform>();
-        _transform.position = GameManager.instance._tileMap_GROUND.CellToWorld(PManager.CurrentPosition_GRID);
+        _transform.position = GameManager.instance.ListaDostepnychMapTEST[0].Ground_Tilemap.CellToWorld(PManager.CurrentPosition_GRID);
         _transform.position += new Vector3(0, 0, .9f);
         if (PManager.IsLocal) {
           //  AssignFunctionToLocalPlayerButtons();
@@ -228,7 +228,7 @@ public class MovementScript : MonoBehaviour
     }
     public void Teleport(Vector3Int vector3Int)
     {
-        Vector3 worldPosition = GameManager.instance._tileMap.CellToWorld(Vector3Int.CeilToInt(vector3Int));
+        Vector3 worldPosition = GameManager.instance.ListaDostepnychMapTEST[0].Ground_Tilemap.CellToWorld(Vector3Int.CeilToInt(vector3Int));
         lastPosition_Grid = vector3Int;
         _transform.position =  new Vector3(worldPosition.x,worldPosition.y,_transform.position.z );
         // unlock movement in case player move while teleport start
@@ -281,7 +281,7 @@ public class MovementScript : MonoBehaviour
             }
             if (jumpDirection != 0){ // jump
 
-                _transform.position =  GameManager.instance._tileMap.CellToWorld(newPosition_Grid);
+                _transform.position =  GameManager.instance.ListaDostepnychMapTEST[0].Ground_Tilemap.CellToWorld(newPosition_Grid);
                 _transform.position += new Vector3(0,0,(jumpDirection>0?2:4));
               //  CurrentFloor += jumpDirection > 0 ? 2 : -2;
             }
@@ -323,9 +323,9 @@ public class MovementScript : MonoBehaviour
     }
     private IEnumerator JumpAnimation(Vector3Int newPosition_Grid, int direction, Vector3Int? startPodition_Grid = null)
     {
-        Vector3 startPosition_World = GameManager.instance._tileMap.CellToWorld(startPodition_Grid.Value);
+        Vector3 startPosition_World = GameManager.instance.ListaDostepnychMapTEST[0].Ground_Tilemap.CellToWorld(startPodition_Grid.Value);
         Vector3 highestJumpPosition_World = GetMediumHightPoint(newPosition_Grid, direction, startPodition_Grid);
-        Vector3 endPosition_World = GameManager.instance._tileMap.CellToWorld(newPosition_Grid);
+        Vector3 endPosition_World = GameManager.instance.ListaDostepnychMapTEST[0].Ground_Tilemap.CellToWorld(newPosition_Grid);
 
         float z = 0;
         Vector3 _startPoint = new Vector3(startPosition_World.x, startPosition_World.y, transform.position.z+(direction>0?2:4));
@@ -376,8 +376,8 @@ public class MovementScript : MonoBehaviour
   //--------------------------------------------------------------------------------------
    static Vector3 GetMediumHightPoint(Vector3Int newPosition_Grid, int direction, Vector3Int? startPodition_Grid)
     {
-        Vector3 h_pos_1 = GameManager.instance._tileMap.CellToWorld(startPodition_Grid.Value + new Vector3Int(0, 0, direction > 0 ? 2 : 2));
-        Vector3 h_pos_2 = GameManager.instance._tileMap.CellToWorld(newPosition_Grid + new Vector3Int(0, 0, direction > 0 ? 2 : 2));
+        Vector3 h_pos_1 = GameManager.instance.ListaDostepnychMapTEST[0].Ground_Tilemap.CellToWorld(startPodition_Grid.Value + new Vector3Int(0, 0, direction > 0 ? 2 : 2));
+        Vector3 h_pos_2 = GameManager.instance.ListaDostepnychMapTEST[0].Ground_Tilemap.CellToWorld(newPosition_Grid + new Vector3Int(0, 0, direction > 0 ? 2 : 2));
 
         Vector3 highestJumpPosition_World = (h_pos_1 + h_pos_2) / 2;
         return highestJumpPosition_World;

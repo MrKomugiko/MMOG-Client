@@ -26,7 +26,7 @@ public class NPCDetector : MonoBehaviour
         foreach(var position in searchArea.allPositionsWithin)
         {      
             Vector3Int sprawdzanaPozycja = playerPosition+position;
-            Tile sprawdzanyTile = (Tile)GameManager.instance._tileMap.GetTile(sprawdzanaPozycja); 
+            Tile sprawdzanyTile = (Tile)GameManager.instance.ListaDostepnychMapTEST[0].Obstacle_Tilemap.GetTile(sprawdzanaPozycja); 
             if(sprawdzanyTile != null)
             {
                 if(sprawdzanyTile.name.Contains("NPC")){
@@ -37,7 +37,8 @@ public class NPCDetector : MonoBehaviour
                         {
                             var border = Instantiate(
                                 GameManager.instance.NPC_Glowing_SPRITE_PREFAB,
-                                GameManager.instance._tileMap.CellToWorld(sprawdzanaPozycja),
+                                // todo: AKTUALNIE SPRAWDZAMY ITEMKI I NPCTOW TYLKO NA POSIOMIE FIRST START LOCATION
+                                GameManager.instance.ListaDostepnychMapTEST[0].Obstacle_Tilemap.CellToWorld(sprawdzanaPozycja),
                                 Quaternion.identity,
                                 GameObject.Find("MapCanvas").transform);
                             _npcInRange_GameObject.Add(sprawdzanaPozycja,border);

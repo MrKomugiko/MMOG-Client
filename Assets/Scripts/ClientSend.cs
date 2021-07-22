@@ -96,7 +96,7 @@ public class ClientSend : MonoBehaviour
     }
     public static void SendMapDataToServer(MAPTYPE mapType, LOCATIONS mapLocation)
     {
-        GameObject locationContainer = GameManager.instance.ListaDostepnychLokalizacji.Where(n => n.name == mapLocation.ToString()).FirstOrDefault();
+        GameObject locationContainer = GameManager.instance.ListaDostepnychMapTEST.Where(n => n.MapName == mapLocation).FirstOrDefault().Container;
 
         Tilemap TILEMAP = locationContainer.GetComponentsInChildren<Tilemap>().Select(t => t).Where(t => t.gameObject.name == mapType.ToString()).FirstOrDefault();
 

@@ -119,6 +119,8 @@ public class DungeonManager : MonoBehaviour
             ListOfDungeonLobby.Add(newRoomData);
             // edycja danych
             ConfigureRoomLabel(roomObject,newRoomData);     
+            
+            roomObject.GetComponent<roomScript>().AssignRoomDataToWindow(newRoomData    );
         }
     }
     private void ConfigureRoomContentPlayerList(DungeonsLobby room)

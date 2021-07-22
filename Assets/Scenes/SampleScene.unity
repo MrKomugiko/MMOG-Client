@@ -18362,6 +18362,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ba0614e70371ae446a1cde592495eefa, type: 2}
   - {fileID: 11400000, guid: be229da2344c77446b314678a77dfa67, type: 2}
   - {fileID: 11400000, guid: 2b08c0ae8ef78b641bba05828159d914, type: 2}
+  - {fileID: 11400000, guid: 82832bf4e3315b74bad3dd9cf895c960, type: 2}
   ListaDostepnychLokalizacji:
   - {fileID: 2113568674}
   - {fileID: 2055547349}

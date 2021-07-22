@@ -175,6 +175,16 @@ Tilemap:
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
       m_AllTileFlags: 1073741825
+  - first: {x: -22, y: -4, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 19
+      m_TileSpriteIndex: 2
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 1
+      m_TileObjectToInstantiateIndex: 65535
+      dummyAlignment: 0
+      m_AllTileFlags: 1073741825
   - first: {x: -20, y: -4, z: 0}
     second:
       serializedVersion: 2
@@ -325,8 +335,8 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: ba0614e70371ae446a1cde592495eefa, type: 2}
   - m_RefCount: 0
     m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
+  - m_RefCount: 1
+    m_Data: {fileID: 11400000, guid: 82832bf4e3315b74bad3dd9cf895c960, type: 2}
   - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: be229da2344c77446b314678a77dfa67, type: 2}
   - m_RefCount: 1
@@ -336,7 +346,7 @@ Tilemap:
     m_Data: {fileID: 5075534648788907645, guid: 651b2e6f83e74a5489fe93f9f13a26d6, type: 3}
   - m_RefCount: 0
     m_Data: {fileID: 0}
-  - m_RefCount: 3
+  - m_RefCount: 4
     m_Data: {fileID: -8554801051175292317, guid: 045570c16e12ce9478e384daec7ab5fd, type: 3}
   - m_RefCount: 0
     m_Data: {fileID: 0}
@@ -359,7 +369,7 @@ Tilemap:
   - m_RefCount: 1
     m_Data: {fileID: 21300000, guid: cd4e22c8e3e44de4b900953574cea624, type: 3}
   m_TileMatrixArray:
-  - m_RefCount: 20
+  - m_RefCount: 21
     m_Data:
       e00: 1
       e01: 0
@@ -380,8 +390,8 @@ Tilemap:
   m_TileColorArray:
   - m_RefCount: 0
     m_Data: {r: -1.2278547e-16, g: -1.2278547e-16, b: -1.2278547e-16, a: -1.2278547e-16}
-  - m_RefCount: 0
-    m_Data: {r: 0, g: 0, b: 0, a: 0}
+  - m_RefCount: 1
+    m_Data: {r: 0.025157154, g: 0.038530637, b: 1, a: 1}
   - m_RefCount: 1
     m_Data: {r: 0.5803237, g: 1, b: 0, a: 1}
   - m_RefCount: 1
@@ -478,7 +488,7 @@ TilemapRenderer:
   m_Mode: 0
   m_DetectChunkCullingBounds: 0
   m_MaskInteraction: 0
---- !u!114 &6056080732367219068
+--- !u!114 &3882898402403282707
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

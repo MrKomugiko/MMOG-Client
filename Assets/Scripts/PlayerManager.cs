@@ -66,9 +66,9 @@ public class PlayerManager : MonoBehaviour
         {
             print("DEBUG:::::::::"+value);
 
-            var parentLoc = GameManager.instance.ListaDostepnychLokalizacji
-                .Where(loc => loc.name == value.ToString())
-                .FirstOrDefault();
+            var parentLoc = GameManager.instance.ListaDostepnychMapTEST
+                .Where(loc => loc.MapName == value)
+                .FirstOrDefault().Container;
 
             print("DEBUG:::::::::"+parentLoc.name);
 

@@ -352,67 +352,13 @@ public class ClientHandle : MonoBehaviour
 
     private static (Dictionary<Vector3Int,string> mapdata,Tilemap tilemap) GetReferencesByMaptype(LOCATIONS _location, MAPTYPE _mapType) 
     {
-        // TODO: do ogarnięcia kiedyindziej, dynamiczne tworzenie i generowanie sie mapy na podstawie pozycji gracza
-        // aktualnie,, są tylko 2 piętra i jest szasa dopisac to z ręki , ale nie na dluzsza mete
-        int key = GetKeyFromMapLocationAndType(_location,_mapType);
+        var mapdata = new Dictionary<Vector3Int, string>();
+        var tilemap = new Tilemap();
 
-        Dictionary<Vector3Int,string> mapdata = new Dictionary<Vector3Int, string>();
-        Tilemap tilemap = new Tilemap();
-
-        switch(key)
-        {
-            case 1:
-            
-                mapdata = GameManager.MAPDATA_Ground;
-                tilemap = GameManager.instance._tileMap_GROUND;
-            break;
-
-            case 2:
-                mapdata = GameManager.MAPDATA;
-                tilemap = GameManager.instance._tileMap;
-            break;
-            
-            case 11:
-            
-                mapdata = GameManager.MAPDATA2ndFloor_Ground;
-                tilemap = GameManager.instance._tileMap3ndFloor_GROUND;
-            break;
-
-            case 12:
-                mapdata = GameManager.MAPDATA2ndFloor;
-                tilemap = GameManager.instance._tileMap2ndFloor;
-            break;
-
-            case 21:
-                GameManager.MAPDATA_DUNGEON_GROUND = new Dictionary<Vector3Int, string>();
-                mapdata = GameManager.MAPDATA_DUNGEON_GROUND;
-                tilemap = GameManager.instance.ListaDostepnychLokalizacji.Where(loc=>loc.name == "DUNGEON_1").First().transform.Find("Ground_MAP").GetComponent<Tilemap>();
-                GameManager.instance._tilemapDUNGEON_GROUND = tilemap;
-
-            break;
-
-            case 22:
-                GameManager.MAPDATA_DUNGEON = new Dictionary<Vector3Int, string>();
-                mapdata = GameManager.MAPDATA_DUNGEON;
-                tilemap = GameManager.instance.ListaDostepnychLokalizacji.Where(loc=>loc.name == "DUNGEON_1").First().transform.Find("Obstacle_MAP").GetComponent<Tilemap>();
-                GameManager.instance._tilemapDUNGEON = tilemap;
-            break;
-
-             case 31:
-                GameManager.MAPDATA_DUNGEON_2_GROUND = new Dictionary<Vector3Int, string>();
-                mapdata = GameManager.MAPDATA_DUNGEON_2_GROUND;
-                tilemap = GameManager.instance.ListaDostepnychLokalizacji.Where(loc=>loc.name == "DUNGEON_2").First().transform.Find("Ground_MAP").GetComponent<Tilemap>();
-                GameManager.instance._tilemapDUNGEON_2_GROUND = tilemap;
-
-            break;
-
-            case 32:
-                GameManager.MAPDATA_DUNGEON_2 = new Dictionary<Vector3Int, string>();
-                mapdata = GameManager.MAPDATA_DUNGEON_2;
-                tilemap = GameManager.instance.ListaDostepnychLokalizacji.Where(loc=>loc.name == "DUNGEON_2").First().transform.Find("Obstacle_MAP").GetComponent<Tilemap>();
-                GameManager.instance._tilemapDUNGEON_2 = tilemap;
-            break;
-        }
+        var mapContainer = GameManager.instance.ListaDostepnychMapTEST.Where(m=>m.MapName == _location).First();
+                mapdata = mapContainer.GetMapdataRef(_mapType);
+                tilemap = mapContainer.GetTilemapRef(_mapType);
+      
         return (mapdata,tilemap);
     } 
     public static void LoadMapDataFromFile(LOCATIONS _location, MAPTYPE _mapType)
@@ -560,5 +506,4 @@ public class ClientHandle : MonoBehaviour
         print($"send map to server: [{mapLocation.ToString()}][{mapType.ToString()}]");
         ClientSend.SendMapDataToServer(mapType,mapLocation);
     }
-    public static int GetKeyFromMapLocationAndType(LOCATIONS location, MAPTYPE mapType) => (int)location * 10 + (int)mapType + 1;
 }

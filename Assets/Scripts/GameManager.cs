@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -14,50 +13,25 @@ public partial class GameManager : MonoBehaviour
     [SerializeField] public GameObject dungeonsWindow;
     [SerializeField] public GameObject NPC_Glowing_SPRITE_PREFAB;
     [SerializeField] public List<Tile> listaDostepnychTilesow;
-
-    [SerializeField] public List<GameObject> ListaDostepnychLokalizacji = new List<GameObject>();
-    [SerializeField] public GameObject StartLocationSeconFloorContainer;
-    [SerializeField] public GameObject StartLocationFirstFloorContainer;
-    public Tilemap _tileMap;
-    public Tilemap _tileMap_GROUND;
-    public static Dictionary<Vector3Int, string> MAPDATA { get; set; }
-    public static Dictionary<Vector3Int, string> MAPDATA_Ground { get; set; }
-
-    public Tilemap _tileMap3ndFloor_GROUND;
-    public Tilemap _tileMap2ndFloor;
-    public static Dictionary<Vector3Int, string> MAPDATA2ndFloor_Ground { get; internal set; }
-    public static Dictionary<Vector3Int, string> MAPDATA2ndFloor { get; internal set; }
-
-
-    public Tilemap _tilemapDUNGEON;
-    public Tilemap _tilemapDUNGEON_GROUND;
-    public static Dictionary<Vector3Int, string> MAPDATA_DUNGEON { get; internal set; }
-    public static Dictionary<Vector3Int, string> MAPDATA_DUNGEON_GROUND { get; internal set; }
-
-    public Tilemap _tilemapDUNGEON_2;
-    public Tilemap _tilemapDUNGEON_2_GROUND;
-    public static Dictionary<Vector3Int, string> MAPDATA_DUNGEON_2 { get; internal set; }
-    public static Dictionary<Vector3Int, string> MAPDATA_DUNGEON_2_GROUND { get; internal set; }
-
-
+    public List<UnityMapElements> ListaDostepnychMapTEST = new List<UnityMapElements>();
     public static Dictionary<int, PlayerManager> players = new Dictionary<int, PlayerManager>();
-
     public GameObject localPlayerPrefab; 
     public GameObject playerPrefab; 
-
     public CounterScript Counter;
-
+    [SerializeField] GameObject TilemapContainerPrefab;
     private void Awake()
     {
-        MAPDATA = new Dictionary<Vector3Int, string>();
-        MAPDATA_Ground = new Dictionary<Vector3Int, string>();
+        var mapsContainer = new UnityMapElements(LOCATIONS.Start_First_Floor,GameObject.Find("Grid").transform, TilemapContainerPrefab); 
+            ListaDostepnychMapTEST.Add(mapsContainer);
 
-        MAPDATA2ndFloor = new Dictionary<Vector3Int, string>();
-        MAPDATA2ndFloor_Ground = new Dictionary<Vector3Int, string>();
+        mapsContainer = new UnityMapElements(LOCATIONS.Start_Second_Floor,GameObject.Find("Grid").transform, TilemapContainerPrefab);  
+            ListaDostepnychMapTEST.Add(mapsContainer);
 
-        ListaDostepnychLokalizacji.Add(StartLocationFirstFloorContainer);
-        ListaDostepnychLokalizacji.Add(StartLocationSeconFloorContainer);
+        mapsContainer = new UnityMapElements(LOCATIONS.DUNGEON_1,GameObject.Find("Grid").transform, TilemapContainerPrefab);
+            ListaDostepnychMapTEST.Add(mapsContainer);
 
+        mapsContainer = new UnityMapElements(LOCATIONS.DUNGEON_2,GameObject.Find("Grid").transform, TilemapContainerPrefab);
+            ListaDostepnychMapTEST.Add(mapsContainer);
 
         if (instance == null)
         {
@@ -71,24 +45,16 @@ public partial class GameManager : MonoBehaviour
     }
     public void SpawnPlayer(int _id, string _username, Vector3 _position, Quaternion _rotation, Vector3Int tileCoordPosition, LOCATIONS _currentLocation, int _currentfloor, int _dungeonRoomID)
     {
-        // if (players.ContainsKey(_id))
-        // {
-        //     print("w grze jest juz taki gracz z tym id");
-        //     return;
-        // }
-
         bool _isLocal;
         GameObject _player;
         InstantiatePlayerGameObject(_id, _position, _rotation, out _isLocal, out _player);
 
         var _playerData = PreparePlayerData(_id, _username, tileCoordPosition, _currentLocation, _currentfloor, _dungeonRoomID, _isLocal, _player);
+        _playerData.nickDisplayed.SetText(_playerData.Username);
 
         players.Add(_id, _playerData);
         
         SetPlayerLocation_init(_playerData, _currentfloor);
-
-        // update nicku
-        _playerData.nickDisplayed.SetText(_playerData.Username);
 
         DungeonManager.instance.Load();
     }
@@ -177,9 +143,9 @@ public partial class GameManager : MonoBehaviour
     }
     private static void SetLocationScene(LOCATIONS new_location)
     {
-        foreach (var mapa in GameManager.instance.ListaDostepnychLokalizacji)
+        foreach (var mapa in GameManager.instance.ListaDostepnychMapTEST)
         {
-            mapa.SetActive(false);
+            mapa.Container.SetActive(false);
         }
 
         switch (new_location)
@@ -188,13 +154,13 @@ public partial class GameManager : MonoBehaviour
             case LOCATIONS.Start_Second_Floor:
 
                 // UWAGA: na piętro 2 wejdziemy tylko z piętra 1, więc konieczne jest zostawienie piętra 1 nadal aktywnego
-                GameManager.instance.ListaDostepnychLokalizacji.Where(loc => loc.name == LOCATIONS.Start_First_Floor.ToString()).First().SetActive(true);
+                GameManager.instance.ListaDostepnychMapTEST.Where(loc => loc.MapName == LOCATIONS.Start_First_Floor).First().Container.SetActive(true);
                 break;
 
             case LOCATIONS.DUNGEON_1: break;
             case LOCATIONS.DUNGEON_2: break;
         }
-        GameManager.instance.ListaDostepnychLokalizacji.Where(loc => loc.name == new_location.ToString()).First().SetActive(true);
+        GameManager.instance.ListaDostepnychMapTEST.Where(loc => loc.MapName == new_location).First().Container.SetActive(true);
     }
     public void SetPlayerLocation_init(PlayerManager player, int _currentfloor)
     {
