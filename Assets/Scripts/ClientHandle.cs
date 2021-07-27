@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System.Collections;
 
 public class ClientHandle : MonoBehaviour
 {
@@ -339,7 +340,54 @@ public class ClientHandle : MonoBehaviour
         LoadMapDataFromFile(location, mapType);
     }
 
-   public static void FinishDungeonAndLeaveRoom(Packet _packet)
+    internal static void ExecuteAnimationOnTileMap(Packet _packet)
+    {
+        // TODO: rozpoznanie roznych typow animacji
+        Vector3Int tileToAnimate = Vector3Int.CeilToInt(_packet.ReadVector3());
+
+        // wykrycie rodzaju tilesa wyciagnietej z jego nazwy
+        // TODO: wykryć z jakiej bazy map w tej chwili korzysta gracz lokalny -> pewnie trzeba wyciagnac na podstawie aktualnej lokacji 
+
+        var localPlayer = GameManager.GetLocalPlayer();
+        var _tilemap = GameManager.instance.ListaDostepnychMapTEST.Where(map => map.MapName == localPlayer.CurrentLocation).FirstOrDefault().GetTilemapRef(MAPTYPE.Obstacle_MAP);
+        // var mapdata = GameManager.instance.ListaDostepnychMapTEST.Where(map => map.MapName == localPlayer.CurrentLocation).FirstOrDefault().GetMapdataRef(MAPTYPE.Obstacle_MAP);
+     
+        var _tileName = _tilemap.GetTile(tileToAnimate).name;
+
+        print($"należy przeprowadzic animacje dla tilesa {_tileName} na pozycji {tileToAnimate.ToString()}");
+       
+        PerformAnimationForTile(_position:tileToAnimate, _tileName, ref _tilemap);
+    }
+
+    private static void PerformAnimationForTile(Vector3Int _position, string _tileName, ref Tilemap _tilemap)
+    {
+        if (_tileName.Contains("Gate"))
+        {
+            // gate -> gate_OPEN
+            print("wlaczenie animacji");
+          
+            _tilemap.SetTile(_position,null);
+            var worldPosition = _tilemap.CellToWorld(_position);
+            var gate = Instantiate(GameManager.instance.listaDostepnychObiektow_ANIMACJI.Where(t=>t.name == _tileName+"_Animation").FirstOrDefault());
+            gate.transform.position += worldPosition;
+
+            GameManager.instance.StartCoroutine(DelayAndSwapTile(1f,_tilemap,_position,_tileName,gate));
+        }
+    }
+
+    private static IEnumerator DelayAndSwapTile(float time, Tilemap _tilemap,Vector3Int _position, string _tileName, GameObject gate)
+    {
+            print("czekanie "+time.ToString()+"s");
+
+        yield return new WaitForSeconds(time);
+            print("podmiana tilesa  otwartą brame");
+        
+        _tilemap.SetTile(_position,GameManager.instance.listaDostepnychTilesow.Where(t=>t.name == _tileName+"_OPEN").FirstOrDefault());
+
+        Destroy(gate);
+    }
+
+    public static void FinishDungeonAndLeaveRoom(Packet _packet)
     {
         // run timer +
         print("odebrano pakiet stoperka ;d");
@@ -375,7 +423,16 @@ public class ClientHandle : MonoBehaviour
             // --------- JEZELI NIE MA ZAPISANYCH DANYCH NA SERWERZE Z AUTOMATU WSZYSTKO PRZYPISUJEMY JAK Z PLIKU
             if (REFERENCE_MAPDATA.Count == 0)
             {
+                if(_mapType == MAPTYPE.Ground_MAP)
+                {
+                    GameManager.instance.ListaDostepnychMapTEST.Where(m=>m.MapName == _location).First().Ground_MAPDATA = TEMP_MAPDATA_FROM_FILE;
+                }
+                if(_mapType == MAPTYPE.Obstacle_MAP)
+                {
+                    GameManager.instance.ListaDostepnychMapTEST.Where(m=>m.MapName == _location).First().Obstacle_MAPDATA = TEMP_MAPDATA_FROM_FILE;
+                }
                 REFERENCE_MAPDATA = TEMP_MAPDATA_FROM_FILE;
+                print("size2: "+REFERENCE_MAPDATA.Count());
             }
             if (REFERENCE_MAPDATA.Count > 0)
             {
@@ -400,11 +457,11 @@ public class ClientHandle : MonoBehaviour
                 }
                // usuniecie nieaktualnych pól
                
-                foreach (var pole in REFERENCE_MAPDATA.Where(pole => TEMP_MAPDATA_FROM_FILE.ContainsKey(pole.Key) == false).Select(pole => pole.Key).ToList()) 
-                {
-                    REFERENCE_MAPDATA.Remove(pole);
-                    deletedCounter++;
-                }
+                // foreach (var pole in REFERENCE_MAPDATA.Where(pole => TEMP_MAPDATA_FROM_FILE.ContainsKey(pole.Key) == false).Select(pole => pole.Key).ToList()) 
+                // {
+                //     REFERENCE_MAPDATA.Remove(pole);
+                //     deletedCounter++;
+                // }
             }
 
         // ----------------------------------PODSUMOWANIE ----------------------------------
@@ -431,7 +488,7 @@ public class ClientHandle : MonoBehaviour
                 
             foreach (KeyValuePair<Vector3, string> kvp in mapData)
             {
-                tw.WriteLine(string.Format("{0} {1}", kvp.Key, kvp.Value));
+                tw.WriteLine(string.Format("{0} {1}", Vector3Int.CeilToInt(kvp.Key), kvp.Value));
             }
         }
     }
@@ -457,24 +514,34 @@ public class ClientHandle : MonoBehaviour
         
         while ((line = file.ReadLine()) != null)
         {
-            string text = line.Replace("(", "").Replace(")", "");
-            string[] data = text.Split(" ".ToCharArray());
+            try
+            {
+                if(String.IsNullOrEmpty(line)) continue;
 
-            string x = data[0].Trim().Replace(",", ".");
-            string y = data[1].Trim().Replace(",", ".");
-            string z = data[2].Trim().Replace(",", ".");
+                string text = line.Replace("(", "").Replace(")", "");
+                string[] data = text.Split(" ".ToCharArray());
 
-            int iX = Int32.Parse(x.Remove(x.Length - 3));
-            int iY = Int32.Parse(y.Remove(y.Length - 3));
-            int iZ = Int32.Parse(z.Remove(z.Length - 2));
+                string x = data[0].Trim().Replace(",", "");
+                string y = data[1].Trim().Replace(",", "");
+                string z = data[2].Trim().Replace(",", "");
 
-            string value = data[3];
+                int iX = Int32.Parse(x);
+                int iY = Int32.Parse(y);
+                int iZ = Int32.Parse(z);
 
-            TEMP_MAPDATA_FROM_FILE.Add(new Vector3Int(iX, iY, iZ), value);
+                string value = data[3];
+
+                TEMP_MAPDATA_FROM_FILE.Add(new Vector3Int(iX, iY, iZ), value);
+                
+            }
+            catch (System.Exception)
+            {
+                Debug.LogError("bląd dla lini "+line.ToString());
+                throw;
+            }
 
         }
-            file.Close();
-            
+            file.Close();  
 
         return TEMP_MAPDATA_FROM_FILE;
     }

@@ -340,7 +340,11 @@ public class Client : MonoBehaviour
             { (int)ServerPackets.CurrentDungeonRoomsStatus, ClientHandle.RetievedUpdatedDungeonList },
             { (int)ServerPackets.removeLobbyRoom, ClientHandle.RemoveNonExistingRoomFromScene },
             { (int)ServerPackets.RunCounter, ClientHandle.FinishDungeonAndLeaveRoom },   
-            { (int)ServerPackets.CancelCounter, GameManager.instance.Counter.FromServer_CancelCounter }   
+            { (int)ServerPackets.CancelCounter, GameManager.instance.Counter.FromServer_CancelCounter },  
+
+            { (int)ServerPackets.ExecuteAnimationForTile, ClientHandle.ExecuteAnimationOnTileMap }   
+
+            
 
             // TODO:     // otrzymanie info o szczegółach zebranego przedmiotu
             // TODO:     // otrzymanie szczegółów dotycznących napotkanego NPC'a 

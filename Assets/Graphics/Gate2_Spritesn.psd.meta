@@ -1,49 +1,7 @@
 fileFormatVersion: 2
-guid: 06da7134cd0493348b867bb2ee2f5c0e
+guid: 1a21d654482b9744bbd33ed128d908cf
 TextureImporter:
-  internalIDToNameTable:
-  - first:
-      213: -2251116365272936130
-    second: testTile_314px_0
-  - first:
-      213: -3871642779926937910
-    second: testTile_314px_1
-  - first:
-      213: 2269060463400194924
-    second: testTile_314px_2
-  - first:
-      213: 8919859173820556062
-    second: testTile_314px_3
-  - first:
-      213: 1099755116252464775
-    second: testTile_314px_4
-  - first:
-      213: 5081982596201135991
-    second: testTile_314px_5
-  - first:
-      213: -2567724469981031958
-    second: testTile_314px_6
-  - first:
-      213: 1481766862940346485
-    second: testTile_314px_7
-  - first:
-      213: 4116196724236679761
-    second: testTile_314px_8
-  - first:
-      213: 889624409063463384
-    second: testTile_314px_9
-  - first:
-      213: -5534114940847569809
-    second: testTile_314px_10
-  - first:
-      213: 186409075742656377
-    second: testTile_314px_11
-  - first:
-      213: -8339588225040324643
-    second: testTile_314px_12
-  - first:
-      213: -2649913246316184708
-    second: testTile_314px_13
+  internalIDToNameTable: []
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -87,11 +45,11 @@ TextureImporter:
   spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 0
+  alignment: 9
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 314
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spriteGenerateFallbackPhysicsShape: 0
+  spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
@@ -111,7 +69,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 3
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -123,7 +81,19 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 3
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Server
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -135,7 +105,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 3
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -146,127 +116,169 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: testTile_314px_0
+      name: Gate2_Spritesn_7
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 314
-        height: 314
+        width: 49
+        height: 70
       alignment: 9
-      pivot: {x: 0.5, y: 0.25}
+      pivot: {x: 0.26, y: 0.33}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e3196dbb79d62c0e0800000000000000
-      internalID: -2251116365272936130
+      spriteID: 3142885e87af5c142b190640e35b121c
+      internalID: -2061109885
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: testTile_314px_1
+      name: Gate2_Spritesn_1
       rect:
         serializedVersion: 2
-        x: 323
+        x: 49
         y: 0
-        width: 314
-        height: 314
+        width: 49
+        height: 70
       alignment: 9
-      pivot: {x: 0.5, y: 0.25}
+      pivot: {x: 0.26, y: 0.33}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: acebf3d8769254ac0800000000000000
-      internalID: -3871642779926937910
+      spriteID: b5c1d9318ed7b78459d7e1d737535afc
+      internalID: 839507573
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: testTile_314px_2
+      name: Gate2_Spritesn_2
       rect:
         serializedVersion: 2
-        x: 640
+        x: 98
         y: 0
-        width: 314
-        height: 314
+        width: 49
+        height: 70
       alignment: 9
-      pivot: {x: 0.5, y: 0.25}
+      pivot: {x: 0.26, y: 0.33}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c631ade28725d7f10800000000000000
-      internalID: 2269060463400194924
+      spriteID: 04b009fc26606bc4190acf10c6361b23
+      internalID: -258606653
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: testTile_314px_3
+      name: Gate2_Spritesn_3
       rect:
         serializedVersion: 2
-        x: 959
+        x: 147
         y: 0
-        width: 314
-        height: 314
+        width: 49
+        height: 70
       alignment: 9
-      pivot: {x: 0.5, y: 0.25}
+      pivot: {x: 0.26, y: 0.33}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e13651eb8a4b9cb70800000000000000
-      internalID: 8919859173820556062
+      spriteID: 8a210568992560846a5176d32abc2226
+      internalID: -1057761379
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: testTile_314px_4
+      name: Gate2_Spritesn_4
       rect:
         serializedVersion: 2
-        x: 1292
+        x: 196
         y: 0
-        width: 314
-        height: 314
+        width: 49
+        height: 70
       alignment: 9
-      pivot: {x: 0.5, y: 0.25}
+      pivot: {x: 0.26, y: 0.33}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7868524937d134f00800000000000000
-      internalID: 1099755116252464775
+      spriteID: fd39c694da906f14cbb00a282d3a94dc
+      internalID: -1467409728
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: testTile_314px_5
+      name: Gate2_Spritesn_5
       rect:
         serializedVersion: 2
-        x: 1621
+        x: 245
         y: 0
-        width: 314
-        height: 314
+        width: 49
+        height: 70
       alignment: 9
-      pivot: {x: 0.5, y: 0.25}
+      pivot: {x: 0.26, y: 0.33}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 77f3949ee34d68640800000000000000
-      internalID: 5081982596201135991
+      spriteID: 23042bf1ae40e7a4a91717efb72d7414
+      internalID: -1525414071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gate2_Spritesn_6
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 0
+        width: 49
+        height: 70
+      alignment: 9
+      pivot: {x: 0.26, y: 0.33}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 432acf2cfc93d1a4fb22f09fbaddeba4
+      internalID: 823451579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gate2_Spritesn_0
+      rect:
+        serializedVersion: 2
+        x: 343
+        y: 0
+        width: 49
+        height: 70
+      alignment: 9
+      pivot: {x: 0.26, y: 0.33}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 815f1c56d7e3d6d4cb47a1591c6b38c3
+      internalID: 2104997592
       vertices: []
       indices: 
       edges: []
@@ -282,12 +294,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      testTile_314px_0: -2251116365272936130
-      testTile_314px_2: 2269060463400194924
-      testTile_314px_4: 1099755116252464775
-      testTile_314px_1: -3871642779926937910
-      testTile_314px_5: 5081982596201135991
-      testTile_314px_3: 8919859173820556062
+      Gate2_Spritesn_1: 839507573
+      Gate2_Spritesn_6: 823451579
+      Gate2_Spritesn_4: -1467409728
+      Gate2_Spritesn_5: -1525414071
+      Gate2_Spritesn_0: 2104997592
+      Gate2_Spritesn_7: -2061109885
+      Gate2_Spritesn_3: -1057761379
+      Gate2_Spritesn_2: -258606653
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 1

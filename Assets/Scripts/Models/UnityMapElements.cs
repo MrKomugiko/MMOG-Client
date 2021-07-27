@@ -61,9 +61,11 @@ using UnityEngine.Tilemaps;
             switch(maptype)
             {
                 case MAPTYPE.Ground_MAP:
+                Debug.Log("size " +this.Ground_MAPDATA.Count);
                 return ref this.Ground_MAPDATA;
 
                 case MAPTYPE.Obstacle_MAP:
+                Debug.Log("size " +this.Obstacle_MAPDATA.Count);
                 return ref this.Obstacle_MAPDATA;
             }
             

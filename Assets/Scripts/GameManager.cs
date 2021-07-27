@@ -13,6 +13,7 @@ public partial class GameManager : MonoBehaviour
     [SerializeField] public GameObject dungeonsWindow;
     [SerializeField] public GameObject NPC_Glowing_SPRITE_PREFAB;
     [SerializeField] public List<Tile> listaDostepnychTilesow;
+     [SerializeField] public List<GameObject> listaDostepnychObiektow_ANIMACJI;
     public List<UnityMapElements> ListaDostepnychMapTEST = new List<UnityMapElements>();
     public static Dictionary<int, PlayerManager> players = new Dictionary<int, PlayerManager>();
     public GameObject localPlayerPrefab; 

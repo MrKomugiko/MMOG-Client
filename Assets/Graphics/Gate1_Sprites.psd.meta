@@ -1,49 +1,31 @@
 fileFormatVersion: 2
-guid: 06da7134cd0493348b867bb2ee2f5c0e
+guid: 820df7320aa42d547b505765b6f66ee4
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2251116365272936130
-    second: testTile_314px_0
+      213: -6759829094967326714
+    second: 8frame gate open animation_0
   - first:
-      213: -3871642779926937910
-    second: testTile_314px_1
+      213: -5296900140276938318
+    second: 8frame gate open animation_1
   - first:
-      213: 2269060463400194924
-    second: testTile_314px_2
+      213: 4423746834675898331
+    second: 8frame gate open animation_2
   - first:
-      213: 8919859173820556062
-    second: testTile_314px_3
+      213: -1105296074304218515
+    second: 8frame gate open animation_3
   - first:
-      213: 1099755116252464775
-    second: testTile_314px_4
+      213: -5951926641520389068
+    second: 8frame gate open animation_4
   - first:
-      213: 5081982596201135991
-    second: testTile_314px_5
+      213: 3511467008090172282
+    second: 8frame gate open animation_5
   - first:
-      213: -2567724469981031958
-    second: testTile_314px_6
+      213: -8540002509168870066
+    second: 8frame gate open animation_6
   - first:
-      213: 1481766862940346485
-    second: testTile_314px_7
-  - first:
-      213: 4116196724236679761
-    second: testTile_314px_8
-  - first:
-      213: 889624409063463384
-    second: testTile_314px_9
-  - first:
-      213: -5534114940847569809
-    second: testTile_314px_10
-  - first:
-      213: 186409075742656377
-    second: testTile_314px_11
-  - first:
-      213: -8339588225040324643
-    second: testTile_314px_12
-  - first:
-      213: -2649913246316184708
-    second: testTile_314px_13
+      213: 7300547636457398984
+    second: 8frame gate open animation_7
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -87,11 +69,11 @@ TextureImporter:
   spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 0
+  alignment: 9
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 314
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spriteGenerateFallbackPhysicsShape: 0
+  spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
@@ -111,7 +93,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 3
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -123,7 +105,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 3
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -135,7 +117,19 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 3
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -146,127 +140,169 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: testTile_314px_0
+      name: 8frame gate open animation_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 314
-        height: 314
+        width: 49
+        height: 70
       alignment: 9
-      pivot: {x: 0.5, y: 0.25}
+      pivot: {x: 0.7, y: 0.33}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e3196dbb79d62c0e0800000000000000
-      internalID: -2251116365272936130
+      spriteID: 6084f14d0434032a0800000000000000
+      internalID: -6759829094967326714
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: testTile_314px_1
+      name: 8frame gate open animation_1
       rect:
         serializedVersion: 2
-        x: 323
+        x: 49
         y: 0
-        width: 314
-        height: 314
+        width: 49
+        height: 70
       alignment: 9
-      pivot: {x: 0.5, y: 0.25}
+      pivot: {x: 0.7, y: 0.33}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: acebf3d8769254ac0800000000000000
-      internalID: -3871642779926937910
+      spriteID: 2b98318f261ad76b0800000000000000
+      internalID: -5296900140276938318
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: testTile_314px_2
+      name: 8frame gate open animation_2
       rect:
         serializedVersion: 2
-        x: 640
+        x: 98
         y: 0
-        width: 314
-        height: 314
+        width: 49
+        height: 70
       alignment: 9
-      pivot: {x: 0.5, y: 0.25}
+      pivot: {x: 0.7, y: 0.33}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c631ade28725d7f10800000000000000
-      internalID: 2269060463400194924
+      spriteID: bd79d11ee4e446d30800000000000000
+      internalID: 4423746834675898331
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: testTile_314px_3
+      name: 8frame gate open animation_3
       rect:
         serializedVersion: 2
-        x: 959
+        x: 147
         y: 0
-        width: 314
-        height: 314
+        width: 49
+        height: 70
       alignment: 9
-      pivot: {x: 0.5, y: 0.25}
+      pivot: {x: 0.7, y: 0.33}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e13651eb8a4b9cb70800000000000000
-      internalID: 8919859173820556062
+      spriteID: d6a9677931339a0f0800000000000000
+      internalID: -1105296074304218515
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: testTile_314px_4
+      name: 8frame gate open animation_4
       rect:
         serializedVersion: 2
-        x: 1292
+        x: 196
         y: 0
-        width: 314
-        height: 314
+        width: 49
+        height: 70
       alignment: 9
-      pivot: {x: 0.5, y: 0.25}
+      pivot: {x: 0.7, y: 0.33}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7868524937d134f00800000000000000
-      internalID: 1099755116252464775
+      spriteID: 4345ef21142866da0800000000000000
+      internalID: -5951926641520389068
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: testTile_314px_5
+      name: 8frame gate open animation_5
       rect:
         serializedVersion: 2
-        x: 1621
+        x: 245
         y: 0
-        width: 314
-        height: 314
+        width: 49
+        height: 70
       alignment: 9
-      pivot: {x: 0.5, y: 0.25}
+      pivot: {x: 0.7, y: 0.33}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 77f3949ee34d68640800000000000000
-      internalID: 5081982596201135991
+      spriteID: a7be7b9a3ac3bb030800000000000000
+      internalID: 3511467008090172282
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 8frame gate open animation_6
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 0
+        width: 49
+        height: 70
+      alignment: 9
+      pivot: {x: 0.7, y: 0.33}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4d7b0cf6f0db7980800000000000000
+      internalID: -8540002509168870066
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 8frame gate open animation_7
+      rect:
+        serializedVersion: 2
+        x: 343
+        y: 0
+        width: 49
+        height: 70
+      alignment: 9
+      pivot: {x: 0.7, y: 0.33}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8c26cd83561c05560800000000000000
+      internalID: 7300547636457398984
       vertices: []
       indices: 
       edges: []
@@ -282,12 +318,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      testTile_314px_0: -2251116365272936130
-      testTile_314px_2: 2269060463400194924
-      testTile_314px_4: 1099755116252464775
-      testTile_314px_1: -3871642779926937910
-      testTile_314px_5: 5081982596201135991
-      testTile_314px_3: 8919859173820556062
+      8frame gate open animation_7: 7300547636457398984
+      8frame gate open animation_4: -5951926641520389068
+      8frame gate open animation_3: -1105296074304218515
+      8frame gate open animation_6: -8540002509168870066
+      8frame gate open animation_5: 3511467008090172282
+      8frame gate open animation_0: -6759829094967326714
+      8frame gate open animation_2: 4423746834675898331
+      8frame gate open animation_1: -5296900140276938318
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 1
